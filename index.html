@@ -1114,11 +1114,8 @@ El documento debe seguir este formato exacto:
 }
 
 function ausDownloadWordFallback(payload, fecha) {
-  // Simple but well-formatted HTML doc that Word can open
   const { year, month, day, dayName, ausentes } = payload;
-  const SESS_KEYS = ['2','3','3R','5','6','7','8'];
-  const SESS_NUMS = {  '2':1,'3':2,'3R':3,'5':4,'6':5,'7':6,'8':7};
-  const SESS_HORAS2 = {'2':'08:30-09:20','3':'09:25-10:15','3R':'10:20-11:10','5':'11:35-12:25','6':'12:30-13:25','7':'13:30-14:20','8':'14:25-15:15'};
+  const SESS_NUMS  = {'2':1,'3':2,'3R':3,'5':4,'6':5,'7':6,'8':7};
 
   function getAusForSess(sessKey) {
     return ausentes.filter(a => a.sesiones.some(s => s.sess === sessKey))
@@ -1129,56 +1126,91 @@ function ausDownloadWordFallback(payload, fecha) {
   }
 
   function tableHTML(sessKeys) {
-    let t = `<table border="1" cellspacing="0" cellpadding="4" style="width:100%;border-collapse:collapse;font-size:9pt;font-family:Arial">
-      <tr style="background:#1F3864;color:white">
-        <th style="width:5%">Hª</th><th style="width:22%">Profesor ausente</th>
-        <th style="width:7%">Curso</th><th style="width:7%">Aula</th>
-        <th style="width:9%">Tarea</th><th style="width:36%">Profesor que realiza de guardia</th>
-        <th style="width:14%">Firmas</th>
+    let t = `<table style="width:100%;border-collapse:collapse;font-size:7.5pt;font-family:Arial;table-layout:fixed">
+      <colgroup>
+        <col style="width:4%"><col style="width:22%"><col style="width:6%">
+        <col style="width:6%"><col style="width:8%"><col style="width:39%"><col style="width:15%">
+      </colgroup>
+      <tr style="background:#1F3864;color:white;height:18px">
+        <th style="border:1px solid #999;padding:2px 3px">Hª</th>
+        <th style="border:1px solid #999;padding:2px 3px">Profesor ausente</th>
+        <th style="border:1px solid #999;padding:2px 3px">Curso</th>
+        <th style="border:1px solid #999;padding:2px 3px">Aula</th>
+        <th style="border:1px solid #999;padding:2px 3px">Tarea</th>
+        <th style="border:1px solid #999;padding:2px 3px">Profesor que realiza de guardia</th>
+        <th style="border:1px solid #999;padding:2px 3px">Firmas</th>
       </tr>`;
     sessKeys.forEach(sk => {
       const ausData = getAusForSess(sk);
       for (let r = 0; r < 8; r++) {
         const aus = ausData[r];
-        const bg = r===0 ? 'background:#DCE6F1' : '';
-        t += `<tr style="height:22px">
-          <td style="text-align:center;font-weight:bold;${bg}">${r===0?SESS_NUMS[sk]:''}</td>
-          <td>${aus?aus.docente:''}</td>
-          <td style="text-align:center">${aus?aus.grupo:''}</td>
-          <td style="text-align:center">${aus&&aus.aula?aus.aula:''}</td>
-          <td></td><td></td><td></td>
+        const numBg = r===0 ? 'background:#DCE6F1;font-weight:bold;text-align:center' : 'text-align:center';
+        const NC = 'white-space:nowrap;overflow:hidden;text-overflow:ellipsis';
+        const docName = aus ? (aus.docente.length>28 ? aus.docente.substring(0,27)+'…' : aus.docente) : '';
+        const grupoTxt = aus ? aus.grupo.replace(' - ','/').replace(' ','') : '';
+        const aulaTxt  = aus ? (aus.aula||'') : '';
+        t += `<tr style="height:15px">
+          <td style="border:1px solid #999;padding:1px 2px;${numBg}">${r===0?SESS_NUMS[sk]:''}</td>
+          <td style="border:1px solid #999;padding:1px 3px;${NC}">${docName}</td>
+          <td style="border:1px solid #999;padding:1px 2px;text-align:center;${NC}">${grupoTxt}</td>
+          <td style="border:1px solid #999;padding:1px 2px;text-align:center;${NC}">${aulaTxt}</td>
+          <td style="border:1px solid #999;padding:1px 2px"></td>
+          <td style="border:1px solid #999;padding:1px 2px"></td>
+          <td style="border:1px solid #999;padding:1px 2px"></td>
         </tr>`;
       }
-      t += `<tr style="height:22px"><td></td><td></td><td></td><td></td><td></td><td><b>Convivencia:</b></td><td></td></tr>`;
-      t += `<tr style="height:22px"><td></td><td></td><td></td><td></td><td></td><td><b>Biblioteca:</b></td><td></td></tr>`;
+      t += `<tr style="height:15px">
+        <td style="border:1px solid #999"></td><td style="border:1px solid #999"></td>
+        <td style="border:1px solid #999"></td><td style="border:1px solid #999"></td>
+        <td style="border:1px solid #999"></td>
+        <td style="border:1px solid #999;padding:1px 3px;font-weight:bold">Convivencia:</td>
+        <td style="border:1px solid #999"></td>
+      </tr>
+      <tr style="height:15px">
+        <td style="border:1px solid #999"></td><td style="border:1px solid #999"></td>
+        <td style="border:1px solid #999"></td><td style="border:1px solid #999"></td>
+        <td style="border:1px solid #999"></td>
+        <td style="border:1px solid #999;padding:1px 3px;font-weight:bold">Biblioteca:</td>
+        <td style="border:1px solid #999"></td>
+      </tr>`;
     });
     return t + '</table>';
   }
 
-  const dayLabel = dayName==='Miercoles'?'Miércoles':dayName;
   const daysLine = ['Lunes','Martes','Miércoles','Jueves','Viernes']
-    .map(d => (d==='Miércoles'?'Miercoles':d)===dayName ? `<b>${d}</b>` : d).join(' – ');
+    .map(d => { const dk = d==='Miércoles'?'Miercoles':d; return dk===dayName?`<b>${d}</b>`:d; })
+    .join(' \u2013 ');
 
   const docHtml = `<html xmlns:o='urn:schemas-microsoft-com:office:office'
     xmlns:w='urn:schemas-microsoft-com:office:word'
     xmlns='http://www.w3.org/TR/REC-html40'>
-  <head><meta charset="UTF-8"><style>
-    body{font-family:Arial;font-size:10pt;margin:1.5cm}
-    h1{text-align:center;font-size:13pt;margin:4px 0}
-    h2{text-align:center;font-size:10pt;font-weight:normal;margin:4px 0}
-    .days{margin:6px 0 10px}
-    .footnote{font-size:8pt;font-style:italic;margin:6px 0 0}
-    @page{margin:1.5cm}
+  <head><meta charset="UTF-8">
+  <!--[if gte mso 9]><xml>
+    <w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument>
+  </xml><![endif]-->
+  <style>
+    @page Section1 { size:21.0cm 29.7cm; margin:1.0cm 1.2cm 1.0cm 1.2cm; }
+    @page Section2 { size:21.0cm 29.7cm; margin:1.0cm 1.2cm 1.0cm 1.2cm; }
+    div.Section1 { page:Section1; }
+    div.Section2 { page:Section2; }
+    body { font-family:Arial; font-size:8pt; margin:0; padding:0; }
+    h1 { text-align:center; font-size:11pt; margin:3px 0; }
+    h2 { text-align:center; font-size:8.5pt; font-weight:normal; margin:2px 0; }
+    p  { margin:2px 0; font-size:8pt; }
+    .footnote { font-size:7.5pt; font-style:italic; margin:4px 0 0; }
   </style></head><body>
+  <div class="Section1">
     <h1>PARTE DIARIO DE GUARDIAS</h1>
     <h2>CURSO 2025 - 26</h2>
     <p>Parte diario de guardia ${day} de ${month} de ${year}</p>
-    <p class="days">${daysLine}</p>
+    <p style="margin:3px 0 6px;font-size:8.5pt">${daysLine}</p>
     ${tableHTML(['2','3','3R'])}
-    <p class="footnote">La tarea se recogerá en el <b>organizador de consejería</b></p>
-    <br style="page-break-after:always">
+    <p class="footnote">La tarea se recoger\u00e1 en el <b>organizador de consejer\u00eda</b></p>
+  </div>
+  <div class="Section2">
     ${tableHTML(['5','6','7','8'])}
-    <p class="footnote">La tarea se recogerá en el <b>organizador de consejería</b></p>
+    <p class="footnote">La tarea se recoger\u00e1 en el <b>organizador de consejer\u00eda</b></p>
+  </div>
   </body></html>`;
 
   const blob = new Blob([docHtml], {type:'application/msword'});
@@ -1187,7 +1219,6 @@ function ausDownloadWordFallback(payload, fecha) {
   a.href = url; a.download = `Parte_Guardias_${fecha}.doc`; a.click();
   URL.revokeObjectURL(url);
 }
-
 
 // Set today's date by default
 (function() {
