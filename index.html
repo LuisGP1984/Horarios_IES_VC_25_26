@@ -1139,97 +1139,184 @@ function ausDownloadWordFallback(payload, fecha) {
       });
   }
 
-  const TD  = 'border:1px solid #999;padding:1px 3px;height:16px;font-size:7.5pt;font-family:Arial';
-  const NC  = 'white-space:nowrap;overflow:hidden;text-overflow:ellipsis';
-  const HDR = 'border:1px solid #999;padding:2px 4px;font-size:7.5pt;font-family:Arial';
-  const COLS = `<colgroup>
-    <col style="width:4%"><col style="width:23%"><col style="width:7%">
-    <col style="width:6%"><col style="width:8%"><col style="width:37%"><col style="width:15%">
-  </colgroup>`;
-  const THEAD = `<tr style="background:#1F3864;color:white;height:17px">
-    <th style="${HDR};text-align:center">H\u00aa</th>
-    <th style="${HDR}">Profesor ausente</th>
-    <th style="${HDR};text-align:center">Curso</th>
-    <th style="${HDR};text-align:center">Aula</th>
-    <th style="${HDR};text-align:center">Tarea</th>
-    <th style="${HDR}">Profesor que realiza de guardia</th>
-    <th style="${HDR};text-align:center">Firmas</th>
-  </tr>`;
+  // Word XML helpers
+  const w = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
 
-  function buildRows(sessKeys) {
+  function esc(s) {
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // DXA column widths matching original template
+  const COLS_DXA = [452, 2350, 760, 740, 830, 3610, 1490]; // sum ~10232
+  const TABLE_W  = 10232;
+
+  function wPr(xml)    { return `<w:pPr>${xml}</w:pPr>`; }
+  function wRPr(xml)   { return `<w:rPr>${xml}</w:rPr>`; }
+  function wRun(text, rpr='') { return `<w:r>${rpr}<w:t xml:space="preserve">${esc(text)}</w:t></w:r>`; }
+  function wPara(runs, ppr='') { return `<w:p>${ppr}${runs}</w:p>`; }
+
+  function wCell(text, colIdx, opts={}) {
+    const w2 = COLS_DXA[colIdx];
+    const shading = opts.fill ? `<w:shd w:val="clear" w:color="auto" w:fill="${opts.fill}"/>` : '';
+    const jc = opts.center ? '<w:jc w:val="center"/>' : '';
+    const bold = opts.bold ? '<w:b/>' : '';
+    const sz = opts.sz || 18;
+    const color = opts.color || '000000';
+    return `<w:tc>
+      <w:tcPr>
+        <w:tcW w:w="${w2}" w:type="dxa"/>
+        ${shading}
+        <w:tcMar><w:top w:w="60" w:type="dxa"/><w:left w:w="100" w:type="dxa"/><w:bottom w:w="60" w:type="dxa"/><w:right w:w="60" w:type="dxa"/></w:tcMar>
+      </w:tcPr>
+      <w:p>
+        <w:pPr>${jc}<w:spacing w:before="0" w:after="0"/></w:pPr>
+        <w:r><w:rPr>${bold}<w:sz w:val="${sz}"/><w:szCs w:val="${sz}"/><w:color w:val="${color}"/><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/></w:rPr>
+        <w:t xml:space="preserve">${esc(text)}</w:t></w:r>
+      </w:p>
+    </w:tc>`;
+  }
+
+  function wHeaderRow() {
+    const heads = ['Hª','Profesor ausente','Curso','Aula','Tarea','Profesor que realiza de guardia','Firmas'];
+    const cells = heads.map((h,i) => `<w:tc>
+      <w:tcPr>
+        <w:tcW w:w="${COLS_DXA[i]}" w:type="dxa"/>
+        <w:shd w:val="clear" w:color="auto" w:fill="1F3864"/>
+        <w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="100" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="60" w:type="dxa"/></w:tcMar>
+      </w:tcPr>
+      <w:p><w:pPr><w:jc w:val="center"/><w:spacing w:before="0" w:after="0"/></w:pPr>
+        <w:r><w:rPr><w:b/><w:color w:val="FFFFFF"/><w:sz w:val="18"/><w:szCs w:val="18"/><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/></w:rPr>
+        <w:t>${esc(h)}</w:t></w:r>
+      </w:p></w:tc>`).join('');
+    return `<w:tr><w:trPr><w:trHeight w:val="340"/></w:trPr>${cells}</w:tr>`;
+  }
+
+  function wDataRow(sessNum, showNum, aus) {
+    const docName  = aus ? (aus.docente.length>30 ? aus.docente.substring(0,29)+'\u2026' : aus.docente) : '';
+    const grupoTxt = aus ? aus.grupo.replace(/ - /g,'/').replace(/ /g,'') : '';
+    const aulaTxt  = aus ? (aus.aula||'') : '';
+    return `<w:tr><w:trPr><w:trHeight w:val="300" w:hRule="atLeast"/></w:trPr>
+      ${wCell(showNum ? String(sessNum) : '', 0, {fill: showNum?'DCE6F1':'', bold:showNum, center:true, sz:20})}
+      ${wCell(docName, 1)}
+      ${wCell(grupoTxt, 2, {center:true})}
+      ${wCell(aulaTxt, 3, {center:true})}
+      ${wCell('', 4)}${wCell('', 5)}${wCell('', 6)}
+    </w:tr>`;
+  }
+
+  function wLabelRow(label) {
+    return `<w:tr><w:trPr><w:trHeight w:val="300" w:hRule="atLeast"/></w:trPr>
+      ${wCell('',0)}${wCell('',1)}${wCell('',2)}${wCell('',3)}${wCell('',4)}
+      ${wCell(label, 5, {bold:true})}
+      ${wCell('',6)}
+    </w:tr>`;
+  }
+
+  function wPageBreakRow() {
+    // A row with a page break paragraph in the first cell
+    const pbCell = (i) => `<w:tc>
+      <w:tcPr><w:tcW w:w="${COLS_DXA[i]}" w:type="dxa"/></w:tcPr>
+      <w:p>${i===0?'<w:pPr><w:pageBreakBefore/><w:spacing w:before="0" w:after="0"/></w:pPr>':''}</w:p>
+    </w:tc>`;
+    return `<w:tr><w:trPr><w:trHeight w:val="1" w:hRule="exact"/><w:hidden/></w:trPr>
+      ${COLS_DXA.map((_,i) => pbCell(i)).join('')}
+    </w:tr>`;
+  }
+
+  function buildTableRows(sessKeys, insertPageBreakBefore) {
     let rows = '';
+    if (insertPageBreakBefore) rows += wPageBreakRow();
+    rows += wHeaderRow();
     sessKeys.forEach(sk => {
       const ausData = getAusForSess(sk);
       const isSess7 = sk === '8';
       const numRows = isSess7 ? 1 : 8;
       for (let r = 0; r < numRows; r++) {
-        const aus = ausData[r];
-        const numStyle = r===0
-          ? `${TD};background:#DCE6F1;font-weight:bold;text-align:center`
-          : `${TD};text-align:center`;
-        const docName  = aus ? (aus.docente.length>28 ? aus.docente.substring(0,27)+'\u2026' : aus.docente) : '';
-        const grupoTxt = aus ? aus.grupo.replace(/ - /g,'/').replace(/ /g,'') : '';
-        const aulaTxt  = aus ? (aus.aula||'') : '';
-        rows += `<tr style="height:16px">
-          <td style="${numStyle}">${r===0?SESS_NUMS[sk]:''}</td>
-          <td style="${TD};${NC}">${docName}</td>
-          <td style="${TD};text-align:center;${NC}">${grupoTxt}</td>
-          <td style="${TD};text-align:center;${NC}">${aulaTxt}</td>
-          <td style="${TD}"></td><td style="${TD}"></td><td style="${TD}"></td>
-        </tr>`;
+        rows += wDataRow(SESS_NUMS[sk], r===0, ausData[r]||null);
       }
       if (!isSess7) {
-        rows += `<tr style="height:16px"><td style="${TD}"></td><td style="${TD}"></td><td style="${TD}"></td><td style="${TD}"></td><td style="${TD}"></td><td style="${TD};font-weight:bold">Convivencia:</td><td style="${TD}"></td></tr>`;
-        rows += `<tr style="height:16px"><td style="${TD}"></td><td style="${TD}"></td><td style="${TD}"></td><td style="${TD}"></td><td style="${TD}"></td><td style="${TD};font-weight:bold">Biblioteca:</td><td style="${TD}"></td></tr>`;
+        rows += wLabelRow('Convivencia:');
+        rows += wLabelRow('Biblioteca:');
       }
     });
     return rows;
   }
 
-  function makeTable(sessKeys, pageBreakBefore) {
-    const pbStyle = pageBreakBefore ? 'page-break-before:always;' : '';
-    return `<table style="${pbStyle}width:100%;border-collapse:collapse;font-family:Arial;font-size:7.5pt;table-layout:fixed">
-      ${COLS}${THEAD}${buildRows(sessKeys)}
-    </table>`;
+  function wSimplePara(text, opts={}) {
+    const jc    = opts.center ? '<w:jc w:val="center"/>' : '';
+    const pb    = opts.pageBreak ? '<w:pageBreakBefore/>' : '';
+    const sz    = opts.sz || 18;
+    const bold  = opts.bold ? '<w:b/>' : '';
+    const itl   = opts.italic ? '<w:i/>' : '';
+    const caps  = opts.caps ? '<w:caps/>' : '';
+    return `<w:p>
+      <w:pPr>${jc}${pb}<w:spacing w:before="0" w:after="60"/></w:pPr>
+      <w:r><w:rPr>${bold}${itl}<w:sz w:val="${sz}"/><w:szCs w:val="${sz}"/><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/></w:rPr>
+        <w:t xml:space="preserve">${esc(text)}</w:t></w:r>
+    </w:p>`;
   }
 
-  const daysLine = ['Lunes','Martes','Mi\u00e9rcoles','Jueves','Viernes'].map(d => {
-    const dk = d==='Mi\u00e9rcoles'?'Miercoles':d;
-    return dk===dayName
-      ? `<b style="font-size:11pt;text-transform:uppercase">${d}</b>`
-      : d;
-  }).join(' \u2013 ');
+  function wDaysLine() {
+    const days = ['Lunes','Martes','Mi\u00e9rcoles','Jueves','Viernes'];
+    const runs = days.map((d,i) => {
+      const dk = d==='Mi\u00e9rcoles'?'Miercoles':d;
+      const isToday = dk===dayName;
+      const sep = i < days.length-1 ? ' \u2013 ' : '';
+      const bold = isToday ? '<w:b/>' : '';
+      const sz   = isToday ? 24 : 18;
+      const txt  = isToday ? d.toUpperCase() : d;
+      return `<w:r><w:rPr>${bold}<w:sz w:val="${sz}"/><w:szCs w:val="${sz}"/><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/></w:rPr><w:t xml:space="preserve">${esc(txt+sep)}</w:t></w:r>`;
+    }).join('');
+    return `<w:p><w:pPr><w:spacing w:before="60" w:after="120"/></w:pPr>${runs}</w:p>`;
+  }
 
-  const footnote = `<p style="font-size:7.5pt;font-style:italic;margin:3px 0 2px">La tarea se recoger\u00e1 en el <b>organizador de consejer\u00eda</b></p>`;
+  function wFootnote() {
+    return `<w:p><w:pPr><w:spacing w:before="80" w:after="0"/></w:pPr>
+      <w:r><w:rPr><w:i/><w:sz w:val="15"/><w:szCs w:val="15"/><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/></w:rPr><w:t xml:space="preserve">La tarea se recoger\u00e1 en el </w:t></w:r>
+      <w:r><w:rPr><w:b/><w:i/><w:sz w:val="15"/><w:szCs w:val="15"/><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/></w:rPr><w:t>organizador de consejer\u00eda</w:t></w:r>
+    </w:p>`;
+  }
 
-  const docHtml = `<html xmlns:o='urn:schemas-microsoft-com:office:office'
-    xmlns:w='urn:schemas-microsoft-com:office:word'
-    xmlns='http://www.w3.org/TR/REC-html40'>
-  <head><meta charset="UTF-8">
-  <!--[if gte mso 9]><xml>
-    <w:WordDocument>
-      <w:View>Print</w:View><w:Zoom>100</w:Zoom>
-      <w:DoNotOptimizeForBrowser/>
-    </w:WordDocument>
-  </xml><![endif]-->
-  <style>
-    @page { size:21.0cm 29.7cm; margin:1.0cm 1.2cm 1.0cm 1.2cm; }
-    body { font-family:Arial; font-size:8pt; margin:0; padding:0; }
-    h1 { text-align:center; font-size:12pt; margin:3px 0; }
-    p  { margin:2px 0; font-size:8pt; }
-  </style></head>
-  <body>
-    <h1>PARTE DIARIO DE GUARDIAS</h1>
-    <p style="text-align:center;font-size:9pt;margin:2px 0">CURSO 2025 - 26</p>
-    <p style="margin:3px 0">Parte diario de guardia ${day} de ${month} de ${year}</p>
-    <p style="margin:3px 0 6px;font-size:9pt">${daysLine}</p>
-    ${makeTable(['2','3','3R'], false)}
-    ${footnote}
-    ${makeTable(['5','6','7','8'], true)}
-    ${footnote}
-  </body></html>`;
+  // Build full Word XML
+  const allRows1 = buildTableRows(['2','3','3R'], false);
+  const allRows2 = buildTableRows(['5','6','7','8'], false);
 
-  const blob = new Blob(['\ufeff' + docHtml], {type:'application/msword;charset=utf-8'});
+  const tblPr = `<w:tblPr>
+    <w:tblStyle w:val="TableGrid"/>
+    <w:tblW w:w="${TABLE_W}" w:type="dxa"/>
+    <w:tblBorders>
+      <w:top w:val="single" w:sz="4" w:space="0" w:color="999999"/>
+      <w:left w:val="single" w:sz="4" w:space="0" w:color="999999"/>
+      <w:bottom w:val="single" w:sz="4" w:space="0" w:color="999999"/>
+      <w:right w:val="single" w:sz="4" w:space="0" w:color="999999"/>
+      <w:insideH w:val="single" w:sz="4" w:space="0" w:color="999999"/>
+      <w:insideV w:val="single" w:sz="4" w:space="0" w:color="999999"/>
+    </w:tblBorders>
+    <w:tblLook w:val="04A0"/>
+  </w:tblPr>
+  <w:tblGrid>${COLS_DXA.map(w=>`<w:gridCol w:w="${w}"/>`).join('')}</w:tblGrid>`;
+
+  const wordXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?mso-application progid="Word.Document"?>
+<w:wordDocument xmlns:w="http://schemas.microsoft.com/office/word/2003/wordml"
+  xmlns:wx="http://schemas.microsoft.com/office/word/2003/auxHint"
+  xmlns:o="urn:schemas-microsoft-com:office:office"
+  w:macrosPresent="no" w:embeddedObjPresent="no" w:ocxPresent="no">
+<w:body>
+  ${wSimplePara('PARTE DIARIO DE GUARDIAS', {center:true, bold:true, sz:26})}
+  ${wSimplePara('CURSO 2025 - 26', {center:true, sz:20})}
+  ${wSimplePara('Parte diario de guardia ' + day + ' de ' + month + ' de ' + year, {sz:18})}
+  ${wDaysLine()}
+  <w:tbl>${tblPr}${allRows1}</w:tbl>
+  ${wFootnote()}
+  <w:p><w:pPr><w:pageBreakBefore/><w:spacing w:before="0" w:after="0"/></w:pPr></w:p>
+  <w:tbl>${tblPr}${allRows2}</w:tbl>
+  ${wFootnote()}
+  <w:p/>
+</w:body>
+</w:wordDocument>`;
+
+  const blob = new Blob([wordXml], {type:'application/msword;charset=utf-8'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url; a.download = `Parte_Guardias_${fecha}.doc`; a.click();
