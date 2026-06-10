@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1a2744">
+  <title>Horarios IES — 2025/26</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <style>
+    /* ── TOKENS ─────────────────────────────────────── */
+    :root {
+      --navy:      #1a2744;
+      --navy-mid:  #243362;
+      --navy-soft: #2e3f7a;
+      --accent:    #4f8ef7;
+      --accent-glow: #4f8ef733;
+      --gold:      #f0b429;
+      --gold-soft: #f0b42922;
+      --green:     #22c78a;
+      --green-soft:#22c78a1a;
+      --red-soft:  #ff6b6b22;
+      --red:       #ff6b6b;
+      --surface:   #f4f6fb;
+      --surface2:  #eaecf5;
+      --card:      #ffffff;
+      --text:      #1a2744;
+      --text-mid:  #4a5568;
+      --text-soft: #8896b3;
+      --border:    #dde2ef;
+      --radius:    10px;
+      --shadow:    0 2px 12px #1a274412;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --surface:  #101726;
+        --surface2: #161f33;
+        --card:     #1d2840;
+        --text:     #e8edf8;
+        --text-mid: #8896b3;
+        --text-soft:#4a5568;
+        --border:   #2a3555;
+        --shadow:   0 2px 16px #00000040;
+      }
+    }
+
+    /* ── RESET ──────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--surface);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── HEADER ─────────────────────────────────────── */
+    header {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-soft) 100%);
+      padding: 20px 24px 18px;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 20px #00000030;
+    }
+    .header-inner {
+      max-width: 900px; margin: 0 auto;
+      display: flex; align-items: center; gap: 16px;
+    }
+    .logo {
+      width: 40px; height: 40px; flex-shrink: 0;
+      background: var(--accent); border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo svg { width: 22px; height: 22px; fill: white; }
+    .header-text h1 {
+      font-size: 1.15rem; font-weight: 700; color: #fff; line-height: 1.2;
+      letter-spacing: -0.01em;
+    }
+    .header-text p {
+      font-size: 0.75rem; color: #8facd4; margin-top: 1px;
+    }
+
+    /* ── MAIN ───────────────────────────────────────── */
+    main {
+      max-width: 900px; margin: 0 auto;
+      padding: 28px 16px 60px;
+    }
+
+    /* ── CONTROLS ───────────────────────────────────── */
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    @media (max-width: 560px) {
+      .controls { grid-template-columns: 1fr; }
+    }
+
+    .control-group label {
+      display: block;
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--text-soft);
+      margin-bottom: 6px;
+    }
+
+    select {
+      width: 100%;
+      appearance: none;
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 11px 40px 11px 14px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 500;
+      color: var(--text);
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238896b3' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      box-shadow: var(--shadow);
+      transition: border-color .15s, box-shadow .15s;
+    }
+    select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    /* ── DAY PILLS ──────────────────────────────────── */
+    .day-pills {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      margin-bottom: 26px;
+    }
+    .pill {
+      padding: 7px 16px;
+      border-radius: 99px;
+      font-size: 0.82rem; font-weight: 600;
+      border: 1.5px solid var(--border);
+      background: var(--card);
+      color: var(--text-mid);
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .pill:hover { border-color: var(--accent); color: var(--accent); }
+    .pill.active {
+      background: var(--navy);
+      border-color: var(--navy);
+      color: #fff;
+      box-shadow: 0 2px 8px #1a274430;
+    }
+    @media (prefers-color-scheme: dark) {
+      .pill.active { background: var(--accent); border-color: var(--accent); }
+    }
+
+    /* ── ESTADO VACÍO / CARGANDO ────────────────────── */
+    .state-msg {
+      text-align: center; padding: 60px 20px;
+      color: var(--text-soft); font-size: 0.9rem;
+    }
+    .state-msg .icon { font-size: 2.5rem; margin-bottom: 12px; }
+
+    /* ── RESULTADO: nombre docente ──────────────────── */
+    .result-header {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 20px;
+    }
+    .result-avatar {
+      width: 44px; height: 44px; flex-shrink: 0;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--navy-mid), var(--accent));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; font-weight: 700; color: #fff;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .result-name {
+      font-size: 1.05rem; font-weight: 700; color: var(--text);
+    }
+    .result-day {
+      font-size: 0.78rem; color: var(--text-soft); margin-top: 2px;
+    }
+
+    /* ── TIMELINE ───────────────────────────────────── */
+    .timeline { display: flex; flex-direction: column; gap: 8px; }
+
+    .slot {
+      display: grid;
+      grid-template-columns: 90px 1fr;
+      gap: 0;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: transform .12s;
+    }
+    .slot:hover { transform: translateY(-1px); }
+
+    .slot-time {
+      background: var(--navy);
+      padding: 12px 10px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+    }
+    .slot-time .sess-label {
+      font-size: 0.65rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.05em;
+      color: #8facd4; margin-bottom: 3px;
+    }
+    .slot-time .sess-hora {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem; font-weight: 500;
+      color: #c8d8f0; line-height: 1.4;
+    }
+
+    .slot-body {
+      background: var(--card);
+      padding: 12px 16px;
+      display: flex; flex-direction: column; justify-content: center;
+      border-left: 3px solid transparent;
+    }
+
+    /* Tipos */
+    .slot.libre .slot-body   { border-left-color: var(--border); }
+    .slot.clase .slot-body   { border-left-color: var(--accent); }
+    .slot.actividad .slot-body { border-left-color: var(--gold); background: var(--gold-soft); }
+    .slot.recreo .slot-body  { border-left-color: var(--green); background: var(--green-soft); }
+    .slot.otro .slot-body    { border-left-color: var(--text-soft); }
+
+    .slot-sigla {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem; font-weight: 600;
+      color: var(--gold);
+      letter-spacing: 0.03em;
+    }
+    .slot-libre-txt {
+      font-size: 0.82rem; color: var(--text-soft); font-style: italic;
+    }
+    .slot-materia {
+      font-size: 0.88rem; font-weight: 600; color: var(--text);
+      line-height: 1.3; margin-bottom: 4px;
+    }
+    .slot-meta {
+      display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px;
+    }
+    .tag {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 0.72rem; font-weight: 500;
+      padding: 2px 8px; border-radius: 99px;
+      background: var(--surface2); color: var(--text-mid);
+    }
+    .tag.grupo  { background: var(--accent-glow); color: var(--accent); }
+    .tag.aula   { background: var(--surface2); }
+    .tag.recreo { background: var(--green-soft); color: var(--green); }
+
+    /* Recreo especial */
+    .slot.recreo .slot-time { background: #143322; }
+    .slot.recreo .slot-sigla { color: var(--green); }
+
+    /* ── LEYENDA ─────────────────────────────────────── */
+    details {
+      margin-top: 36px;
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+    summary {
+      padding: 14px 18px;
+      font-size: 0.82rem; font-weight: 600;
+      cursor: pointer; user-select: none;
+      color: var(--text-mid); list-style: none;
+    }
+    summary::marker, summary::-webkit-details-marker { display: none; }
+    summary::after {
+      content: '▸'; float: right; transition: transform .2s;
+    }
+    details[open] summary::after { transform: rotate(90deg); }
+    .leyenda-grid {
+      padding: 0 18px 16px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 6px 16px;
+    }
+    .leyenda-item {
+      display: flex; align-items: baseline; gap: 8px;
+      font-size: 0.8rem;
+    }
+    .leyenda-sigla {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem; font-weight: 600;
+      color: var(--gold); white-space: nowrap;
+      min-width: 46px;
+    }
+    .leyenda-desc { color: var(--text-mid); }
+
+    /* ── LOADING ─────────────────────────────────────── */
+    #loading {
+      position: fixed; inset: 0;
+      background: var(--navy);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 16px; z-index: 999;
+      transition: opacity .4s;
+    }
+    #loading.fade { opacity: 0; pointer-events: none; }
+    #loading p { color: #8facd4; font-size: 0.9rem; }
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid #2e3f7a;
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading">
+  <div class="spinner"></div>
+  <p>Cargando horarios…</p>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <svg viewBox="0 0 24 24"><path d="M4 4h16v2H4zm0 4h10v2H4zm0 4h16v2H4zm0 4h10v2H4z"/></svg>
+    </div>
+    <div class="header-text">
+      <h1>Horarios del Profesorado</h1>
+      <p>IES Valle del Carrión · Curso 2025/26</p>
+    </div>
+  </div>
+</header>
+
+<!-- MAIN -->
+<main>
+
+  <!-- Controles -->
+  <div class="controls">
+    <div class="control-group">
+      <label for="sel-docente">Docente</label>
+      <select id="sel-docente">
+        <option value="">— Selecciona un docente —</option>
+      </select>
+    </div>
+    <div class="control-group">
+      <label for="sel-dia">Día</label>
+      <select id="sel-dia">
+        <option value="">— Selecciona un día —</option>
+        <option value="Lunes">Lunes</option>
+        <option value="Martes">Martes</option>
+        <option value="Miercoles">Miércoles</option>
+        <option value="Jueves">Jueves</option>
+        <option value="Viernes">Viernes</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Resultado -->
+  <div id="resultado">
+    <div class="state-msg">
+      <div class="icon">📅</div>
+      <p>Selecciona un docente y un día para ver su horario.</p>
+    </div>
+  </div>
+
+  <!-- Leyenda siglas -->
+  <details>
+    <summary>Leyenda de siglas</summary>
+    <div class="leyenda-grid" id="leyenda-grid"></div>
+  </details>
+
+</main>
+
+<script>
+const LEYENDA = [
+  ['AMP',  'Atención a Madres y Padres'],
+  ['CHL',  'Compensación de Horario Lectivo'],
+  ['G',    'Guardia'],
+  ['RT',   'Reunión de Tutores'],
+  ['FCT',  'Formación en Centros de Trabajo'],
+  ['RTIC', 'Reunión Coordinación TIC'],
+  ['JDEP', 'Jefatura de Departamento'],
+  ['AC',   'Actividades Complementarias'],
+  ['TLEC', 'Tutoría Lectiva'],
+  ['GREC', 'Guardia de Recreo'],
+  ['DD',   'Despacho Dirección'],
+  ['ED',   'Equipo Directivo'],
+  ['APO',  'Apoyo'],
+  ['RDP',  'Reunión de Departamento'],
+  ['CPFC', 'Coordinador FP / Centro'],
+  ['RCE',  'Reunión de Coordinación'],
+  ['TUT',  'Tutoría'],
+  ['RAD',  'Reunión Área/Departamento'],
+  ['OPC',  'Optativa'],
+  ['RSB',  'Refuerzo'],
+  ['RBIB', 'Biblioteca'],
+];
+
+const SESSION_ORDER = ['1','2','3','3R','4','5','6','7','8'];
+
+let DB = null;
+
+// ── Leyenda ──────────────────────────────────────────
+const legGrid = document.getElementById('leyenda-grid');
+LEYENDA.forEach(([s, d]) => {
+  legGrid.innerHTML += `<div class="leyenda-item">
+    <span class="leyenda-sigla">${s}</span>
+    <span class="leyenda-desc">${d}</span>
+  </div>`;
+});
+
+// ── Carga datos ──────────────────────────────────────
+fetch('horarios.json')
+  .then(r => r.json())
+  .then(data => {
+    DB = data;
+    const sel = document.getElementById('sel-docente');
+    Object.entries(data.docentes)
+      .sort((a, b) => a[1].nombre.localeCompare(b[1].nombre, 'es'))
+      .forEach(([code, info]) => {
+        const opt = document.createElement('option');
+        opt.value = code;
+        opt.textContent = info.nombre;
+        sel.appendChild(opt);
+      });
+    // Detect today
+    const days = ['Domingo','Lunes','Martes','Miercoles','Jueves','Viernes','Sabado'];
+    const today = days[new Date().getDay()];
+    const selDia = document.getElementById('sel-dia');
+    if (['Lunes','Martes','Miercoles','Jueves','Viernes'].includes(today)) {
+      selDia.value = today;
+    }
+    document.getElementById('loading').classList.add('fade');
+    setTimeout(() => document.getElementById('loading').style.display = 'none', 450);
+  })
+  .catch(() => {
+    document.getElementById('loading').innerHTML =
+      '<p style="color:#ff6b6b;padding:20px">Error cargando horarios.json</p>';
+  });
+
+// ── Render ───────────────────────────────────────────
+function render() {
+  if (!DB) return;
+  const code = document.getElementById('sel-docente').value;
+  const dia  = document.getElementById('sel-dia').value;
+  const el   = document.getElementById('resultado');
+
+  if (!code || !dia) {
+    el.innerHTML = `<div class="state-msg"><div class="icon">📅</div>
+      <p>Selecciona un docente y un día para ver su horario.</p></div>`;
+    return;
+  }
+
+  const docente = DB.docentes[code];
+  const sesiones = DB.sesiones;
+  const horarioDia = (docente.horario[dia]) || {};
+  const initials = docente.nombre.split(' ').filter(w => /^[A-ZÁÉÍÓÚÑ]/.test(w)).slice(0,2).map(w=>w[0]).join('');
+
+  // Header
+  let html = `<div class="result-header">
+    <div class="result-avatar">${initials}</div>
+    <div>
+      <div class="result-name">${docente.nombre}</div>
+      <div class="result-day">${dia} · ${Object.values(horarioDia).length} sesiones con actividad</div>
+    </div>
+  </div>
+  <div class="timeline">`;
+
+  // Sessions
+  const sessionsForDay = dia === 'Viernes'
+    ? SESSION_ORDER.filter(s => s !== '8')
+    : SESSION_ORDER;
+
+  sessionsForDay.forEach(sess => {
+    const meta = sesiones[sess];
+    const slot = horarioDia[sess];
+
+    if (!slot) {
+      // Libre
+      html += `<div class="slot libre">
+        <div class="slot-time">
+          <span class="sess-label">${meta.label}</span>
+          <span class="sess-hora">${meta.hora.replace('-','–')}</span>
+        </div>
+        <div class="slot-body">
+          <span class="slot-libre-txt">Libre</span>
+        </div>
+      </div>`;
+      return;
+    }
+
+    // Puede ser objeto o array (celdas con múltiples entradas)
+    const slots = Array.isArray(slot) ? slot : [slot];
+    const tipo = sess === '4' ? 'recreo' : (slots[0].tipo || 'otro');
+
+    let bodyHtml = '';
+    slots.forEach(s => {
+      if (s.tipo === 'actividad') {
+        bodyHtml += `<span class="slot-sigla">${s.sigla}</span>`;
+      } else if (s.tipo === 'clase') {
+        bodyHtml += `<div class="slot-materia">${s.materia}</div>
+          <div class="slot-meta">
+            ${s.grupo ? `<span class="tag grupo">👥 ${s.grupo}</span>` : ''}
+            ${s.aula  ? `<span class="tag aula">🚪 Aula ${s.aula}</span>` : ''}
+          </div>`;
+      } else {
+        // otro (sigla con grupo pegado, etc.)
+        const txt = s.sigla || s.materia || '';
+        bodyHtml += `<span class="slot-sigla">${txt}</span>`;
+        if (s.aula) bodyHtml += `<div class="slot-meta"><span class="tag aula">🚪 Aula ${s.aula}</span></div>`;
+      }
+    });
+
+    if (sess === '4' && !bodyHtml.trim()) {
+      bodyHtml = `<span class="tag recreo">☕ Recreo</span>`;
+    }
+
+    html += `<div class="slot ${tipo}">
+      <div class="slot-time">
+        <span class="sess-label">${meta.label}</span>
+        <span class="sess-hora">${meta.hora.replace('-','–')}</span>
+      </div>
+      <div class="slot-body">${bodyHtml}</div>
+    </div>`;
+  });
+
+  html += `</div>`;
+  el.innerHTML = html;
+}
+
+document.getElementById('sel-docente').addEventListener('change', render);
+document.getElementById('sel-dia').addEventListener('change', render);
+</script>
+</body>
+</html>
