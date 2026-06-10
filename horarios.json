@@ -371,46 +371,6 @@
         }
       }
     },
-    "ANYXXX": {
-      "nombre": "ARIAS NIETO, YOLANDA",
-      "horario": {
-        "Lunes": {
-          "2": {"tipo": "actividad", "sigla": "CHL", "grupo": "", "materia": "", "aula": ""},
-          "3": {"tipo": "actividad", "sigla": "CHL", "grupo": "", "materia": "", "aula": ""},
-          "3R": {"tipo": "actividad", "sigla": "JDEP", "grupo": "", "materia": "", "aula": ""},
-          "5": {"tipo": "actividad", "sigla": "RT", "grupo": "", "materia": "", "aula": ""},
-          "6": {"tipo": "actividad", "sigla": "AC", "grupo": "", "materia": "", "aula": ""},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "FPB2", "materia": "Atención al cliente", "aula": "116"}
-        },
-        "Martes": {
-          "2": {"tipo": "clase", "sigla": "", "grupo": "SR1", "materia": "Operaciones básicas en bar-cafetería", "aula": "BAR"},
-          "3": {"tipo": "clase", "sigla": "", "grupo": "SR1", "materia": "Operaciones básicas en bar-cafetería", "aula": "BAR"},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "SR1", "materia": "Operaciones básicas en bar-cafetería", "aula": "BAR"},
-          "5": {"tipo": "actividad", "sigla": "FCT", "grupo": "", "materia": "", "aula": ""},
-          "6": {"tipo": "actividad", "sigla": "FCT", "grupo": "", "materia": "", "aula": ""},
-          "8": {"tipo": "actividad", "sigla": "JDEP", "grupo": "", "materia": "", "aula": ""}
-        },
-        "Miercoles": {
-          "3": {"tipo": "clase", "sigla": "", "grupo": "SR1", "materia": "Operaciones básicas en bar-cafetería", "aula": "BAR"},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "SR1", "materia": "Operaciones básicas en bar-cafetería", "aula": "BAR"},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "SR1", "materia": "Operaciones básicas en bar-cafetería", "aula": "BAR"},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "FPB2", "materia": "Atención al cliente", "aula": "116"},
-          "8": {"tipo": "actividad", "sigla": "RDP", "grupo": "", "materia": "", "aula": ""}
-        },
-        "Jueves": {
-          "3": {"tipo": "actividad", "sigla": "AC", "grupo": "", "materia": "", "aula": ""},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "SR1", "materia": "Operaciones básicas en bar-cafetería", "aula": "209A"},
-          "5": {"tipo": "actividad", "sigla": "JDEP", "grupo": "", "materia": "", "aula": ""},
-          "6": {"tipo": "actividad", "sigla": "AMP", "grupo": "", "materia": "", "aula": ""}
-        },
-        "Viernes": {
-          "2": {"tipo": "clase", "sigla": "", "grupo": "FPB2", "materia": "Atención al cliente", "aula": "116"},
-          "5": {"tipo": "actividad", "sigla": "FCT", "grupo": "", "materia": "", "aula": ""},
-          "6": {"tipo": "actividad", "sigla": "FCT", "grupo": "", "materia": "", "aula": ""},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "SR1", "materia": "Operaciones básicas en bar-cafetería", "aula": "209A"}
-        }
-      }
-    },
     "ATDXXX": {
       "nombre": "AUSÍN  TOMÉ, DANIEL",
       "horario": {
@@ -529,46 +489,6 @@
           "3": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "04C Geografía e Historia\nAula: 107", "aula": ""},
           "5": {"tipo": "actividad", "sigla": "G", "grupo": "", "materia": "", "aula": ""},
           "7": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "02D Geografía e Historia\nAula: B08", "aula": ""}
-        }
-      }
-    },
-    "BOMAXX": {
-      "nombre": "BENITEZ ORTEGA, MARIA ALMUDENA",
-      "horario": {
-        "Lunes": {
-          "2": {"tipo": "clase", "sigla": "", "grupo": "4E", "materia": "Inglés", "aula": "205"},
-          "3": {"tipo": "actividad", "sigla": "G", "grupo": "", "materia": "", "aula": ""},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "TL1", "materia": "Inglés profesional (GS)", "aula": "201"},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "CI1", "materia": "Inglés profesional (GS)", "aula": "216"}
-        },
-        "Martes": {
-          "2": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "03A Inglés\nAula: 101", "aula": ""},
-          "3": {"tipo": "actividad", "sigla": "G", "grupo": "", "materia": "", "aula": ""},
-          "3R": {"tipo": "actividad", "sigla": "CHL", "grupo": "", "materia": "", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "04A Inglés\nAula: 105", "aula": ""},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "4E", "materia": "Inglés", "aula": "205"},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "03C Inglés\nAula: 103", "aula": ""}
-        },
-        "Miercoles": {
-          "2": {"tipo": "clase", "sigla": "", "grupo": "4E", "materia": "Inglés", "aula": "205"},
-          "3": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "03C Inglés\nAula: 103", "aula": ""},
-          "3R": {"tipo": "actividad", "sigla": "CHL", "grupo": "", "materia": "", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "AC1", "materia": "Inglés profesional (GM)", "aula": "211B"},
-          "6": {"tipo": "actividad", "sigla": "G", "grupo": "", "materia": "", "aula": ""}
-        },
-        "Jueves": {
-          "2": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "04A Inglés\nAula: 105", "aula": ""},
-          "3": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "03A Inglés\nAula: 101", "aula": ""},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "03C Inglés\nAula: 103", "aula": ""},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "CI1", "materia": "Inglés profesional (GS)", "aula": "216"},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "TL1", "materia": "Inglés profesional (GS)", "aula": "201"},
-          "8": {"tipo": "actividad", "sigla": "RDP", "grupo": "", "materia": "", "aula": ""}
-        },
-        "Viernes": {
-          "3R": {"tipo": "actividad", "sigla": "AMP", "grupo": "", "materia": "", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "AC1", "materia": "Inglés profesional (GM)", "aula": "211B"},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "04A Inglés\nAula: 105", "aula": ""},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "03A Inglés\nAula: 101", "aula": ""}
         }
       }
     },
@@ -1239,46 +1159,6 @@
         }
       }
     },
-    "DAMRXX": {
-      "nombre": "DIEZ ALONSO, Mª DEL ROSARIO",
-      "horario": {
-        "Lunes": {
-          "3": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01D Matemáticas\nAula: B01", "aula": ""},
-          "3R": {"tipo": "actividad", "sigla": "G", "grupo": "", "materia": "", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01D Inglés\nAula: B01", "aula": ""},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "02D Lengua castellana y literatura\nAula: B08", "aula": ""}
-        },
-        "Martes": {
-          "3": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01D Inglés\nAula: B01", "aula": ""},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "G AMP", "aula": ""},
-          "5": {"tipo": "actividad", "sigla": "G", "grupo": "", "materia": "", "aula": ""},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01D Biología y Geología (B12) 01D Biología y Geología\nAula: B12", "aula": ""},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01D Matemáticas\nAula: B12", "aula": ""}
-        },
-        "Miercoles": {
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "AMP 02D Lengua castellana y literatura (B08) 02D Lengua castellana y literatura\nAula: B08", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01D Inglés\nAula: B01", "aula": ""},
-          "6": {"tipo": "actividad", "sigla": "RDP", "grupo": "", "materia": "", "aula": ""},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01D Educación Plástica, Visual y Audiovisual\nAula: B12", "aula": ""}
-        },
-        "Jueves": {
-          "2": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01D Educación Plástica, Visual y Audiovisual\nAula: B01", "aula": ""},
-          "3": {"tipo": "actividad", "sigla": "CHL", "grupo": "", "materia": "", "aula": ""},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01D Geografía e Historia\nAula: B12", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01D Biología y Geología\nAula: B12", "aula": ""},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01D Matemáticas\nAula: B12", "aula": ""},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01D Inglés\nAula: B01", "aula": ""}
-        },
-        "Viernes": {
-          "2": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01D Educación Plástica, Visual y Audiovisual\nAula: B01", "aula": ""},
-          "3": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01D Geografía e Historia\nAula: B12", "aula": ""},
-          "3R": {"tipo": "actividad", "sigla": "G", "grupo": "", "materia": "", "aula": ""},
-          "5": {"tipo": "actividad", "sigla": "CHL", "grupo": "", "materia": "", "aula": ""},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01D Educación Plástica, Visual y Audiovisual\nAula: B12", "aula": ""},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01D Matemáticas\nAula: B01", "aula": ""}
-        }
-      }
-    },
     "DCMXXX": {
       "nombre": "DIEZ CORTIJO, MARIA",
       "horario": {
@@ -1647,46 +1527,6 @@
           "5": {"tipo": "actividad", "sigla": "G", "grupo": "", "materia": "", "aula": ""},
           "6": {"tipo": "clase", "sigla": "", "grupo": "3E", "materia": "Ambito científico-tecnológico", "aula": "104"},
           "7": {"tipo": "clase", "sigla": "", "grupo": "3E", "materia": "Ambito científico-tecnológico", "aula": "104"}
-        }
-      }
-    },
-    "FTDXXX": {
-      "nombre": "FERNÁNDEZ DE LA TORRE, DIEGO",
-      "horario": {
-        "Lunes": {
-          "3R": {"tipo": "actividad", "sigla": "CHL", "grupo": "", "materia": "", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "Operaciones auxiliares de gestión de tesorería (217) GEA2 Operaciones auxiliares de gestión de tesorería\nAula: 217", "aula": ""},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "GEA2", "materia": "Operaciones auxiliares de gestión de tesorería (217) Operaciones auxiliares de gestión de tesorería", "aula": "217"},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "AF1", "materia": "Recursos humanos y responsabilidad social corporativa (210) AF1 Recursos humanos y responsabilidad social corporativa", "aula": "208"}
-        },
-        "Martes": {
-          "2": {"tipo": "clase", "sigla": "", "grupo": "AF1", "materia": "Proceso integral de la actividad comercial (210) AF1 Proceso integral de la actividad comercial", "aula": "208"},
-          "3": {"tipo": "clase", "sigla": "", "grupo": "AF1", "materia": "Proceso integral de la actividad comercial (208) AF1 Proceso integral de la actividad comercial", "aula": "210"},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "GEA2", "materia": "Operaciones auxiliares de gestión de tesorería (217) Operaciones auxiliares de gestión de tesorería", "aula": "217"},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "Operaciones auxiliares de gestión de tesorería (217) GEA2 Operaciones auxiliares de gestión de tesorería\nAula: 217", "aula": ""},
-          "6": {"tipo": "actividad", "sigla": "CHL", "grupo": "", "materia": "", "aula": ""}
-        },
-        "Miercoles": {
-          "3R": {"tipo": "actividad", "sigla": "CHL", "grupo": "", "materia": "", "aula": ""},
-          "5": {"tipo": "actividad", "sigla": "AMP", "grupo": "", "materia": "", "aula": ""},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "AF1", "materia": "Proceso integral de la actividad comercial (210) AF1 Proceso integral de la actividad comercial", "aula": "208"},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "AF1", "materia": "Proceso integral de la actividad comercial (210) AF1 Proceso integral de la actividad comercial", "aula": "208"}
-        },
-        "Jueves": {
-          "2": {"tipo": "clase", "sigla": "", "grupo": "AF1", "materia": "Proceso integral de la actividad comercial (210) AF1 Proceso integral de la actividad comercial", "aula": "208"},
-          "3": {"tipo": "clase", "sigla": "", "grupo": "AF1", "materia": "Proceso integral de la actividad comercial (208) AF1 Proceso integral de la actividad comercial", "aula": "210"},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "GAV2", "materia": "Operaciones auxiliares de gestión de tesorería ()", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "GEA2", "materia": "Operaciones auxiliares de gestión de tesorería (217) Operaciones auxiliares de gestión de tesorería", "aula": "217"},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "Operaciones auxiliares de gestión de tesorería (217) GEA2 Operaciones auxiliares de gestión de tesorería\nAula: 217", "aula": ""},
-          "7": {"tipo": "actividad", "sigla": "CHL", "grupo": "", "materia": "", "aula": ""},
-          "8": {"tipo": "actividad", "sigla": "RDP", "grupo": "", "materia": "", "aula": ""}
-        },
-        "Viernes": {
-          "3": {"tipo": "clase", "sigla": "", "grupo": "GAV2", "materia": "Operaciones auxiliares de gestión de tesorería ()", "aula": ""},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "AF1", "materia": "Recursos humanos y responsabilidad social corporativa (208) AF1 Recursos humanos y responsabilidad social corporativa", "aula": "210"},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "GAV2", "materia": "Operaciones auxiliares de gestión de tesorería ()", "aula": ""},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "AF1", "materia": "Proceso integral de la actividad comercial (208) AF1 Proceso integral de la actividad comercial", "aula": "210"},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "AF1", "materia": "Proceso integral de la actividad comercial (210) AF1 Proceso integral de la actividad comercial", "aula": "208"}
         }
       }
     },
@@ -2140,46 +1980,6 @@
           "3R": {"tipo": "actividad", "sigla": "DD", "grupo": "", "materia": "", "aula": ""},
           "5": {"tipo": "actividad", "sigla": "DD", "grupo": "", "materia": "", "aula": ""},
           "6": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "Digitalización aplicada a los sectores productivos (GM)\nAula: 217", "aula": ""}
-        }
-      }
-    },
-    "GAMBXX": {
-      "nombre": "GARCIA-RISCO ALVAREZ, MARIA BELEN",
-      "horario": {
-        "Lunes": {
-          "2": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "02A - 02C Segunda Lengua Extranjera: Francés (115) 02A - 02C Segunda Lengua Extranjera: Francés\nAula: 115", "aula": ""},
-          "3": {"tipo": "actividad", "sigla": "G", "grupo": "", "materia": "", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01B Segunda Lengua Extranjera: Francés\nAula: B03", "aula": ""},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "03C - 03B - 03A Segunda Lengua Extranjera: Francés (103) 03C - 03B - 03A Segunda Lengua Extranjera: Francés (103) 03C - 03B - 03A Segunda Lengua Extranjera: Francés () 03C - 03B - 03A Segunda Lengua Extranjera: Francés (103) 03C - 03B - 03A Segunda Lengua Extranjera: Francés\nAula: 114", "aula": ""}
-        },
-        "Martes": {
-          "3": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "02A - 02C Segunda Lengua Extranjera: Francés (115) 02A - 02C Segunda Lengua Extranjera: Francés\nAula: 115", "aula": ""},
-          "3R": {"tipo": "actividad", "sigla": "G", "grupo": "", "materia": "", "aula": ""},
-          "5": {"tipo": "actividad", "sigla": "RDP", "grupo": "", "materia": "", "aula": ""},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "GU1", "materia": "Segunda lengua extranjera Francés", "aula": "120"},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "04A Segunda Lengua Extranjera: Francés\nAula: 205", "aula": ""}
-        },
-        "Miercoles": {
-          "2": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "02C Medidas de Atención Educativa\nAula: B11B", "aula": ""},
-          "3": {"tipo": "actividad", "sigla": "AMP", "grupo": "", "materia": "", "aula": ""},
-          "3R": {"tipo": "actividad", "sigla": "G", "grupo": "", "materia": "", "aula": ""},
-          "5": {"tipo": "actividad", "sigla": "AC", "grupo": "", "materia": "", "aula": ""},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "03C - 03B - 03A Segunda Lengua Extranjera: Francés (103) 03C - 03B - 03A Segunda Lengua Extranjera: Francés (103) 03C - 03B - 03A Segunda Lengua Extranjera: Francés (114) 03C - 03B - 03A Segunda Lengua Extranjera: Francés (103) 03C - 03B - 03A Segunda Lengua Extranjera: Francés\nAula: 114", "aula": ""},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01C Segunda Lengua Extranjera: Francés (B06) 01C Segunda Lengua Extranjera: Francés\nAula: B06", "aula": ""}
-        },
-        "Jueves": {
-          "2": {"tipo": "clase", "sigla": "", "grupo": "GU1", "materia": "Segunda lengua extranjera Francés", "aula": "120"},
-          "3": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01B Segunda Lengua Extranjera: Francés\nAula: B03", "aula": ""},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "02D Medidas de Atención Educativa\nAula: 115", "aula": ""},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "04A Segunda Lengua Extranjera: Francés\nAula: 205", "aula": ""}
-        },
-        "Viernes": {
-          "2": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01C Segunda Lengua Extranjera: Francés (B06) 01C Segunda Lengua Extranjera: Francés\nAula: B06", "aula": ""},
-          "3": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "02D Medidas de Atención Educativa\nAula: 115", "aula": ""},
-          "3R": {"tipo": "actividad", "sigla": "AC", "grupo": "", "materia": "", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "GU1", "materia": "Segunda lengua extranjera Francés", "aula": "120"},
-          "6": {"tipo": "actividad", "sigla": "AC", "grupo": "", "materia": "", "aula": ""},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "02C Medidas de Atención Educativa\nAula: B11B", "aula": ""}
         }
       }
     },
@@ -3096,46 +2896,6 @@
           "3R": {"tipo": "actividad", "sigla": "FCT", "grupo": "", "materia": "", "aula": ""},
           "5": {"tipo": "actividad", "sigla": "FCT", "grupo": "", "materia": "", "aula": ""},
           "6": {"tipo": "actividad", "sigla": "CHL", "grupo": "", "materia": "", "aula": ""}
-        }
-      }
-    },
-    "MEJAXX": {
-      "nombre": "MARCOS ESCRIBANO, JOSE ANDRES",
-      "horario": {
-        "Lunes": {
-          "3": {"tipo": "clase", "sigla": "", "grupo": "2BCT", "materia": "Física", "aula": "215"},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "04A - 04B - 04C Laboratorio de Ciencias\nAula: LB1", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "02C Física y Química\nAula: B07", "aula": ""},
-          "6": {"tipo": "actividad", "sigla": "RDP", "grupo": "", "materia": "", "aula": ""},
-          "7": {"tipo": "actividad", "sigla": "G", "grupo": "", "materia": "", "aula": ""},
-          "8": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "02A - 02B Física y Química\nAula: B05", "aula": ""}
-        },
-        "Martes": {
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01C Medidas de Atención Educativa\nAula: B11B", "aula": ""},
-          "5": {"tipo": "actividad", "sigla": "TLEC", "grupo": "", "materia": "", "aula": ""},
-          "6": {"tipo": "actividad", "sigla": "AMP", "grupo": "", "materia": "", "aula": ""},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "02C Física y Química\nAula: B07", "aula": ""}
-        },
-        "Miercoles": {
-          "3": {"tipo": "clase", "sigla": "", "grupo": "2BCT", "materia": "Física", "aula": "215"},
-          "3R": {"tipo": "actividad", "sigla": "CHL", "grupo": "", "materia": "", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "SB RSB", "aula": ""},
-          "6": {"tipo": "actividad", "sigla": "TUT", "grupo": "", "materia": "", "aula": ""},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "03B - 03A Física y Química\nAula: 101", "aula": ""},
-          "8": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "02A - 02B Física y Química\nAula: B05", "aula": ""}
-        },
-        "Jueves": {
-          "2": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "03B - 03A Física y Química\nAula: 101", "aula": ""},
-          "3": {"tipo": "actividad", "sigla": "CHL", "grupo": "", "materia": "", "aula": ""},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "2BCT", "materia": "Física", "aula": "215"},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "02A - 02B Física y Química\nAula: B05", "aula": ""},
-          "6": {"tipo": "actividad", "sigla": "RT", "grupo": "", "materia": "", "aula": ""}
-        },
-        "Viernes": {
-          "2": {"tipo": "actividad", "sigla": "G", "grupo": "", "materia": "", "aula": ""},
-          "3": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "02C Física y Química\nAula: B07", "aula": ""},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "04A - 04B - 04C Laboratorio de Ciencias\nAula: LB1", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "2BCT", "materia": "Física", "aula": "215"}
         }
       }
     },
@@ -4640,40 +4400,6 @@
           "3R": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "CSB", "aula": ""},
           "5": {"tipo": "clase", "sigla": "", "grupo": "DC1", "materia": "Inglés profesional (GS)", "aula": "218"},
           "6": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "AMP CHL", "aula": ""}
-        }
-      }
-    },
-    "VLLXXX": {
-      "nombre": "VARAS LÓPEZ, LAURA",
-      "horario": {
-        "Martes": {
-          "2": {"tipo": "clase", "sigla": "", "grupo": "4E", "materia": "Inglés", "aula": "205"},
-          "3": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "G\n/ G", "aula": ""},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "TL1", "materia": "Inglés profesional (GS)", "aula": "201"},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "CI1", "materia": "Inglés profesional (GS)", "aula": "216"},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "4E", "materia": "Inglés", "aula": "205"},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "03C Inglés\nAula: 103", "aula": ""}
-        },
-        "Miercoles": {
-          "2": {"tipo": "clase", "sigla": "", "grupo": "4E", "materia": "Inglés", "aula": "205"},
-          "3": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "03C Inglés\nAula: 103", "aula": ""},
-          "3R": {"tipo": "actividad", "sigla": "CHL", "grupo": "", "materia": "", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "AC1", "materia": "Inglés profesional (GM)", "aula": "211B"},
-          "6": {"tipo": "actividad", "sigla": "G", "grupo": "", "materia": "", "aula": ""}
-        },
-        "Jueves": {
-          "2": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "04A Inglés\nAula: 105", "aula": ""},
-          "3": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "03A Inglés (101) 03A Inglés\nAula: 101", "aula": ""},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "03C Inglés\nAula: 103", "aula": ""},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "CI1", "materia": "Inglés profesional (GS)", "aula": "216"},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "TL1", "materia": "Inglés profesional (GS)", "aula": "201"},
-          "8": {"tipo": "actividad", "sigla": "RDP", "grupo": "", "materia": "", "aula": ""}
-        },
-        "Viernes": {
-          "3R": {"tipo": "actividad", "sigla": "AMP", "grupo": "", "materia": "", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "AC1", "materia": "Inglés profesional (GM)", "aula": "211B"},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "04A Inglés\nAula: 105", "aula": ""},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "03A Inglés (101) 03A Inglés\nAula: 101", "aula": ""}
         }
       }
     },
