@@ -1079,46 +1079,6 @@
         }
       }
     },
-    "DDCXXX": {
-      "nombre": "DIAZ DIAZ, CARLOS",
-      "horario": {
-        "Lunes": {
-          "3R": {"tipo": "actividad", "sigla": "CPFC", "grupo": "", "materia": "", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01C Biología y Geología\nAula: B04", "aula": ""},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "04B Biología y Geología\nAula: 106", "aula": ""},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "04A - 04C Biología y Geología\nAula: 105", "aula": ""},
-          "8": {"tipo": "actividad", "sigla": "RDP", "grupo": "", "materia": "", "aula": ""}
-        },
-        "Martes": {
-          "3": {"tipo": "actividad", "sigla": "RT", "grupo": "", "materia": "", "aula": ""},
-          "3R": {"tipo": "actividad", "sigla": "JDEP", "grupo": "", "materia": "", "aula": ""},
-          "5": {"tipo": "actividad", "sigla": "AMP", "grupo": "", "materia": "", "aula": ""},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "04B Biología y Geología\nAula: 106", "aula": ""},
-          "7": {"tipo": "actividad", "sigla": "RCE", "grupo": "", "materia": "", "aula": ""},
-          "8": {"tipo": "actividad", "sigla": "JDEP", "grupo": "", "materia": "", "aula": ""}
-        },
-        "Miercoles": {
-          "3": {"tipo": "actividad", "sigla": "CHL", "grupo": "", "materia": "", "aula": ""},
-          "3R": {"tipo": "actividad", "sigla": "JDEP", "grupo": "", "materia": "", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "04A - 04C Biología y Geología\nAula: 105", "aula": ""},
-          "6": {"tipo": "actividad", "sigla": "TUT", "grupo": "", "materia": "", "aula": ""},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "04B Biología y Geología\nAula: 106", "aula": ""}
-        },
-        "Jueves": {
-          "3": {"tipo": "actividad", "sigla": "CHL", "grupo": "", "materia": "", "aula": ""},
-          "3R": {"tipo": "actividad", "sigla": "TLEC", "grupo": "", "materia": "", "aula": ""},
-          "5": {"tipo": "actividad", "sigla": "RCE", "grupo": "", "materia": "", "aula": ""},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "04A - 04C Biología y Geología\nAula: 105", "aula": ""},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01C Biología y Geología\nAula: B04", "aula": ""}
-        },
-        "Viernes": {
-          "2": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "04B Biología y Geología\nAula: 106", "aula": ""},
-          "3": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "04A - 04C Biología y Geología\nAula: 105", "aula": ""},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01C Biología y Geología\nAula: B04", "aula": ""},
-          "5": {"tipo": "actividad", "sigla": "CPFC", "grupo": "", "materia": "", "aula": ""}
-        }
-      }
-    },
     "DCMXXX": {
       "nombre": "DIEZ CORTIJO, MARIA",
       "horario": {

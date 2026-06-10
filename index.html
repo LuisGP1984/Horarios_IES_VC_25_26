@@ -1142,7 +1142,7 @@ function ausDownloadWordFallback(payload, fecha) {
   const TD  = 'border:1px solid #999;padding:1px 3px;height:16px;font-size:7.5pt;font-family:Arial';
   const NC  = 'white-space:nowrap;overflow:hidden;text-overflow:ellipsis';
   const HDR = 'border:1px solid #999;padding:2px 4px;font-size:7.5pt;font-family:Arial';
-  const COL = `<colgroup>
+  const COLS = `<colgroup>
     <col style="width:4%"><col style="width:23%"><col style="width:7%">
     <col style="width:6%"><col style="width:8%"><col style="width:37%"><col style="width:15%">
   </colgroup>`;
@@ -1156,50 +1156,42 @@ function ausDownloadWordFallback(payload, fecha) {
     <th style="${HDR};text-align:center">Firmas</th>
   </tr>`;
 
-  function sessRows(sk, pageBreakAfterLast) {
-    const ausData = getAusForSess(sk);
-    const isSess7 = sk === '8';
-    const numRows = isSess7 ? 1 : 8;
+  function buildRows(sessKeys) {
     let rows = '';
-
-    for (let r = 0; r < numRows; r++) {
-      const aus = ausData[r];
-      const isLast = !isSess7 ? false : true; // last data row of sess7
-      const numStyle = r===0
-        ? `${TD};background:#DCE6F1;font-weight:bold;text-align:center`
-        : `${TD};text-align:center`;
-      const docName  = aus ? (aus.docente.length>28 ? aus.docente.substring(0,27)+'\u2026' : aus.docente) : '';
-      const grupoTxt = aus ? aus.grupo.replace(/ - /g,'/').replace(/ /g,'') : '';
-      const aulaTxt  = aus ? (aus.aula||'') : '';
-      rows += `<tr style="height:16px">
-        <td style="${numStyle}">${r===0?SESS_NUMS[sk]:''}</td>
-        <td style="${TD};${NC}">${docName}</td>
-        <td style="${TD};text-align:center;${NC}">${grupoTxt}</td>
-        <td style="${TD};text-align:center;${NC}">${aulaTxt}</td>
-        <td style="${TD}"></td>
-        <td style="${TD}"></td>
-        <td style="${TD}"></td>
-      </tr>`;
-    }
-    if (!isSess7) {
-      rows += `<tr style="height:16px"><td style="${TD}"></td><td style="${TD}"></td><td style="${TD}"></td><td style="${TD}"></td><td style="${TD}"></td><td style="${TD};font-weight:bold">Convivencia:</td><td style="${TD}"></td></tr>`;
-      // Biblioteca row: if pageBreakAfterLast, add page-break-after on this row
-      const bibRowStyle = pageBreakAfterLast ? ' mso-row-margin-top:0;page-break-after:always' : '';
-      rows += `<tr style="height:16px${bibRowStyle}"><td style="${TD}"></td><td style="${TD}"></td><td style="${TD}"></td><td style="${TD}"></td><td style="${TD}"></td><td style="${TD};font-weight:bold">Biblioteca:</td><td style="${TD}"></td></tr>`;
-    }
+    sessKeys.forEach(sk => {
+      const ausData = getAusForSess(sk);
+      const isSess7 = sk === '8';
+      const numRows = isSess7 ? 1 : 8;
+      for (let r = 0; r < numRows; r++) {
+        const aus = ausData[r];
+        const numStyle = r===0
+          ? `${TD};background:#DCE6F1;font-weight:bold;text-align:center`
+          : `${TD};text-align:center`;
+        const docName  = aus ? (aus.docente.length>28 ? aus.docente.substring(0,27)+'\u2026' : aus.docente) : '';
+        const grupoTxt = aus ? aus.grupo.replace(/ - /g,'/').replace(/ /g,'') : '';
+        const aulaTxt  = aus ? (aus.aula||'') : '';
+        rows += `<tr style="height:16px">
+          <td style="${numStyle}">${r===0?SESS_NUMS[sk]:''}</td>
+          <td style="${TD};${NC}">${docName}</td>
+          <td style="${TD};text-align:center;${NC}">${grupoTxt}</td>
+          <td style="${TD};text-align:center;${NC}">${aulaTxt}</td>
+          <td style="${TD}"></td><td style="${TD}"></td><td style="${TD}"></td>
+        </tr>`;
+      }
+      if (!isSess7) {
+        rows += `<tr style="height:16px"><td style="${TD}"></td><td style="${TD}"></td><td style="${TD}"></td><td style="${TD}"></td><td style="${TD}"></td><td style="${TD};font-weight:bold">Convivencia:</td><td style="${TD}"></td></tr>`;
+        rows += `<tr style="height:16px"><td style="${TD}"></td><td style="${TD}"></td><td style="${TD}"></td><td style="${TD}"></td><td style="${TD}"></td><td style="${TD};font-weight:bold">Biblioteca:</td><td style="${TD}"></td></tr>`;
+      }
+    });
     return rows;
   }
 
-  // Build one single table for all sessions — page break after Biblioteca of sess 3R
-  let allRows = '';
-  ['2','3','3R','5','6','7','8'].forEach(sk => {
-    const isLastOfPage1 = sk === '3R';
-    allRows += sessRows(sk, isLastOfPage1);
-  });
-
-  const singleTable = `<table style="width:100%;border-collapse:collapse;font-family:Arial;font-size:7.5pt;table-layout:fixed">
-    ${COL}${THEAD}${allRows}
-  </table>`;
+  function makeTable(sessKeys, pageBreakBefore) {
+    const pbStyle = pageBreakBefore ? 'page-break-before:always;' : '';
+    return `<table style="${pbStyle}width:100%;border-collapse:collapse;font-family:Arial;font-size:7.5pt;table-layout:fixed">
+      ${COLS}${THEAD}${buildRows(sessKeys)}
+    </table>`;
+  }
 
   const daysLine = ['Lunes','Martes','Mi\u00e9rcoles','Jueves','Viernes'].map(d => {
     const dk = d==='Mi\u00e9rcoles'?'Miercoles':d;
@@ -1208,7 +1200,7 @@ function ausDownloadWordFallback(payload, fecha) {
       : d;
   }).join(' \u2013 ');
 
-  const footnote = `<p style="font-size:7.5pt;font-style:italic;margin:4px 0 2px">La tarea se recoger\u00e1 en el <b>organizador de consejer\u00eda</b></p>`;
+  const footnote = `<p style="font-size:7.5pt;font-style:italic;margin:3px 0 2px">La tarea se recoger\u00e1 en el <b>organizador de consejer\u00eda</b></p>`;
 
   const docHtml = `<html xmlns:o='urn:schemas-microsoft-com:office:office'
     xmlns:w='urn:schemas-microsoft-com:office:word'
@@ -1225,14 +1217,15 @@ function ausDownloadWordFallback(payload, fecha) {
     body { font-family:Arial; font-size:8pt; margin:0; padding:0; }
     h1 { text-align:center; font-size:12pt; margin:3px 0; }
     p  { margin:2px 0; font-size:8pt; }
-    tr { page-break-inside:avoid; }
   </style></head>
   <body>
     <h1>PARTE DIARIO DE GUARDIAS</h1>
     <p style="text-align:center;font-size:9pt;margin:2px 0">CURSO 2025 - 26</p>
     <p style="margin:3px 0">Parte diario de guardia ${day} de ${month} de ${year}</p>
     <p style="margin:3px 0 6px;font-size:9pt">${daysLine}</p>
-    ${singleTable}
+    ${makeTable(['2','3','3R'], false)}
+    ${footnote}
+    ${makeTable(['5','6','7','8'], true)}
     ${footnote}
   </body></html>`;
 
