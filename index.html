@@ -371,8 +371,6 @@
     .spinner { width: 36px; height: 36px; border: 3px solid #ffffff30; border-top-color: #fff; border-radius: 50%; animation: spin .8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
   </style>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/8.5.0/docx.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 </head>
 <body>
 
@@ -998,31 +996,18 @@ async function ausDownloadWord() {
 
   const dayName = ausDayName(fecha);
   const [year, month, day2] = fecha.split('-');
-  const monthNames = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  const monthNames = ['enero','febrero','marzo','abril','mayo','junio','julio',
+    'agosto','septiembre','octubre','noviembre','diciembre'];
   const monthName = monthNames[parseInt(month)-1];
-  const dayLabel = dayName === 'Miercoles' ? 'Miércoles' : dayName;
 
-  const {
-    Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
-    AlignmentType, BorderStyle, WidthType, ShadingType, VerticalAlign,
-    PageOrientation
-  } = docx;
-
-  const COL_WIDTHS = [452, 2656, 762, 743, 831, 3543, 1498];
-  const TABLE_W = 10485;
-  const BORDER = { style: BorderStyle.SINGLE, size: 4, color: '999999' };
-  const BORDERS = { top: BORDER, bottom: BORDER, left: BORDER, right: BORDER };
-  const MARGINS = { top: 60, bottom: 60, left: 100, right: 60 };
-  const NAVY = '1F3864';
-
-  // Map ausentes by session key
+  // Map ausentes by session key -> [{docente, grupo, aula}]
   function getAusBySession(sessKey) {
     const result = [];
     data.forEach(aus => {
+      if (!aus.sesiones.includes(sessKey)) return;
       const info = DB.docentes[aus.codigo];
       if (!info) return;
       const horDia = info.horario[dayName] || {};
-      if (!aus.sesiones.includes(sessKey)) return;
       const slot = horDia[sessKey];
       let grupo = '', aula = '';
       if (slot) {
@@ -1034,119 +1019,173 @@ async function ausDownloadWord() {
     return result;
   }
 
-  function makeCell(text, colIdx, opts={}) {
-    return new TableCell({
-      width: { size: COL_WIDTHS[colIdx], type: WidthType.DXA },
-      borders: BORDERS, margins: MARGINS,
-      verticalAlign: VerticalAlign.CENTER,
-      shading: opts.fill ? { fill: opts.fill, type: ShadingType.CLEAR } : undefined,
-      children: [new Paragraph({
-        alignment: opts.center ? AlignmentType.CENTER : AlignmentType.LEFT,
-        children: [new TextRun({ text: text||'', bold: opts.bold||false, size: opts.size||18, color: opts.color||'000000', font: 'Arial' })]
-      })]
-    });
-  }
-
-  function headerRow() {
-    const heads = ['Hª','Profesor ausente','Curso','Aula','Tarea','Profesor que realiza de guardia','Firmas'];
-    return new TableRow({ tableHeader: true, children: heads.map((h,i) =>
-      new TableCell({
-        width: { size: COL_WIDTHS[i], type: WidthType.DXA },
-        borders: BORDERS, margins: MARGINS,
-        shading: { fill: NAVY, type: ShadingType.CLEAR },
-        children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [
-          new TextRun({ text: h, bold: true, size: 18, color: 'FFFFFF', font: 'Arial' })
-        ]})]
-      })
-    )});
-  }
-
-  function sessionBlock(num, sessKey) {
-    const ausData = getAusBySession(sessKey);
-    const rows = [];
-    for (let r = 0; r < 8; r++) {
-      const aus = ausData[r];
-      rows.push(new TableRow({
-        height: { value: 380, rule: 'atLeast' },
-        children: [
-          new TableCell({
-            width: { size: COL_WIDTHS[0], type: WidthType.DXA }, borders: BORDERS, margins: MARGINS,
-            verticalAlign: VerticalAlign.CENTER,
-            shading: r===0 ? { fill: 'DCE6F1', type: ShadingType.CLEAR } : undefined,
-            children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [
-              new TextRun({ text: r===0 ? String(num) : '', bold: true, size: 20, font: 'Arial' })
-            ]})]
-          }),
-          new TableCell({ width:{size:COL_WIDTHS[1],type:WidthType.DXA}, borders:BORDERS, margins:MARGINS,
-            children:[new Paragraph({children:[new TextRun({text:aus?aus.docente:'',size:18,font:'Arial'})]})] }),
-          new TableCell({ width:{size:COL_WIDTHS[2],type:WidthType.DXA}, borders:BORDERS, margins:MARGINS,
-            children:[new Paragraph({alignment:AlignmentType.CENTER,children:[new TextRun({text:aus?aus.grupo:'',size:18,font:'Arial'})]})] }),
-          new TableCell({ width:{size:COL_WIDTHS[3],type:WidthType.DXA}, borders:BORDERS, margins:MARGINS,
-            children:[new Paragraph({alignment:AlignmentType.CENTER,children:[new TextRun({text:aus&&aus.aula?aus.aula:'',size:18,font:'Arial'})]})] }),
-          new TableCell({ width:{size:COL_WIDTHS[4],type:WidthType.DXA}, borders:BORDERS, margins:MARGINS,
-            children:[new Paragraph({children:[new TextRun({text:'',size:18,font:'Arial'})]})] }),
-          new TableCell({ width:{size:COL_WIDTHS[5],type:WidthType.DXA}, borders:BORDERS, margins:MARGINS,
-            children:[new Paragraph({children:[new TextRun({text:'',size:18,font:'Arial'})]})] }),
-          new TableCell({ width:{size:COL_WIDTHS[6],type:WidthType.DXA}, borders:BORDERS, margins:MARGINS,
-            children:[new Paragraph({children:[new TextRun({text:'',size:18,font:'Arial'})]})] }),
-        ]
-      }));
-    }
-    // Convivencia
-    rows.push(new TableRow({ height:{value:380,rule:'atLeast'}, children: [
-      ...COL_WIDTHS.slice(0,5).map((w,i)=>new TableCell({width:{size:w,type:WidthType.DXA},borders:BORDERS,margins:MARGINS,children:[new Paragraph({children:[new TextRun({text:'',size:18,font:'Arial'})]})]})),
-      new TableCell({width:{size:COL_WIDTHS[5],type:WidthType.DXA},borders:BORDERS,margins:MARGINS,children:[new Paragraph({children:[new TextRun({text:'Convivencia:',bold:true,size:18,font:'Arial'})]})] }),
-      new TableCell({width:{size:COL_WIDTHS[6],type:WidthType.DXA},borders:BORDERS,margins:MARGINS,children:[new Paragraph({children:[new TextRun({text:'',size:18,font:'Arial'})]})]}),
-    ]}));
-    // Biblioteca
-    rows.push(new TableRow({ height:{value:380,rule:'atLeast'}, children: [
-      ...COL_WIDTHS.slice(0,5).map((w,i)=>new TableCell({width:{size:w,type:WidthType.DXA},borders:BORDERS,margins:MARGINS,children:[new Paragraph({children:[new TextRun({text:'',size:18,font:'Arial'})]})]})),
-      new TableCell({width:{size:COL_WIDTHS[5],type:WidthType.DXA},borders:BORDERS,margins:MARGINS,children:[new Paragraph({children:[new TextRun({text:'Biblioteca:',bold:true,size:18,font:'Arial'})]})] }),
-      new TableCell({width:{size:COL_WIDTHS[6],type:WidthType.DXA},borders:BORDERS,margins:MARGINS,children:[new Paragraph({children:[new TextRun({text:'',size:18,font:'Arial'})]})]}),
-    ]}));
-    return rows;
-  }
-
-  function makeTable(sessions) {
-    const rows = [headerRow()];
-    sessions.forEach(({num, key}) => sessionBlock(num, key).forEach(r => rows.push(r)));
-    return new Table({ width:{size:TABLE_W,type:WidthType.DXA}, columnWidths:COL_WIDTHS, rows });
-  }
-
-  function footNote() {
-    return new Paragraph({ spacing:{before:80,after:80}, children:[
-      new TextRun({text:'La tarea se recogerá en el ', italics:true, size:16, font:'Arial'}),
-      new TextRun({text:'organizador de consejería', italics:true, bold:true, size:16, font:'Arial'}),
-    ]});
-  }
-
-  const SESS_MAP1 = [{num:1,key:'2'},{num:2,key:'3'},{num:3,key:'3R'}];
-  const SESS_MAP2 = [{num:4,key:'5'},{num:5,key:'6'},{num:6,key:'7'},{num:7,key:'8'}];
-
-  const doc2 = new Document({ sections:[{
-    properties:{ page:{ size:{width:11906,height:16838}, margin:{top:720,right:720,bottom:720,left:720} } },
-    children:[
-      new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:60,after:60},children:[new TextRun({text:'PARTE DIARIO DE GUARDIAS',bold:true,size:26,font:'Arial'})]}),
-      new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:40,after:40},children:[new TextRun({text:'CURSO 2025 - 26',size:20,font:'Arial'})]}),
-      new Paragraph({spacing:{before:40,after:40},children:[new TextRun({text:`Parte diario de guardia ${day2} de ${monthName} de ${year}`,size:20,font:'Arial'})]}),
-      new Paragraph({spacing:{before:40,after:120},children:[
-        ...'Lunes,Martes,Miércoles,Jueves,Viernes'.split(',').flatMap((d,i,arr) => {
-          const dKey = d==='Miércoles'?'Miercoles':d;
-          const runs = [new TextRun({text:d, bold:dKey===dayName, italics:true, size:20, font:'Arial'})];
-          if(i<arr.length-1) runs.push(new TextRun({text:' – ',size:20,font:'Arial'}));
-          return runs;
+  // Send to Anthropic API which will generate the docx via Node and return base64
+  const payload = {
+    fecha, dayName, year, month: monthName, day: day2,
+    ausentes: data.map(aus => {
+      const info = DB.docentes[aus.codigo];
+      return {
+        codigo: aus.codigo,
+        nombre: info ? tc2(info.nombre) : aus.codigo,
+        sesiones: aus.sesiones.map(sessKey => {
+          const horDia = (info?.horario[dayName]) || {};
+          const slot = horDia[sessKey];
+          let grupo = '', aula = '';
+          if (slot) {
+            const arr = Array.isArray(slot) ? slot : [slot];
+            if (arr[0].tipo === 'clase') { grupo = arr[0].grupo||''; aula = arr[0].aula||''; }
+          }
+          return { sess: sessKey, grupo, aula };
         })
-      ]}),
-      makeTable(SESS_MAP1),
-      footNote(),
-      new Paragraph({pageBreakBefore:true,children:[new TextRun({text:''})]}),
-      makeTable(SESS_MAP2),
-      footNote(),
-    ]
-  }]});
+      };
+    })
+  };
 
-  const buf = await Packer.toBlob(doc2);
-  saveAs(buf, `Parte_Guardias_${fecha}.docx`);
+  // Show loading state
+  const btn = document.querySelector('[onclick="ausDownloadWord()"]');
+  const origText = btn.textContent;
+  btn.textContent = '⏳ Generando...';
+  btn.disabled = true;
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4000,
+        system: `Eres un generador de documentos Word para un IES español. 
+Cuando recibas datos de ausencias de docentes, debes generar un parte de guardias en formato Word.
+RESPONDE SOLO con un JSON con este formato exacto (sin markdown, sin explicaciones):
+{"docx_base64": "<base64 del archivo docx>"}
+
+El documento debe seguir este formato exacto:
+- Título: PARTE DIARIO DE GUARDIAS
+- Subtítulo: CURSO 2025 - 26  
+- Fecha: "Parte diario de guardia DD de MES de YYYY"
+- Línea de días con el día actual en negrita
+- TABLA 1 (sesiones 1-3): cabecera azul marino, 8 filas por sesión + Convivencia + Biblioteca
+- Nota al pie en cursiva
+- Salto de página
+- TABLA 2 (sesiones 4-7): misma estructura
+- Columnas: Hª | Profesor ausente | Curso | Aula | Tarea | Profesor que realiza de guardia | Firmas
+- Solo rellenar: número sesión, nombre docente, curso/grupo y aula
+- Sesión 1=Sesión1(08:30), 2=Sesión2(09:25), 3=Sesión3(10:20), 4=Sesión4(11:35), 5=Sesión5(12:30), 6=Sesión6(13:30), 7=Sesión7(14:25)`,
+        messages: [{
+          role: 'user',
+          content: `Genera el parte de guardias con estos datos: ${JSON.stringify(payload)}`
+        }]
+      })
+    });
+
+    if (!response.ok) throw new Error('API error: ' + response.status);
+    const apiData = await response.json();
+    const text = apiData.content?.[0]?.text || '';
+    
+    // Try to parse JSON response
+    let parsed;
+    try {
+      const clean = text.replace(/```json|```/g, '').trim();
+      parsed = JSON.parse(clean);
+    } catch(e) {
+      throw new Error('No se pudo parsear la respuesta');
+    }
+
+    if (!parsed.docx_base64) throw new Error('Respuesta incompleta');
+
+    // Convert base64 to blob and download
+    const binary = atob(parsed.docx_base64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    const blob = new Blob([bytes], {type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `Parte_Guardias_${fecha}.docx`; a.click();
+    URL.revokeObjectURL(url);
+
+  } catch(err) {
+    // Fallback: generate a simple HTML-based doc
+    console.error('API error, using fallback:', err);
+    ausDownloadWordFallback(payload, fecha);
+  } finally {
+    btn.textContent = origText;
+    btn.disabled = false;
+  }
+}
+
+function ausDownloadWordFallback(payload, fecha) {
+  // Simple but well-formatted HTML doc that Word can open
+  const { year, month, day, dayName, ausentes } = payload;
+  const SESS_KEYS = ['2','3','3R','5','6','7','8'];
+  const SESS_NUMS = {  '2':1,'3':2,'3R':3,'5':4,'6':5,'7':6,'8':7};
+  const SESS_HORAS2 = {'2':'08:30-09:20','3':'09:25-10:15','3R':'10:20-11:10','5':'11:35-12:25','6':'12:30-13:25','7':'13:30-14:20','8':'14:25-15:15'};
+
+  function getAusForSess(sessKey) {
+    return ausentes.filter(a => a.sesiones.some(s => s.sess === sessKey))
+      .map(a => {
+        const s = a.sesiones.find(s => s.sess === sessKey);
+        return { docente: a.nombre, grupo: s?.grupo||'', aula: s?.aula||'' };
+      });
+  }
+
+  function tableHTML(sessKeys) {
+    let t = `<table border="1" cellspacing="0" cellpadding="4" style="width:100%;border-collapse:collapse;font-size:9pt;font-family:Arial">
+      <tr style="background:#1F3864;color:white">
+        <th style="width:5%">Hª</th><th style="width:22%">Profesor ausente</th>
+        <th style="width:7%">Curso</th><th style="width:7%">Aula</th>
+        <th style="width:9%">Tarea</th><th style="width:36%">Profesor que realiza de guardia</th>
+        <th style="width:14%">Firmas</th>
+      </tr>`;
+    sessKeys.forEach(sk => {
+      const ausData = getAusForSess(sk);
+      for (let r = 0; r < 8; r++) {
+        const aus = ausData[r];
+        const bg = r===0 ? 'background:#DCE6F1' : '';
+        t += `<tr style="height:22px">
+          <td style="text-align:center;font-weight:bold;${bg}">${r===0?SESS_NUMS[sk]:''}</td>
+          <td>${aus?aus.docente:''}</td>
+          <td style="text-align:center">${aus?aus.grupo:''}</td>
+          <td style="text-align:center">${aus&&aus.aula?aus.aula:''}</td>
+          <td></td><td></td><td></td>
+        </tr>`;
+      }
+      t += `<tr style="height:22px"><td></td><td></td><td></td><td></td><td></td><td><b>Convivencia:</b></td><td></td></tr>`;
+      t += `<tr style="height:22px"><td></td><td></td><td></td><td></td><td></td><td><b>Biblioteca:</b></td><td></td></tr>`;
+    });
+    return t + '</table>';
+  }
+
+  const dayLabel = dayName==='Miercoles'?'Miércoles':dayName;
+  const daysLine = ['Lunes','Martes','Miércoles','Jueves','Viernes']
+    .map(d => (d==='Miércoles'?'Miercoles':d)===dayName ? `<b>${d}</b>` : d).join(' – ');
+
+  const docHtml = `<html xmlns:o='urn:schemas-microsoft-com:office:office'
+    xmlns:w='urn:schemas-microsoft-com:office:word'
+    xmlns='http://www.w3.org/TR/REC-html40'>
+  <head><meta charset="UTF-8"><style>
+    body{font-family:Arial;font-size:10pt;margin:1.5cm}
+    h1{text-align:center;font-size:13pt;margin:4px 0}
+    h2{text-align:center;font-size:10pt;font-weight:normal;margin:4px 0}
+    .days{margin:6px 0 10px}
+    .footnote{font-size:8pt;font-style:italic;margin:6px 0 0}
+    @page{margin:1.5cm}
+  </style></head><body>
+    <h1>PARTE DIARIO DE GUARDIAS</h1>
+    <h2>CURSO 2025 - 26</h2>
+    <p>Parte diario de guardia ${day} de ${month} de ${year}</p>
+    <p class="days">${daysLine}</p>
+    ${tableHTML(['2','3','3R'])}
+    <p class="footnote">La tarea se recogerá en el <b>organizador de consejería</b></p>
+    <br style="page-break-after:always">
+    ${tableHTML(['5','6','7','8'])}
+    <p class="footnote">La tarea se recogerá en el <b>organizador de consejería</b></p>
+  </body></html>`;
+
+  const blob = new Blob([docHtml], {type:'application/msword'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `Parte_Guardias_${fecha}.doc`; a.click();
+  URL.revokeObjectURL(url);
 }
 
 
