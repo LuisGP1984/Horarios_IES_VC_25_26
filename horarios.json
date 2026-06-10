@@ -51,46 +51,6 @@
         }
       }
     },
-    "ALLNXX": {
-      "nombre": "ALONSO DE LINAJE LLANOS, NIEVES",
-      "horario": {
-        "Lunes": {
-          "2": {"tipo": "clase", "sigla": "", "grupo": "1BCB - 1BHS", "materia": "Economía", "aula": "114"},
-          "3": {"tipo": "actividad", "sigla": "G", "grupo": "", "materia": "", "aula": ""},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "2BHB", "materia": "Empresa y Diseño de Modelos de Negocio", "aula": "111"},
-          "5": {"tipo": "actividad", "sigla": "CHL", "grupo": "", "materia": "", "aula": ""},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "2BHA", "materia": "Empresa y Diseño de Modelos de Negocio", "aula": "112"}
-        },
-        "Martes": {
-          "2": {"tipo": "actividad", "sigla": "G", "grupo": "", "materia": "", "aula": ""},
-          "3": {"tipo": "clase", "sigla": "", "grupo": "1BCB - 1BHS", "materia": "Economía", "aula": "114"},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "04B Economía y Emprendimiento\nAula: 106", "aula": ""},
-          "5": {"tipo": "actividad", "sigla": "CHL", "grupo": "", "materia": "", "aula": ""},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "03B Medidas de Atención Educativa\nAula: B11B", "aula": ""},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "2BHA", "materia": "Empresa y Diseño de Modelos de Negocio", "aula": "112"}
-        },
-        "Miercoles": {
-          "2": {"tipo": "clase", "sigla": "", "grupo": "2BHB", "materia": "Empresa y Diseño de Modelos de Negocio", "aula": "111"},
-          "3": {"tipo": "clase", "sigla": "", "grupo": "1BCB - 1BHS", "materia": "Economía", "aula": "114"},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "3E", "materia": "- 03A Medidas de Atención Educativa", "aula": "102"},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "04B Economía y Emprendimiento\nAula: 106", "aula": ""},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "2BHA", "materia": "Empresa y Diseño de Modelos de Negocio", "aula": "112"}
-        },
-        "Jueves": {
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "04B Economía y Emprendimiento\nAula: 106", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "2BHB", "materia": "Empresa y Diseño de Modelos de Negocio", "aula": "111"},
-          "6": {"tipo": "actividad", "sigla": "AMP", "grupo": "", "materia": "", "aula": ""},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "1BCB - 1BHS", "materia": "Economía", "aula": "114"},
-          "8": {"tipo": "actividad", "sigla": "RDP", "grupo": "", "materia": "", "aula": ""}
-        },
-        "Viernes": {
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "2BHA", "materia": "Empresa y Diseño de Modelos de Negocio", "aula": "112"},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "04B Economía y Emprendimiento\nAula: 106", "aula": ""},
-          "6": {"tipo": "actividad", "sigla": "G", "grupo": "", "materia": "", "aula": ""},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "2BHB", "materia": "Empresa y Diseño de Modelos de Negocio", "aula": "111"}
-        }
-      }
-    },
     "AEMAXX": {
       "nombre": "ALONSO ESTEBAN, MARIA DE LOS A",
       "horario": {
