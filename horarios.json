@@ -1012,46 +1012,6 @@
         }
       }
     },
-    "CMJAXX": {
-      "nombre": "CUESTA MARTINEZ, JOSE ALBERTO",
-      "horario": {
-        "Lunes": {
-          "3": {"tipo": "actividad", "sigla": "JDEP", "grupo": "", "materia": "", "aula": ""},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "04B - 04C Geografía Económica\nAula: 105", "aula": ""},
-          "5": {"tipo": "actividad", "sigla": "AMP", "grupo": "", "materia": "", "aula": ""},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "2BHB", "materia": "Geografía", "aula": "111"}
-        },
-        "Martes": {
-          "2": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01D Medidas de Atención Educativa (B03) 01D Medidas de Atención Educativa\nAula: B12", "aula": ""},
-          "3": {"tipo": "clase", "sigla": "", "grupo": "2BHA", "materia": "Geografía", "aula": "112"},
-          "3R": {"tipo": "actividad", "sigla": "JDEP", "grupo": "", "materia": "", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "2BHB", "materia": "Geografía", "aula": "111"},
-          "6": {"tipo": "actividad", "sigla": "CHL", "grupo": "", "materia": "", "aula": ""}
-        },
-        "Miercoles": {
-          "3": {"tipo": "actividad", "sigla": "CHL", "grupo": "", "materia": "", "aula": ""},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "2BHA", "materia": "Geografía", "aula": "112"},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "2BHB", "materia": "Geografía", "aula": "111"},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01D Geografía e Historia\nAula: B12", "aula": ""},
-          "7": {"tipo": "actividad", "sigla": "G", "grupo": "", "materia": "", "aula": ""},
-          "8": {"tipo": "actividad", "sigla": "RDP", "grupo": "", "materia": "", "aula": ""}
-        },
-        "Jueves": {
-          "3": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "04A Medidas de Atención Educativa\nAula: 106", "aula": ""},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01D Geografía e Historia\nAula: B12", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "2BHA", "materia": "Geografía", "aula": "112"},
-          "6": {"tipo": "actividad", "sigla": "G", "grupo": "", "materia": "", "aula": ""},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "2BHB", "materia": "Geografía", "aula": "111"}
-        },
-        "Viernes": {
-          "3": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01D Geografía e Historia\nAula: B12", "aula": ""},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "04B - 04C Geografía Económica\nAula: 105", "aula": ""},
-          "5": {"tipo": "actividad", "sigla": "JDEP", "grupo": "", "materia": "", "aula": ""},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "2BHA", "materia": "Geografía", "aula": "112"},
-          "7": {"tipo": "actividad", "sigla": "G", "grupo": "", "materia": "", "aula": ""}
-        }
-      }
-    },
     "CGFXXX": {
       "nombre": "CUEVAS GIL, FERNANDO DE LA",
       "horario": {
@@ -2220,46 +2180,6 @@
           "5": {"tipo": "clase", "sigla": "", "grupo": "GU1", "materia": "Segunda lengua extranjera Francés", "aula": "120"},
           "6": {"tipo": "actividad", "sigla": "AC", "grupo": "", "materia": "", "aula": ""},
           "7": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "02C Medidas de Atención Educativa\nAula: B11B", "aula": ""}
-        }
-      }
-    },
-    "GBAXXX": {
-      "nombre": "GASPAR BORREGA, ALBERTO",
-      "horario": {
-        "Lunes": {
-          "2": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01B Educación Física\nAula: GIM1", "aula": ""},
-          "3": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01C Educación Física\nAula: GIM1", "aula": ""},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01D Educación Física (GIM3) 01D Educación Física\nAula: GIM3", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "04A Educación Física\nAula: GIM1", "aula": ""}
-        },
-        "Martes": {
-          "3": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01A Educación Física\nAula: GIM1", "aula": ""},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "03A Educación Física\nAula: GIM2", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "03B Educación Física\nAula: GIM2", "aula": ""},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "03C Educación Física\nAula: GIM2", "aula": ""},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "3E", "materia": "Educación Física", "aula": "GIM2"}
-        },
-        "Miercoles": {
-          "2": {"tipo": "actividad", "sigla": "G", "grupo": "", "materia": "", "aula": ""},
-          "3": {"tipo": "actividad", "sigla": "AMP", "grupo": "", "materia": "", "aula": ""},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01D Educación Física (GIM3) 01D Educación Física\nAula: GIM3", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01A Educación Física\nAula: GIM1", "aula": ""}
-        },
-        "Jueves": {
-          "3": {"tipo": "actividad", "sigla": "CHL", "grupo": "", "materia": "", "aula": ""},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "03A Educación Física\nAula: GIM1", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "03B Educación Física\nAula: GIM1", "aula": ""},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "03C Educación Física\nAula: GIM1", "aula": ""},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "3E", "materia": "Educación Física", "aula": "GIM1"},
-          "8": {"tipo": "actividad", "sigla": "RDP", "grupo": "", "materia": "", "aula": ""}
-        },
-        "Viernes": {
-          "1": {"tipo": "actividad", "sigla": "G", "grupo": "", "materia": "", "aula": ""},
-          "2": {"tipo": "actividad", "sigla": "G", "grupo": "", "materia": "", "aula": ""},
-          "3": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01B Educación Física\nAula: GIM1", "aula": ""},
-          "3R": {"tipo": "actividad", "sigla": "CHL", "grupo": "", "materia": "", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "04A Educación Física\nAula: GIM1", "aula": ""},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01C Educación Física\nAula: GIM1", "aula": ""}
         }
       }
     },
@@ -3591,46 +3511,6 @@
           "5": {"tipo": "actividad", "sigla": "AMP", "grupo": "", "materia": "", "aula": ""},
           "6": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01D Tecnología y Digitalización\nAula: B01", "aula": ""},
           "7": {"tipo": "clase", "sigla": "", "grupo": "FPB1", "materia": "Ciencias aplicadas I", "aula": "117"}
-        }
-      }
-    },
-    "PGGXXX": {
-      "nombre": "PASTOR GUTIERREZ, GUILLERMO",
-      "horario": {
-        "Lunes": {
-          "2": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01B Educación Física\nAula: GIM1", "aula": ""},
-          "3": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01C Educación Física\nAula: GIM1", "aula": ""},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01D Educación Física\nAula: GIM3", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "04A Educación Física\nAula: GIM1", "aula": ""}
-        },
-        "Martes": {
-          "3": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01A Educación Física\nAula: GIM1", "aula": ""},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "03A Educación Física\nAula: GIM2", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "03B Educación Física\nAula: GIM2", "aula": ""},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "03C Educación Física\nAula: GIM2", "aula": ""},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "3E", "materia": "Educación Física", "aula": "GIM2"}
-        },
-        "Miercoles": {
-          "2": {"tipo": "actividad", "sigla": "G", "grupo": "", "materia": "", "aula": ""},
-          "3": {"tipo": "actividad", "sigla": "AMP", "grupo": "", "materia": "", "aula": ""},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01D Educación Física\nAula: GIM3", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01A Educación Física\nAula: GIM1", "aula": ""}
-        },
-        "Jueves": {
-          "3": {"tipo": "actividad", "sigla": "CHL", "grupo": "", "materia": "", "aula": ""},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "03A Educación Física\nAula: GIM1", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "03B Educación Física\nAula: GIM1", "aula": ""},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "03C Educación Física\nAula: GIM1", "aula": ""},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "3E", "materia": "Educación Física", "aula": "GIM1"},
-          "8": {"tipo": "actividad", "sigla": "RDP", "grupo": "", "materia": "", "aula": ""}
-        },
-        "Viernes": {
-          "1": {"tipo": "actividad", "sigla": "G", "grupo": "", "materia": "", "aula": ""},
-          "2": {"tipo": "actividad", "sigla": "G", "grupo": "", "materia": "", "aula": ""},
-          "3": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01B Educación Física\nAula: GIM1", "aula": ""},
-          "3R": {"tipo": "actividad", "sigla": "CHL", "grupo": "", "materia": "", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "04A Educación Física\nAula: GIM1", "aula": ""},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01C Educación Física\nAula: GIM1", "aula": ""}
         }
       }
     },
