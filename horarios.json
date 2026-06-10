@@ -2369,46 +2369,6 @@
         }
       }
     },
-    "GAMAXX": {
-      "nombre": "GONZALEZ ALONSO, MARIA ANGELES",
-      "horario": {
-        "Lunes": {
-          "2": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "03B Geografía e Historia\nAula: 102", "aula": ""},
-          "3": {"tipo": "actividad", "sigla": "CHL", "grupo": "", "materia": "", "aula": ""},
-          "3R": {"tipo": "actividad", "sigla": "RT", "grupo": "", "materia": "", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "1BHS", "materia": "Historia del Mundo Contemporáneo", "aula": "107"},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01B Geografía e Historia\nAula: B03", "aula": ""},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01A Geografía e Historia\nAula: B02", "aula": ""}
-        },
-        "Martes": {
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01A Geografía e Historia\nAula: B02", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "1BHS", "materia": "Historia del Mundo Contemporáneo", "aula": "107"},
-          "6": {"tipo": "actividad", "sigla": "AMP", "grupo": "", "materia": "", "aula": ""},
-          "7": {"tipo": "actividad", "sigla": "TUT", "grupo": "", "materia": "", "aula": ""}
-        },
-        "Miercoles": {
-          "3": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01B Geografía e Historia\nAula: B03", "aula": ""},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "03C Geografía e Historia\nAula: 103", "aula": ""},
-          "4": {"tipo": "actividad", "sigla": "GREC", "grupo": "", "materia": "", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "03B Geografía e Historia\nAula: 102", "aula": ""},
-          "8": {"tipo": "actividad", "sigla": "RDP", "grupo": "", "materia": "", "aula": ""}
-        },
-        "Jueves": {
-          "2": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01B Geografía e Historia\nAula: B03", "aula": ""},
-          "3": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "03C Geografía e Historia\nAula: 103", "aula": ""},
-          "3R": {"tipo": "actividad", "sigla": "CHL", "grupo": "", "materia": "", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "1BHS", "materia": "Historia del Mundo Contemporáneo", "aula": "107"}
-        },
-        "Viernes": {
-          "2": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "03C Geografía e Historia\nAula: 103", "aula": ""},
-          "3": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "03B Geografía e Historia\nAula: 102", "aula": ""},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01A Geografía e Historia\nAula: B02", "aula": ""},
-          "5": {"tipo": "actividad", "sigla": "G", "grupo": "", "materia": "", "aula": ""},
-          "6": {"tipo": "actividad", "sigla": "TLEC", "grupo": "", "materia": "", "aula": ""},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "1BHS", "materia": "Historia del Mundo Contemporáneo", "aula": "107"}
-        }
-      }
-    },
     "GCPXXX": {
       "nombre": "GONZALEZ CASTAÑO, PABLO",
       "horario": {
