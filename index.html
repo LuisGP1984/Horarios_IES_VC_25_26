@@ -371,6 +371,8 @@
     .spinner { width: 36px; height: 36px; border: 3px solid #ffffff30; border-top-color: #fff; border-radius: 50%; animation: spin .8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/8.5.0/docx.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 </head>
 <body>
 
@@ -995,114 +997,158 @@ async function ausDownloadWord() {
   if (data.length === 0) { alert('No hay ausencias registradas para esta fecha.'); return; }
 
   const dayName = ausDayName(fecha);
-  const dateLabel = new Date(fecha+'T12:00:00').toLocaleDateString('es-ES',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const [year, month, day2] = fecha.split('-');
+  const monthNames = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  const monthName = monthNames[parseInt(month)-1];
+  const dayLabel = dayName === 'Miercoles' ? 'Miércoles' : dayName;
 
-  // Build rows for the Word table
-  const rows = [];
-  data.forEach(aus => {
-    const info = DB.docentes[aus.codigo];
-    if (!info) return;
-    (aus.sesiones || []).forEach(sess => {
+  const {
+    Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
+    AlignmentType, BorderStyle, WidthType, ShadingType, VerticalAlign,
+    PageOrientation
+  } = docx;
+
+  const COL_WIDTHS = [452, 2656, 762, 743, 831, 3543, 1498];
+  const TABLE_W = 10485;
+  const BORDER = { style: BorderStyle.SINGLE, size: 4, color: '999999' };
+  const BORDERS = { top: BORDER, bottom: BORDER, left: BORDER, right: BORDER };
+  const MARGINS = { top: 60, bottom: 60, left: 100, right: 60 };
+  const NAVY = '1F3864';
+
+  // Map ausentes by session key
+  function getAusBySession(sessKey) {
+    const result = [];
+    data.forEach(aus => {
+      const info = DB.docentes[aus.codigo];
+      if (!info) return;
       const horDia = info.horario[dayName] || {};
-      const slot = horDia[sess];
-      let grupo='', materia='', aula='';
+      if (!aus.sesiones.includes(sessKey)) return;
+      const slot = horDia[sessKey];
+      let grupo = '', aula = '';
       if (slot) {
         const arr = Array.isArray(slot) ? slot : [slot];
-        if (arr[0].tipo === 'clase') {
-          grupo = arr[0].grupo || '';
-          materia = arr[0].materia || '';
-          aula = arr[0].aula || '';
-        } else {
-          materia = arr[0].sigla || '';
-        }
+        if (arr[0].tipo === 'clase') { grupo = arr[0].grupo||''; aula = arr[0].aula||''; }
       }
-      rows.push({
-        sesion: SESS_LABELS[sess] || sess,
-        hora: SESS_HORAS[sess] || '',
-        docente: tc2(info.nombre),
-        grupo, materia, aula
-      });
+      result.push({ docente: tc2(info.nombre), grupo, aula });
     });
-  });
+    return result;
+  }
 
-  // Sort by session order
-  rows.sort((a,b) => {
-    const oi = r => SESS_ORDER.indexOf(Object.entries(SESS_LABELS).find(([k,v])=>v===r.sesion)?.[0] || '9');
-    return oi(a) - oi(b);
-  });
+  function makeCell(text, colIdx, opts={}) {
+    return new TableCell({
+      width: { size: COL_WIDTHS[colIdx], type: WidthType.DXA },
+      borders: BORDERS, margins: MARGINS,
+      verticalAlign: VerticalAlign.CENTER,
+      shading: opts.fill ? { fill: opts.fill, type: ShadingType.CLEAR } : undefined,
+      children: [new Paragraph({
+        alignment: opts.center ? AlignmentType.CENTER : AlignmentType.LEFT,
+        children: [new TextRun({ text: text||'', bold: opts.bold||false, size: opts.size||18, color: opts.color||'000000', font: 'Arial' })]
+      })]
+    });
+  }
 
-  // Use Anthropic API to generate a structured Word-compatible HTML, then convert
-  // Since we can't use docx.js from browser, generate a clean printable HTML
-  // that the user can save as .docx via Word's "Save as"
-  const htmlDoc = generateParteHTML(rows, dateLabel, dayName);
-  const blob = new Blob([htmlDoc], {type:'application/msword'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `Parte_Guardias_${fecha}.doc`;
-  a.click();
-  URL.revokeObjectURL(url);
+  function headerRow() {
+    const heads = ['Hª','Profesor ausente','Curso','Aula','Tarea','Profesor que realiza de guardia','Firmas'];
+    return new TableRow({ tableHeader: true, children: heads.map((h,i) =>
+      new TableCell({
+        width: { size: COL_WIDTHS[i], type: WidthType.DXA },
+        borders: BORDERS, margins: MARGINS,
+        shading: { fill: NAVY, type: ShadingType.CLEAR },
+        children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [
+          new TextRun({ text: h, bold: true, size: 18, color: 'FFFFFF', font: 'Arial' })
+        ]})]
+      })
+    )});
+  }
+
+  function sessionBlock(num, sessKey) {
+    const ausData = getAusBySession(sessKey);
+    const rows = [];
+    for (let r = 0; r < 8; r++) {
+      const aus = ausData[r];
+      rows.push(new TableRow({
+        height: { value: 380, rule: 'atLeast' },
+        children: [
+          new TableCell({
+            width: { size: COL_WIDTHS[0], type: WidthType.DXA }, borders: BORDERS, margins: MARGINS,
+            verticalAlign: VerticalAlign.CENTER,
+            shading: r===0 ? { fill: 'DCE6F1', type: ShadingType.CLEAR } : undefined,
+            children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [
+              new TextRun({ text: r===0 ? String(num) : '', bold: true, size: 20, font: 'Arial' })
+            ]})]
+          }),
+          new TableCell({ width:{size:COL_WIDTHS[1],type:WidthType.DXA}, borders:BORDERS, margins:MARGINS,
+            children:[new Paragraph({children:[new TextRun({text:aus?aus.docente:'',size:18,font:'Arial'})]})] }),
+          new TableCell({ width:{size:COL_WIDTHS[2],type:WidthType.DXA}, borders:BORDERS, margins:MARGINS,
+            children:[new Paragraph({alignment:AlignmentType.CENTER,children:[new TextRun({text:aus?aus.grupo:'',size:18,font:'Arial'})]})] }),
+          new TableCell({ width:{size:COL_WIDTHS[3],type:WidthType.DXA}, borders:BORDERS, margins:MARGINS,
+            children:[new Paragraph({alignment:AlignmentType.CENTER,children:[new TextRun({text:aus&&aus.aula?aus.aula:'',size:18,font:'Arial'})]})] }),
+          new TableCell({ width:{size:COL_WIDTHS[4],type:WidthType.DXA}, borders:BORDERS, margins:MARGINS,
+            children:[new Paragraph({children:[new TextRun({text:'',size:18,font:'Arial'})]})] }),
+          new TableCell({ width:{size:COL_WIDTHS[5],type:WidthType.DXA}, borders:BORDERS, margins:MARGINS,
+            children:[new Paragraph({children:[new TextRun({text:'',size:18,font:'Arial'})]})] }),
+          new TableCell({ width:{size:COL_WIDTHS[6],type:WidthType.DXA}, borders:BORDERS, margins:MARGINS,
+            children:[new Paragraph({children:[new TextRun({text:'',size:18,font:'Arial'})]})] }),
+        ]
+      }));
+    }
+    // Convivencia
+    rows.push(new TableRow({ height:{value:380,rule:'atLeast'}, children: [
+      ...COL_WIDTHS.slice(0,5).map((w,i)=>new TableCell({width:{size:w,type:WidthType.DXA},borders:BORDERS,margins:MARGINS,children:[new Paragraph({children:[new TextRun({text:'',size:18,font:'Arial'})]})]})),
+      new TableCell({width:{size:COL_WIDTHS[5],type:WidthType.DXA},borders:BORDERS,margins:MARGINS,children:[new Paragraph({children:[new TextRun({text:'Convivencia:',bold:true,size:18,font:'Arial'})]})] }),
+      new TableCell({width:{size:COL_WIDTHS[6],type:WidthType.DXA},borders:BORDERS,margins:MARGINS,children:[new Paragraph({children:[new TextRun({text:'',size:18,font:'Arial'})]})]}),
+    ]}));
+    // Biblioteca
+    rows.push(new TableRow({ height:{value:380,rule:'atLeast'}, children: [
+      ...COL_WIDTHS.slice(0,5).map((w,i)=>new TableCell({width:{size:w,type:WidthType.DXA},borders:BORDERS,margins:MARGINS,children:[new Paragraph({children:[new TextRun({text:'',size:18,font:'Arial'})]})]})),
+      new TableCell({width:{size:COL_WIDTHS[5],type:WidthType.DXA},borders:BORDERS,margins:MARGINS,children:[new Paragraph({children:[new TextRun({text:'Biblioteca:',bold:true,size:18,font:'Arial'})]})] }),
+      new TableCell({width:{size:COL_WIDTHS[6],type:WidthType.DXA},borders:BORDERS,margins:MARGINS,children:[new Paragraph({children:[new TextRun({text:'',size:18,font:'Arial'})]})]}),
+    ]}));
+    return rows;
+  }
+
+  function makeTable(sessions) {
+    const rows = [headerRow()];
+    sessions.forEach(({num, key}) => sessionBlock(num, key).forEach(r => rows.push(r)));
+    return new Table({ width:{size:TABLE_W,type:WidthType.DXA}, columnWidths:COL_WIDTHS, rows });
+  }
+
+  function footNote() {
+    return new Paragraph({ spacing:{before:80,after:80}, children:[
+      new TextRun({text:'La tarea se recogerá en el ', italics:true, size:16, font:'Arial'}),
+      new TextRun({text:'organizador de consejería', italics:true, bold:true, size:16, font:'Arial'}),
+    ]});
+  }
+
+  const SESS_MAP1 = [{num:1,key:'2'},{num:2,key:'3'},{num:3,key:'3R'}];
+  const SESS_MAP2 = [{num:4,key:'5'},{num:5,key:'6'},{num:6,key:'7'},{num:7,key:'8'}];
+
+  const doc2 = new Document({ sections:[{
+    properties:{ page:{ size:{width:11906,height:16838}, margin:{top:720,right:720,bottom:720,left:720} } },
+    children:[
+      new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:60,after:60},children:[new TextRun({text:'PARTE DIARIO DE GUARDIAS',bold:true,size:26,font:'Arial'})]}),
+      new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:40,after:40},children:[new TextRun({text:'CURSO 2025 - 26',size:20,font:'Arial'})]}),
+      new Paragraph({spacing:{before:40,after:40},children:[new TextRun({text:`Parte diario de guardia ${day2} de ${monthName} de ${year}`,size:20,font:'Arial'})]}),
+      new Paragraph({spacing:{before:40,after:120},children:[
+        ...'Lunes,Martes,Miércoles,Jueves,Viernes'.split(',').flatMap((d,i,arr) => {
+          const dKey = d==='Miércoles'?'Miercoles':d;
+          const runs = [new TextRun({text:d, bold:dKey===dayName, italics:true, size:20, font:'Arial'})];
+          if(i<arr.length-1) runs.push(new TextRun({text:' – ',size:20,font:'Arial'}));
+          return runs;
+        })
+      ]}),
+      makeTable(SESS_MAP1),
+      footNote(),
+      new Paragraph({pageBreakBefore:true,children:[new TextRun({text:''})]}),
+      makeTable(SESS_MAP2),
+      footNote(),
+    ]
+  }]});
+
+  const buf = await Packer.toBlob(doc2);
+  saveAs(buf, `Parte_Guardias_${fecha}.docx`);
 }
 
-function generateParteHTML(rows, dateLabel, dayName) {
-  // Group rows by session
-  const bySession = {};
-  rows.forEach(r => {
-    const k = r.sesion + '|' + r.hora;
-    if (!bySession[k]) bySession[k] = [];
-    bySession[k].push(r);
-  });
-
-  let tableRows = '';
-  Object.entries(bySession).forEach(([key, sesRows]) => {
-    const [sesion, hora] = key.split('|');
-    sesRows.forEach((r, i) => {
-      tableRows += `<tr>
-        ${i===0?`<td rowspan="${sesRows.length}" style="font-weight:bold;text-align:center;vertical-align:middle;width:60px">${sesion}<br><small>${hora}</small></td>`:''}
-        <td>${r.docente}</td>
-        <td>${r.grupo}</td>
-        <td>${r.aula ? 'Aula '+r.aula : ''}</td>
-        <td>${r.materia}</td>
-        <td></td>
-        <td></td>
-      </tr>`;
-    });
-    // Convivencia / Biblioteca rows
-    tableRows += `<tr><td></td><td></td><td></td><td></td><td style="color:#666"><em>Convivencia:</em></td><td></td></tr>`;
-    tableRows += `<tr><td></td><td></td><td></td><td></td><td style="color:#666"><em>Biblioteca:</em></td><td></td></tr>`;
-  });
-
-  return `<html xmlns:o='urn:schemas-microsoft-com:office:office'
-    xmlns:w='urn:schemas-microsoft-com:office:word'
-    xmlns='http://www.w3.org/TR/REC-html40'>
-  <head><meta charset="UTF-8">
-  <style>
-    body { font-family: Arial, sans-serif; font-size: 11pt; margin: 2cm; }
-    h1 { font-size: 14pt; text-align: center; margin-bottom: 4px; }
-    h2 { font-size: 11pt; text-align: center; margin-bottom: 16px; font-weight: normal; }
-    table { width: 100%; border-collapse: collapse; font-size: 10pt; }
-    th { background: #1a3a6e; color: white; padding: 6px 8px; text-align: left; }
-    td { border: 1px solid #ccc; padding: 5px 8px; vertical-align: top; }
-    .footer { font-size: 9pt; color: #666; margin-top: 12px; font-style: italic; }
-  </style></head><body>
-  <h1>PARTE DIARIO DE GUARDIAS</h1>
-  <h2>IES Virgen de la Calle · Palencia · Curso 2025/26</h2>
-  <p style="margin-bottom:12px"><strong>${dateLabel}</strong></p>
-  <table>
-    <tr>
-      <th style="width:70px">Sesión</th>
-      <th>Profesor ausente</th>
-      <th style="width:70px">Curso</th>
-      <th style="width:70px">Aula</th>
-      <th>Tarea / Actividad</th>
-      <th>Profesor de guardia</th>
-      <th style="width:60px">Firma</th>
-    </tr>
-    ${tableRows}
-  </table>
-  <p class="footer">* La tarea se recogerá en el organizador de consejería</p>
-  </body></html>`;
-}
 
 // Set today's date by default
 (function() {
