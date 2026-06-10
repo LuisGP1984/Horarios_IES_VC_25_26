@@ -294,6 +294,22 @@
     .today-col { background: #0d1e3a !important; }
     .today-head { background: linear-gradient(90deg, var(--blue2), var(--accent)) !important; color: #fff !important; }
 
+
+    .sess-header > td {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      background: linear-gradient(90deg, #0d1f3c, #112550);
+      padding: 9px 14px; border-top: 2px solid var(--border2);
+    }
+    .sess-header.recreo-hdr > td { background: linear-gradient(90deg, #001a10, #001e14); border-top-color: #1a5035; }
+    .sh-label { font-weight: 800; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--light); }
+    .sh-hora  { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--text-mid); }
+    .sh-counts { display: flex; gap: 4px; margin-left: auto; flex-wrap: wrap; }
+    .day-count { font-size: 0.68rem; font-weight: 700; padding: 2px 7px; border-radius: 99px; border: 1px solid; }
+    .day-count.manana { background: #0d2050; border-color: var(--blue2); color: var(--accent2); }
+    .day-count.grec   { background: #001a10; border-color: #1a6040; color: var(--green); }
+    .day-count.today-cnt { background: var(--blue2) !important; border-color: var(--accent) !important; color: #fff !important; }
+    table.guardias td { padding: 8px 12px; }
+
     /* ── LEYENDA ─────────────────────────────────────── */
     details { margin-top: 32px; background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); }
     summary { padding: 14px 18px; font-size: 0.82rem; font-weight: 600; cursor: pointer; color: var(--text-mid); list-style: none; }
@@ -525,51 +541,70 @@ fetch('horarios.json')
 function buildGuardiasTable(data) {
   const todayMap = {1:'Lunes',2:'Martes',3:'Miercoles',4:'Jueves',5:'Viernes'};
   const today = todayMap[new Date().getDay()] || '';
-  const gMan={}, gRec={};
-  DAYS.forEach(d=>{ gMan[d]=[]; gRec[d]=[]; });
-  Object.values(data.docentes).forEach(info=>{
-    DAYS.forEach(day=>{
-      const h = info.horario[day]||{};
-      if (h['1']&&h['1'].sigla==='G')    gMan[day].push(info.nombre);
-      if (h['4']&&h['4'].sigla==='GREC') gRec[day].push(info.nombre);
+  const SESS = ['1','2','3','3R','4','5','6','7','8'];
+  const SMETA = {
+    '1':  {label:'Guardia mañana', hora:'08:00–08:30'},
+    '2':  {label:'Sesión 1',       hora:'08:30–09:20'},
+    '3':  {label:'Sesión 2',       hora:'09:25–10:15'},
+    '3R': {label:'Sesión 3',       hora:'10:20–11:10'},
+    '4':  {label:'Recreo',         hora:'11:10–11:35'},
+    '5':  {label:'Sesión 4',       hora:'11:35–12:25'},
+    '6':  {label:'Sesión 5',       hora:'12:30–13:25'},
+    '7':  {label:'Sesión 6',       hora:'13:30–14:20'},
+    '8':  {label:'Sesión 7',       hora:'14:25–15:15'},
+  };
+
+  // Build map sess->day->[nombres]
+  const gMap = {};
+  SESS.forEach(s => { gMap[s] = {}; DAYS.forEach(d => { gMap[s][d] = []; }); });
+  Object.values(data.docentes).forEach(info => {
+    DAYS.forEach(day => {
+      const hd = info.horario[day] || {};
+      SESS.forEach(sess => {
+        let slot = hd[sess];
+        if (!slot) return;
+        const arr = Array.isArray(slot) ? slot : [slot];
+        const sig = sess === '4' ? 'GREC' : 'G';
+        if (arr.some(s => s.sigla === sig)) gMap[sess][day].push(info.nombre);
+      });
     });
   });
-  const maxMan = Math.max(...DAYS.map(d=>gMan[d].length),1);
-  const maxRec = Math.max(...DAYS.map(d=>gRec[d].length),1);
 
-  let html = '<thead><tr><th></th>';
-  DAYS.forEach(d=>{ html+=`<th class="${d===today?'today-head':''}">${DAY_LABELS[d]}</th>`; });
+  let html = '<thead><tr><th style="width:28px"></th>';
+  DAYS.forEach(d => { html += `<th class="${d===today?'today-head':''}">${DAY_LABELS[d]}</th>`; });
   html += '</tr></thead><tbody>';
 
-  html += `<tr class="turno-header"><td colspan="6">⏰ Guardia mañana · 08:00–08:30</td></tr>`;
-  for(let r=0;r<maxMan;r++){
-    html+='<tr>';
-    html+=r===0?'<td>Docente</td>':'<td></td>';
-    DAYS.forEach(day=>{
-      const n=gMan[day][r];
-      html+=`<td class="${day===today?'today-col':''}">`;
-      if(n) html+=`<span class="guardia-pill manana" title="${n}">${abreviar(n)}</span>`;
-      else if(r===0) html+=`<span class="guardia-empty">—</span>`;
-      html+='</td>';
-    });
-    html+='</tr>';
-  }
+  SESS.forEach(sess => {
+    const meta = SMETA[sess];
+    const isRec = sess === '4';
+    const pc = isRec ? 'grec' : 'manana';
+    const maxR = Math.max(...DAYS.map(d => gMap[sess][d].length), 1);
+    const counts = DAYS.map(d => gMap[sess][d].length);
 
-  html += `<tr class="turno-header"><td colspan="6">☕ Guardia recreo · 11:10–11:35</td></tr>`;
-  for(let r=0;r<maxRec;r++){
-    html+='<tr>';
-    html+=r===0?'<td>Docente</td>':'<td></td>';
-    DAYS.forEach(day=>{
-      const n=gRec[day][r];
-      html+=`<td class="${day===today?'today-col':''}">`;
-      if(n) html+=`<span class="guardia-pill grec" title="${n}">${abreviar(n)}</span>`;
-      else if(r===0) html+=`<span class="guardia-empty">—</span>`;
-      html+='</td>';
-    });
-    html+='</tr>';
-  }
-  html+='</tbody>';
-  document.getElementById('tabla-guardias').innerHTML=html;
+    // Section header
+    html += `<tr class="sess-header${isRec?' recreo-hdr':''}"><td colspan="6">` +
+      `<span class="sh-label">${meta.label}</span>` +
+      `<span class="sh-hora">${meta.hora}</span>` +
+      `<span class="sh-counts">` +
+      DAYS.map((d,i) => `<span class="day-count ${pc}${d===today?' today-cnt':''}">${DAY_LABELS[d][0]}:${counts[i]}</span>`).join('') +
+      `</span></td></tr>`;
+
+    // Data rows
+    for (let r = 0; r < maxR; r++) {
+      html += '<tr class="data-row"><td></td>';
+      DAYS.forEach(day => {
+        const n = gMap[sess][day][r];
+        html += `<td class="${day===today?'today-col':''}">`;
+        if (n) html += `<span class="guardia-pill ${pc}" title="${n}">${abreviar(n)}</span>`;
+        else if (r === 0 && gMap[sess][day].length === 0) html += `<span class="guardia-empty">—</span>`;
+        html += '</td>';
+      });
+      html += '</tr>';
+    }
+  });
+
+  html += '</tbody>';
+  document.getElementById('tabla-guardias').innerHTML = html;
 }
 
 function abreviar(nombre) {
