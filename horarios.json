@@ -1483,46 +1483,6 @@
         }
       }
     },
-    "EAMAXX": {
-      "nombre": "ELICES AYUSO, MARIA AUXILIAD",
-      "horario": {
-        "Lunes": {
-          "2": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "02C Conocimiento del Lenguaje (B02) 02C Conocimiento del Lenguaje\nAula: B02", "aula": ""},
-          "3": {"tipo": "actividad", "sigla": "TLEC", "grupo": "", "materia": "", "aula": ""},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "02B Cultura Clásica\nAula: B06", "aula": ""},
-          "5": {"tipo": "actividad", "sigla": "RDP", "grupo": "", "materia": "", "aula": ""},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01D Conocimiento del Lenguaje\nAula: B12", "aula": ""},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "02C Cultura Clásica\nAula: B07", "aula": ""}
-        },
-        "Martes": {
-          "2": {"tipo": "actividad", "sigla": "AMP", "grupo": "", "materia": "", "aula": ""},
-          "3": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "02C Conocimiento del Lenguaje (B02) 02C Conocimiento del Lenguaje\nAula: B02", "aula": ""},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "02A Cultura Clásica\nAula: B05", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "02D Cultura Clásica\nAula: B08", "aula": ""}
-        },
-        "Miercoles": {
-          "1": {"tipo": "actividad", "sigla": "G", "grupo": "", "materia": "", "aula": ""},
-          "2": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "02A Cultura Clásica\nAula: B05", "aula": ""},
-          "3": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "02D Cultura Clásica\nAula: B08", "aula": ""},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "02B Cultura Clásica\nAula: B06", "aula": ""},
-          "5": {"tipo": "actividad", "sigla": "CHL", "grupo": "", "materia": "", "aula": ""}
-        },
-        "Jueves": {
-          "2": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "02C Cultura Clásica\nAula: B07", "aula": ""},
-          "3": {"tipo": "actividad", "sigla": "G", "grupo": "", "materia": "", "aula": ""},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "02B Cultura Clásica\nAula: B06", "aula": ""},
-          "5": {"tipo": "actividad", "sigla": "CHL", "grupo": "", "materia": "", "aula": ""},
-          "6": {"tipo": "actividad", "sigla": "RT", "grupo": "", "materia": "", "aula": ""},
-          "7": {"tipo": "actividad", "sigla": "TUT", "grupo": "", "materia": "", "aula": ""}
-        },
-        "Viernes": {
-          "2": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "02D Cultura Clásica\nAula: B08", "aula": ""},
-          "3": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "02A Cultura Clásica\nAula: B05", "aula": ""},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01D Conocimiento del Lenguaje\nAula: B12", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "02C Cultura Clásica\nAula: B07", "aula": ""}
-        }
-      }
-    },
     "EFAXXX": {
       "nombre": "ESTEBAN FERNANDEZ, ALICIA",
       "horario": {
@@ -3995,46 +3955,6 @@
         }
       }
     },
-    "RRIXXX": {
-      "nombre": "ROCHA REGUEIRA, IVAN",
-      "horario": {
-        "Lunes": {
-          "2": {"tipo": "clase", "sigla": "", "grupo": "2BHB", "materia": "Historia de la Filosofía", "aula": "111"},
-          "3": {"tipo": "clase", "sigla": "", "grupo": "2BHB - 2BCT - 2BHA", "materia": "Psicología", "aula": "112"},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "2BHA", "materia": "Historia de la Filosofía", "aula": "112"},
-          "5": {"tipo": "actividad", "sigla": "TLEC", "grupo": "", "materia": "", "aula": ""},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "2BCT", "materia": "Historia de la Filosofía", "aula": "215"}
-        },
-        "Martes": {
-          "1": {"tipo": "actividad", "sigla": "G", "grupo": "", "materia": "", "aula": ""},
-          "2": {"tipo": "clase", "sigla": "", "grupo": "2BHB", "materia": "Historia de la Filosofía", "aula": "111"},
-          "3": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "03A Educación en Valores Cívicos y Éticos\nAula: 101", "aula": ""},
-          "3R": {"tipo": "actividad", "sigla": "RDP", "grupo": "", "materia": "", "aula": ""},
-          "5": {"tipo": "actividad", "sigla": "CHL", "grupo": "", "materia": "", "aula": ""}
-        },
-        "Miercoles": {
-          "2": {"tipo": "clase", "sigla": "", "grupo": "2BHA", "materia": "Historia de la Filosofía", "aula": "112"},
-          "3": {"tipo": "clase", "sigla": "", "grupo": "2BHB - 2BCT - 2BHA", "materia": "Psicología", "aula": "112"},
-          "5": {"tipo": "actividad", "sigla": "RT", "grupo": "", "materia": "", "aula": ""},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "2BCT", "materia": "Historia de la Filosofía", "aula": "215"},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "3E", "materia": "Educación en Valores Cívicos y Éticos", "aula": "104"}
-        },
-        "Jueves": {
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "2BHB - 2BCT - 2BHA", "materia": "Psicología", "aula": "112"},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "2BCT", "materia": "Historia de la Filosofía", "aula": "215"},
-          "6": {"tipo": "actividad", "sigla": "CHL", "grupo": "", "materia": "", "aula": ""},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "03C Educación en Valores Cívicos y Éticos\nAula: 103", "aula": ""}
-        },
-        "Viernes": {
-          "2": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "03B Educación en Valores Cívicos y Éticos\nAula: 102", "aula": ""},
-          "3": {"tipo": "clase", "sigla": "", "grupo": "2BHB", "materia": "Historia de la Filosofía", "aula": "111"},
-          "3R": {"tipo": "actividad", "sigla": "AMP", "grupo": "", "materia": "", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "2BHB - 2BCT - 2BHA", "materia": "Psicología", "aula": "112"},
-          "6": {"tipo": "actividad", "sigla": "G", "grupo": "", "materia": "", "aula": ""},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "2BHA", "materia": "Historia de la Filosofía", "aula": "112"}
-        }
-      }
-    },
     "RBSXXX": {
       "nombre": "RODRIGUEZ BERNAL, SUSANA",
       "horario": {
@@ -4669,46 +4589,6 @@
           "5": {"tipo": "actividad", "sigla": "FCT", "grupo": "", "materia": "", "aula": ""},
           "6": {"tipo": "actividad", "sigla": "FCT", "grupo": "", "materia": "", "aula": ""},
           "7": {"tipo": "clase", "sigla": "", "grupo": "SR1", "materia": "Operaciones básicas en bar-cafetería (209A) SR1 Operaciones básicas en bar-cafetería", "aula": "203"}
-        }
-      }
-    },
-    "SOAIDX": {
-      "nombre": "SIMULADO ORTEGA ANA ISABEL, DOCENTE",
-      "horario": {
-        "Lunes": {
-          "2": {"tipo": "clase", "sigla": "", "grupo": "FPB2", "materia": "Comunicación y ciencias sociales II", "aula": "116"},
-          "3": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "02A Lengua castellana y literatura\nAula: B05", "aula": ""},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "FPB1", "materia": "Comunicación y ciencias sociales I", "aula": "117"},
-          "4": {"tipo": "actividad", "sigla": "GREC", "grupo": "", "materia": "", "aula": ""},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "02D Lengua castellana y literatura\nAula: B08", "aula": ""},
-          "7": {"tipo": "actividad", "sigla": "CHL", "grupo": "", "materia": "", "aula": ""},
-          "8": {"tipo": "actividad", "sigla": "RDP", "grupo": "", "materia": "", "aula": ""}
-        },
-        "Martes": {
-          "3": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "02D Lengua castellana y literatura\nAula: B08", "aula": ""},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "FPB1", "materia": "Comunicación y ciencias sociales I", "aula": "117"},
-          "6": {"tipo": "actividad", "sigla": "G", "grupo": "", "materia": "", "aula": ""},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "02A Lengua castellana y literatura\nAula: B05", "aula": ""}
-        },
-        "Miercoles": {
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "02D Lengua castellana y literatura\nAula: B08", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "02A Lengua castellana y literatura\nAula: B05", "aula": ""},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "FPB1", "materia": "Comunicación y ciencias sociales I (117) FPB2 Comunicación y ciencias sociales II", "aula": "116"},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01C Conocimiento del Lenguaje\nAula: B11B", "aula": ""}
-        },
-        "Jueves": {
-          "2": {"tipo": "clase", "sigla": "", "grupo": "FPB1", "materia": "Comunicación y ciencias sociales I", "aula": "117"},
-          "3": {"tipo": "actividad", "sigla": "AMP", "grupo": "", "materia": "", "aula": ""},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "02A Lengua castellana y literatura\nAula: B05", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "FPB2", "materia": "Comunicación y ciencias sociales II", "aula": "116"},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "02D Lengua castellana y literatura\nAula: B08", "aula": ""}
-        },
-        "Viernes": {
-          "2": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01C Conocimiento del Lenguaje\nAula: B11B", "aula": ""},
-          "3R": {"tipo": "actividad", "sigla": "G", "grupo": "", "materia": "", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "FPB1", "materia": "Comunicación y ciencias sociales I", "aula": "117"},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "FPB2", "materia": "Comunicación y ciencias sociales II", "aula": "116"},
-          "7": {"tipo": "actividad", "sigla": "CHL", "grupo": "", "materia": "", "aula": ""}
         }
       }
     },
