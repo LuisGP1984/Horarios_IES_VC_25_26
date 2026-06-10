@@ -861,7 +861,14 @@ function ausRender() {
     if (sesAusentes.length === 0) {
       html += '<p style="color:var(--text-soft);font-size:.83rem;padding:4px 0">Sin sesiones marcadas</p>';
     } else {
-      sesAusentes.forEach(sess => {
+      // Only show sessions with clase or G
+      const sesValidas = sesAusentes.filter(sess => {
+        const slot = horDia[sess];
+        if (!slot) return false;
+        const arr = Array.isArray(slot) ? slot : [slot];
+        return arr[0].tipo === 'clase' || arr[0].sigla === 'G';
+      });
+      sesValidas.forEach(sess => {
         const slot = horDia[sess];
         const meta_label = SESS_LABELS[sess] || sess;
         const meta_hora  = SESS_HORAS[sess] || '';
@@ -1030,13 +1037,19 @@ async function ausDownloadWord() {
         sesiones: aus.sesiones.map(sessKey => {
           const horDia = (info?.horario[dayName]) || {};
           const slot = horDia[sessKey];
-          let grupo = '', aula = '';
+          let grupo = '', aula = '', incluir = false;
           if (slot) {
             const arr = Array.isArray(slot) ? slot : [slot];
-            if (arr[0].tipo === 'clase') { grupo = arr[0].grupo||''; aula = arr[0].aula||''; }
+            const s0 = arr[0];
+            if (s0.tipo === 'clase') {
+              grupo = s0.grupo||''; aula = s0.aula||''; incluir = true;
+            } else if (s0.sigla === 'G') {
+              incluir = true; // Guardia genera parte
+            }
+            // CHL, AMP, JDEP, etc. -> incluir = false
           }
-          return { sess: sessKey, grupo, aula };
-        })
+          return { sess: sessKey, grupo, aula, incluir };
+        }).filter(s => s.incluir)
       };
     })
   };
@@ -1115,23 +1128,32 @@ El documento debe seguir este formato exacto:
 
 function ausDownloadWordFallback(payload, fecha) {
   const { year, month, day, dayName, ausentes } = payload;
-  const SESS_NUMS  = {'2':1,'3':2,'3R':3,'5':4,'6':5,'7':6,'8':7};
+  const SESS_NUMS = {'2':1,'3':2,'3R':3,'5':4,'6':5,'7':6,'8':7};
+  // Only sessions that generate guardias (clase or G sigla)
+  const VALID_SESS = ['2','3','3R','5','6','7','8'];
 
   function getAusForSess(sessKey) {
-    return ausentes.filter(a => a.sesiones.some(s => s.sess === sessKey))
-      .map(a => {
-        const s = a.sesiones.find(s => s.sess === sessKey);
-        return { docente: a.nombre, grupo: s?.grupo||'', aula: s?.aula||'' };
-      });
+    return ausentes.filter(a => {
+      // Only include if this session has a clase or G
+      const s = a.sesiones.find(s => s.sess === sessKey);
+      if (!s) return false;
+      // s has tipo info
+      return s.incluir !== false;
+    }).map(a => {
+      const s = a.sesiones.find(s => s.sess === sessKey);
+      return { docente: a.nombre, grupo: s?.grupo||'', aula: s?.aula||'' };
+    });
   }
 
+  // Session 7 (key '8') only gets 1 data row
   function tableHTML(sessKeys) {
+    const NC = 'white-space:nowrap;overflow:hidden;text-overflow:ellipsis';
     let t = `<table style="width:100%;border-collapse:collapse;font-size:7.5pt;font-family:Arial;table-layout:fixed">
       <colgroup>
-        <col style="width:4%"><col style="width:22%"><col style="width:6%">
-        <col style="width:6%"><col style="width:8%"><col style="width:39%"><col style="width:15%">
+        <col style="width:4%"><col style="width:22%"><col style="width:7%">
+        <col style="width:6%"><col style="width:8%"><col style="width:38%"><col style="width:15%">
       </colgroup>
-      <tr style="background:#1F3864;color:white;height:18px">
+      <tr style="background:#1F3864;color:white;height:17px">
         <th style="border:1px solid #999;padding:2px 3px">Hª</th>
         <th style="border:1px solid #999;padding:2px 3px">Profesor ausente</th>
         <th style="border:1px solid #999;padding:2px 3px">Curso</th>
@@ -1140,14 +1162,17 @@ function ausDownloadWordFallback(payload, fecha) {
         <th style="border:1px solid #999;padding:2px 3px">Profesor que realiza de guardia</th>
         <th style="border:1px solid #999;padding:2px 3px">Firmas</th>
       </tr>`;
+
     sessKeys.forEach(sk => {
       const ausData = getAusForSess(sk);
-      for (let r = 0; r < 8; r++) {
+      const isSess7 = sk === '8'; // Sesión 7 = key '8'
+      const numRows = isSess7 ? 1 : 8;
+
+      for (let r = 0; r < numRows; r++) {
         const aus = ausData[r];
         const numBg = r===0 ? 'background:#DCE6F1;font-weight:bold;text-align:center' : 'text-align:center';
-        const NC = 'white-space:nowrap;overflow:hidden;text-overflow:ellipsis';
-        const docName = aus ? (aus.docente.length>28 ? aus.docente.substring(0,27)+'…' : aus.docente) : '';
-        const grupoTxt = aus ? aus.grupo.replace(' - ','/').replace(' ','') : '';
+        const docName = aus ? (aus.docente.length>28 ? aus.docente.substring(0,27)+'\u2026' : aus.docente) : '';
+        const grupoTxt = aus ? aus.grupo.replace(' - ','/').replace(/ /g,'') : '';
         const aulaTxt  = aus ? (aus.aula||'') : '';
         t += `<tr style="height:15px">
           <td style="border:1px solid #999;padding:1px 2px;${numBg}">${r===0?SESS_NUMS[sk]:''}</td>
@@ -1159,27 +1184,36 @@ function ausDownloadWordFallback(payload, fecha) {
           <td style="border:1px solid #999;padding:1px 2px"></td>
         </tr>`;
       }
-      t += `<tr style="height:15px">
-        <td style="border:1px solid #999"></td><td style="border:1px solid #999"></td>
-        <td style="border:1px solid #999"></td><td style="border:1px solid #999"></td>
-        <td style="border:1px solid #999"></td>
-        <td style="border:1px solid #999;padding:1px 3px;font-weight:bold">Convivencia:</td>
-        <td style="border:1px solid #999"></td>
-      </tr>
-      <tr style="height:15px">
-        <td style="border:1px solid #999"></td><td style="border:1px solid #999"></td>
-        <td style="border:1px solid #999"></td><td style="border:1px solid #999"></td>
-        <td style="border:1px solid #999"></td>
-        <td style="border:1px solid #999;padding:1px 3px;font-weight:bold">Biblioteca:</td>
-        <td style="border:1px solid #999"></td>
-      </tr>`;
+
+      // No Convivencia/Biblioteca for session 7
+      if (!isSess7) {
+        t += `<tr style="height:15px">
+          <td style="border:1px solid #999"></td><td style="border:1px solid #999"></td>
+          <td style="border:1px solid #999"></td><td style="border:1px solid #999"></td>
+          <td style="border:1px solid #999"></td>
+          <td style="border:1px solid #999;padding:1px 3px;font-weight:bold">Convivencia:</td>
+          <td style="border:1px solid #999"></td>
+        </tr>
+        <tr style="height:15px">
+          <td style="border:1px solid #999"></td><td style="border:1px solid #999"></td>
+          <td style="border:1px solid #999"></td><td style="border:1px solid #999"></td>
+          <td style="border:1px solid #999"></td>
+          <td style="border:1px solid #999;padding:1px 3px;font-weight:bold">Biblioteca:</td>
+          <td style="border:1px solid #999"></td>
+        </tr>`;
+      }
     });
     return t + '</table>';
   }
 
+  // Build days line: today in UPPERCASE BOLD, bigger font
   const daysLine = ['Lunes','Martes','Miércoles','Jueves','Viernes']
-    .map(d => { const dk = d==='Miércoles'?'Miercoles':d; return dk===dayName?`<b>${d}</b>`:d; })
-    .join(' \u2013 ');
+    .map(d => {
+      const dk = d==='Miércoles'?'Miercoles':d;
+      return dk===dayName
+        ? `<b style="font-size:11pt;text-transform:uppercase">${d}</b>`
+        : d;
+    }).join(' \u2013 ');
 
   const docHtml = `<html xmlns:o='urn:schemas-microsoft-com:office:office'
     xmlns:w='urn:schemas-microsoft-com:office:word'
