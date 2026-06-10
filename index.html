@@ -201,19 +201,24 @@
     table.guardias td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; text-align: center; }
     table.guardias td:first-child { text-align: left; }
     table.guardias tr:last-child td { border-bottom: none; }
-    .sess-header > td {
-      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-      background: var(--surface2); padding: 9px 14px;
+    /* sess-header: each cell is its own column */
+    .sess-header > td, .sess-header > .sh-time, .sess-header > .sh-count-cell {
+      background: var(--surface2);
       border-top: 2px solid var(--border); border-bottom: 1px solid var(--border);
+      padding: 10px 12px; vertical-align: middle;
     }
-    .sess-header.recreo-hdr > td { background: #d1fae5; border-top-color: #6ee7b7; }
-    .sh-label { font-weight: 800; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text); }
-    .sh-hora  { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--text-mid); }
-    .sh-counts { display: flex; gap: 4px; margin-left: auto; flex-wrap: wrap; }
-    .day-count { font-size: 0.68rem; font-weight: 700; padding: 2px 7px; border-radius: 99px; border: 1px solid; }
-    .day-count.manana { background: var(--accent-soft); border-color: #93c5fd; color: var(--navy); }
-    .day-count.grec   { background: var(--green-soft); border-color: #6ee7b7; color: var(--green); }
-    .day-count.today-cnt { background: var(--accent) !important; border-color: var(--accent) !important; color: #fff !important; }
+    .sess-header.recreo-hdr > td,
+    .sess-header.recreo-hdr > .sh-time,
+    .sess-header.recreo-hdr > .sh-count-cell { background: #d1fae5; border-top-color: #6ee7b7; }
+    .sh-time { text-align: left; white-space: nowrap; }
+    .sh-label { font-weight: 800; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text); display: block; }
+    .sh-hora  { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--text-mid); display: block; margin-top: 2px; }
+    .sh-count-cell { text-align: center; }
+    .cnt-badge { display: inline-block; font-size: 0.72rem; font-weight: 700; padding: 3px 9px; border-radius: 99px; border: 1px solid; white-space: nowrap; }
+    .cnt-badge.manana { background: var(--accent-soft); border-color: #93c5fd; color: var(--navy); }
+    .cnt-badge.grec   { background: var(--green-soft); border-color: #6ee7b7; color: var(--green); }
+    .cnt-badge.today-cnt { background: var(--accent) !important; border-color: var(--accent) !important; color: #fff !important; }
+    .col-sess-th { width: 110px; }
     .guardia-pill { display: inline-block; border-radius: 8px; padding: 4px 9px; font-size: 0.75rem; font-weight: 600; margin: 2px; white-space: nowrap; cursor: default; }
     .guardia-pill.manana { background: var(--accent-soft); border: 1px solid #93c5fd; color: var(--navy2); }
     .guardia-pill.grec   { background: var(--green-soft); border: 1px solid #6ee7b7; color: #065f46; }
@@ -466,7 +471,6 @@ function buildGuardiasTable(data) {
     '8':  {label:'Sesión 7',       hora:'14:25–15:15'},
   };
 
-  // Build map sess->day->[nombres]
   const gMap = {};
   SESS.forEach(s => { gMap[s] = {}; DAYS.forEach(d => { gMap[s][d] = []; }); });
   Object.values(data.docentes).forEach(info => {
@@ -482,8 +486,11 @@ function buildGuardiasTable(data) {
     });
   });
 
-  let html = '<thead><tr><th style="width:28px"></th>';
-  DAYS.forEach(d => { html += `<th class="${d===today?'today-head':''}">${DAY_LABELS[d]}</th>`; });
+  // Header row
+  let html = '<thead><tr><th class="col-sess-th"></th>';
+  DAYS.forEach(d => {
+    html += `<th class="${d===today?'today-head':''}">${DAY_LABELS[d]}</th>`;
+  });
   html += '</tr></thead><tbody>';
 
   SESS.forEach(sess => {
@@ -493,22 +500,28 @@ function buildGuardiasTable(data) {
     const maxR = Math.max(...DAYS.map(d => gMap[sess][d].length), 1);
     const counts = DAYS.map(d => gMap[sess][d].length);
 
-    // Section header
-    html += `<tr class="sess-header${isRec?' recreo-hdr':''}"><td colspan="6">` +
-      `<span class="sh-label">${meta.label}</span>` +
-      `<span class="sh-hora">${meta.hora}</span>` +
-      `<span class="sh-counts">` +
-      DAYS.map((d,i) => `<span class="day-count ${pc}${d===today?' today-cnt':''}">${DAY_LABELS[d][0]}:${counts[i]}</span>`).join('') +
-      `</span></td></tr>`;
+    // Session header: label + hora + one pill-count per day, all in one row
+    html += `<tr class="sess-header${isRec?' recreo-hdr':''}">
+      <td class="sh-time">
+        <div class="sh-label">${meta.label}</div>
+        <div class="sh-hora">${meta.hora}</div>
+      </td>`;
+    DAYS.forEach((d, i) => {
+      const cnt = counts[i];
+      const isT = d === today;
+      html += `<td class="sh-count-cell${isT?' today-col':''}">
+        <span class="cnt-badge ${pc}${isT?' today-cnt':''}">${cnt} guardia${cnt!==1?'s':''}</span>
+      </td>`;
+    });
+    html += '</tr>';
 
-    // Data rows
+    // Data rows — only names, no extra left column
     for (let r = 0; r < maxR; r++) {
-      html += '<tr class="data-row"><td></td>';
+      html += `<tr class="data-row"><td></td>`;
       DAYS.forEach(day => {
         const n = gMap[sess][day][r];
         html += `<td class="${day===today?'today-col':''}">`;
         if (n) html += `<span class="guardia-pill ${pc}" title="${n}">${abreviar(n)}</span>`;
-        else if (r === 0 && gMap[sess][day].length === 0) html += `<span class="guardia-empty">—</span>`;
         html += '</td>';
       });
       html += '</tr>';
