@@ -314,9 +314,108 @@
       animation: spin .8s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── LOGIN ──────────────────────────────────────── */
+    #login-screen {
+      position: fixed; inset: 0; z-index: 200;
+      background: linear-gradient(135deg, var(--navy) 0%, #0d1729 100%);
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+    }
+    #login-screen.hidden { display: none; }
+    .login-card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 40px 36px;
+      width: 100%; max-width: 380px;
+      box-shadow: 0 8px 40px #00000050;
+      text-align: center;
+    }
+    .login-logo {
+      width: 56px; height: 56px;
+      background: linear-gradient(135deg, var(--navy-mid), var(--accent));
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px;
+    }
+    .login-logo svg { width: 28px; height: 28px; fill: white; }
+    .login-card h2 {
+      font-size: 1.2rem; font-weight: 700; color: var(--text);
+      margin-bottom: 4px;
+    }
+    .login-card p {
+      font-size: 0.82rem; color: var(--text-soft); margin-bottom: 28px;
+    }
+    .login-field {
+      position: relative; margin-bottom: 14px;
+    }
+    .login-field input {
+      width: 100%;
+      padding: 12px 44px 12px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      color: var(--text);
+      background: var(--surface);
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .login-field input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    .toggle-pw {
+      position: absolute; right: 12px; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none;
+      cursor: pointer; padding: 4px;
+      color: var(--text-soft); font-size: 1rem;
+    }
+    .login-btn {
+      width: 100%; padding: 12px;
+      background: var(--navy);
+      color: #fff; border: none;
+      border-radius: var(--radius);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem; font-weight: 600;
+      cursor: pointer;
+      transition: background .15s, transform .1s;
+      margin-top: 4px;
+    }
+    .login-btn:hover { background: var(--navy-soft); }
+    .login-btn:active { transform: scale(.98); }
+    .login-error {
+      color: var(--red); font-size: 0.8rem;
+      margin-top: 10px; min-height: 18px;
+    }
+    .login-hint {
+      font-size: 0.72rem; color: var(--text-soft);
+      margin-top: 20px; line-height: 1.5;
+    }
   </style>
 </head>
 <body>
+
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <svg viewBox="0 0 24 24"><path d="M4 4h16v2H4zm0 4h10v2H4zm0 4h16v2H4zm0 4h10v2H4z"/></svg>
+    </div>
+    <h2>Horarios del Profesorado</h2>
+    <p>IES Valle del Carrión · 2025/26</p>
+    <div class="login-field">
+      <input type="password" id="pw-input" placeholder="Contraseña de acceso"
+             autocomplete="current-password">
+      <button class="toggle-pw" onclick="togglePw()" tabindex="-1" title="Mostrar/ocultar">👁</button>
+    </div>
+    <button class="login-btn" onclick="checkLogin()">Entrar</button>
+    <div class="login-error" id="login-error"></div>
+    <p class="login-hint">Acceso restringido al claustro del centro.<br>Contacta con el equipo directivo para obtener la contraseña.</p>
+  </div>
+</div>
 
 <!-- LOADING -->
 <div id="loading">
@@ -378,6 +477,40 @@
 </main>
 
 <script>
+
+// ── LOGIN ────────────────────────────────────────────
+// Cambia esta contraseña por la que quieras usar en el centro:
+const ACCESS_PASSWORD = 'iesvc2526';
+
+function checkLogin() {
+  const val = document.getElementById('pw-input').value;
+  const err = document.getElementById('login-error');
+  if (val === ACCESS_PASSWORD) {
+    sessionStorage.setItem('auth', '1');
+    document.getElementById('login-screen').classList.add('hidden');
+    err.textContent = '';
+  } else {
+    err.textContent = 'Contraseña incorrecta. Inténtalo de nuevo.';
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-input').focus();
+  }
+}
+
+function togglePw() {
+  const inp = document.getElementById('pw-input');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+document.getElementById('pw-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkLogin();
+});
+
+// Si ya autenticó en esta sesión, ocultar login
+if (sessionStorage.getItem('auth') === '1') {
+  document.getElementById('login-screen').classList.add('hidden');
+}
+
+
 const LEYENDA = [
   ['AMP',  'Atención a Madres y Padres'],
   ['CHL',  'Compensación de Horario Lectivo'],
