@@ -227,6 +227,132 @@
     .today-head { background: var(--accent2) !important; color: #fff !important; }
     .data-row:hover { background: var(--surface); }
 
+
+    /* ── AUSENCIAS ───────────────────────────────────── */
+    .aus-header { margin-bottom: 20px; }
+    .aus-header h2 { font-size: 1.25rem; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+    .aus-header p  { font-size: 0.83rem; color: var(--text-mid); }
+    .aus-toolbar {
+      display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap;
+      margin-bottom: 24px; background: var(--card);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 16px 20px; box-shadow: var(--shadow);
+    }
+    .aus-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end; padding-bottom: 1px; }
+    input[type="date"] {
+      width: 100%; padding: 11px 14px;
+      background: var(--card); border: 1.5px solid var(--border);
+      border-radius: var(--radius); font-family: 'Inter', sans-serif;
+      font-size: 0.92rem; color: var(--text); cursor: pointer;
+      box-shadow: var(--shadow); transition: border-color .15s;
+    }
+    input[type="date"]:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+    .btn-primary {
+      padding: 10px 18px; background: var(--accent); color: #fff; border: none;
+      border-radius: var(--radius); font-family: 'Inter', sans-serif;
+      font-size: 0.85rem; font-weight: 700; cursor: pointer;
+      transition: opacity .15s, transform .1s; white-space: nowrap;
+      box-shadow: 0 2px 8px #2563eb25;
+    }
+    .btn-primary:hover { opacity: .9; }
+    .btn-primary:active { transform: scale(.98); }
+    .btn-secondary {
+      padding: 10px 18px; background: var(--card); color: var(--text-mid);
+      border: 1.5px solid var(--border); border-radius: var(--radius);
+      font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 600;
+      cursor: pointer; transition: all .15s; white-space: nowrap;
+    }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* Ausente card */
+    .aus-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); margin-bottom: 10px;
+      box-shadow: var(--shadow); overflow: hidden;
+    }
+    .aus-card-header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 16px; background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+    .aus-avatar {
+      width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--navy), var(--accent));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 800; color: #fff;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .aus-nombre { font-weight: 700; font-size: 0.92rem; color: var(--text); flex: 1; }
+    .aus-del-btn {
+      background: none; border: none; cursor: pointer; color: var(--text-soft);
+      font-size: 1.1rem; padding: 4px 6px; border-radius: 6px; transition: all .15s;
+    }
+    .aus-del-btn:hover { background: #fee2e2; color: var(--red); }
+    .aus-sesiones-list { padding: 12px 16px; display: flex; flex-direction: column; gap: 6px; }
+    .aus-ses-row {
+      display: grid; grid-template-columns: 100px 1fr 1fr 1fr;
+      gap: 8px; align-items: center; font-size: 0.82rem;
+    }
+    .aus-ses-label { font-weight: 700; color: var(--text-mid); }
+    .aus-ses-val   { color: var(--text); }
+    .aus-ses-val.empty { color: var(--text-soft); font-style: italic; }
+    .ses-badge {
+      display: inline-block; padding: 2px 8px; border-radius: 99px;
+      font-size: 0.72rem; font-weight: 700; border: 1px solid;
+    }
+    .ses-badge.clase    { background: var(--accent-soft); border-color: #93c5fd; color: var(--navy2); }
+    .ses-badge.actividad{ background: var(--gold-soft); border-color: #fcd34d; color: var(--gold); }
+
+    /* Sesiones checkboxes */
+    .sesiones-check { display: flex; flex-direction: column; gap: 8px; }
+    .ses-check-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--surface); cursor: pointer; transition: all .15s;
+    }
+    .ses-check-row:hover { border-color: var(--accent); background: var(--accent-soft); }
+    .ses-check-row input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
+    .ses-check-label { flex: 1; font-size: 0.85rem; font-weight: 600; color: var(--text); }
+    .ses-check-detail { font-size: 0.75rem; color: var(--text-mid); }
+    .ses-check-row.no-clase { opacity: .5; cursor: not-allowed; }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 200;
+      background: #0f172a80; backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal-overlay.hidden { display: none; }
+    .modal-card {
+      background: var(--card); border-radius: 16px;
+      width: 100%; max-width: 500px; max-height: 90vh;
+      display: flex; flex-direction: column;
+      box-shadow: 0 20px 60px #00000040;
+      border: 1px solid var(--border);
+    }
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 20px; border-bottom: 1px solid var(--border);
+    }
+    .modal-header h3 { font-size: 1rem; font-weight: 800; color: var(--text); }
+    .modal-close { background: none; border: none; cursor: pointer; font-size: 1.1rem; color: var(--text-soft); padding: 4px 8px; border-radius: 6px; }
+    .modal-close:hover { background: var(--surface2); }
+    .modal-body { padding: 20px; overflow-y: auto; flex: 1; }
+    .modal-hint { font-size: 0.75rem; color: var(--text-soft); margin-top: 10px; }
+    .modal-footer { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
+
+    /* Print styles */
+    @media print {
+      header, nav, .aus-toolbar, .aus-del-btn, .aus-card-header .aus-del-btn { display: none !important; }
+      .view { display: block !important; }
+      #view-menu, #view-horarios, #view-guardias { display: none !important; }
+      #view-ausencias { display: block !important; }
+      body { background: white; }
+      .aus-card { break-inside: avoid; box-shadow: none; border: 1px solid #ccc; }
+      .parte-print-header { display: block !important; }
+    }
+    .parte-print-header { display: none; }
+
     /* ── LEYENDA ─────────────────────────────────────── */
     details { margin-top: 32px; background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); }
     summary { padding: 14px 18px; font-size: 0.82rem; font-weight: 600; cursor: pointer; color: var(--text-mid); list-style: none; }
@@ -324,6 +450,7 @@
   <button class="nav-btn active" onclick="showView('menu')" id="nav-menu">🏠 Inicio</button>
   <button class="nav-btn" onclick="showView('horarios')" id="nav-horarios">📅 Horarios</button>
   <button class="nav-btn" onclick="showView('guardias')" id="nav-guardias">🛡️ Guardias</button>
+  <button class="nav-btn" onclick="showView('ausencias')" id="nav-ausencias">📋 Ausencias</button>
 </nav>
 
 <!-- MAIN -->
@@ -347,6 +474,12 @@
         <div class="mc-icon">🛡️</div>
         <div class="mc-title">Guardias</div>
         <div class="mc-desc">Docentes de guardia a primera hora y en el recreo, de lunes a viernes</div>
+        <span class="mc-arrow">→</span>
+      </div>
+      <div class="menu-card" onclick="showView('ausencias')">
+        <div class="mc-icon">📋</div>
+        <div class="mc-title">Ausencias</div>
+        <div class="mc-desc">Registra docentes ausentes y genera el parte diario de guardias</div>
         <span class="mc-arrow">→</span>
       </div>
     </div>
@@ -391,10 +524,66 @@
     </div>
   </div>
 
+
+  <!-- AUSENCIAS -->
+  <div class="view" id="view-ausencias">
+    <div class="aus-header">
+      <h2>📋 Parte de ausencias</h2>
+      <p>Selecciona la fecha, añade docentes ausentes y genera el parte de guardias</p>
+    </div>
+
+    <!-- Date picker + actions -->
+    <div class="aus-toolbar">
+      <div class="control-group" style="flex:0 0 200px">
+        <label for="aus-fecha">Fecha</label>
+        <input type="date" id="aus-fecha">
+      </div>
+      <div class="aus-actions">
+        <button class="btn-primary" onclick="ausAddDocente()">＋ Añadir ausente</button>
+        <button class="btn-secondary" onclick="ausPrintParte()">🖨️ Imprimir parte</button>
+        <button class="btn-secondary" onclick="ausDownloadWord()">⬇️ Descargar Word</button>
+      </div>
+    </div>
+
+    <!-- Ausentes list -->
+    <div id="aus-lista-wrap">
+      <div class="state-msg" id="aus-empty">
+        <div class="icon">📅</div>
+        <p>Selecciona una fecha y añade los docentes ausentes.</p>
+      </div>
+      <div id="aus-lista"></div>
+    </div>
+
+    <!-- Modal: añadir ausente -->
+    <div id="aus-modal" class="modal-overlay hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>Añadir docente ausente</h3>
+          <button class="modal-close" onclick="ausCloseModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="control-group" style="margin-bottom:16px">
+            <label for="aus-sel-docente">Docente</label>
+            <select id="aus-sel-docente"><option value="">— Selecciona —</option></select>
+          </div>
+          <div class="control-group">
+            <label>Sesiones ausente</label>
+            <div id="aus-sesiones-check" class="sesiones-check"></div>
+          </div>
+          <p class="modal-hint">Solo se muestran sesiones con clase asignada ese día.</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" onclick="ausCloseModal()">Cancelar</button>
+          <button class="btn-primary" onclick="ausConfirmAdd()">Añadir</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </main>
 
 <script>
-const ACCESS_PASSWORD = 'EGL2530';
+const ACCESS_PASSWORD = 'iesvc2526';
 const DAYS = ['Lunes','Martes','Miercoles','Jueves','Viernes'];
 const DAY_LABELS = {Lunes:'Lunes',Martes:'Martes',Miercoles:'Miércoles',Jueves:'Jueves',Viernes:'Viernes'};
 const SESSION_ORDER = ['1','2','3','3R','4','5','6','7','8'];
@@ -596,6 +785,333 @@ function renderHorario() {
   html+=`</div>`;
   el.innerHTML=html;
 }
+
+
+// ── AUSENCIAS ─────────────────────────────────────────────────────────────
+const SESS_LABELS = {
+  '1':'Guardia mañana','2':'Sesión 1','3':'Sesión 2','3R':'Sesión 3',
+  '4':'Recreo','5':'Sesión 4','6':'Sesión 5','7':'Sesión 6','8':'Sesión 7'
+};
+const SESS_HORAS = {
+  '1':'08:00-08:30','2':'08:30-09:20','3':'09:25-10:15','3R':'10:20-11:10',
+  '4':'11:10-11:35','5':'11:35-12:25','6':'12:30-13:25','7':'13:30-14:20','8':'14:25-15:15'
+};
+const SESS_ORDER = ['1','2','3','3R','4','5','6','7','8'];
+
+// Storage key: ausencias:YYYY-MM-DD
+function ausStorageKey(fecha) { return 'aus:' + fecha; }
+
+function ausGetData(fecha) {
+  try {
+    const raw = localStorage.getItem(ausStorageKey(fecha));
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) { return []; }
+}
+
+function ausSaveData(fecha, data) {
+  try { localStorage.setItem(ausStorageKey(fecha), JSON.stringify(data)); } catch(e) {}
+}
+
+function ausGetFecha() { return document.getElementById('aus-fecha').value; }
+
+function ausDayName(fecha) {
+  if (!fecha) return null;
+  const d = new Date(fecha + 'T12:00:00');
+  const names = ['Domingo','Lunes','Martes','Miercoles','Jueves','Viernes','Sabado'];
+  return names[d.getDay()];
+}
+
+// Render the list of ausentes for selected date
+function ausRender() {
+  const fecha = ausGetFecha();
+  const lista = document.getElementById('aus-lista');
+  const empty = document.getElementById('aus-empty');
+  if (!fecha || !DB) { lista.innerHTML=''; empty.style.display=''; return; }
+
+  const dayName = ausDayName(fecha);
+  if (!['Lunes','Martes','Miercoles','Jueves','Viernes'].includes(dayName)) {
+    lista.innerHTML = '<div class="state-msg"><div class="icon">🚫</div><p>Este día no es lectivo.</p></div>';
+    empty.style.display = 'none';
+    return;
+  }
+
+  const data = ausGetData(fecha);
+  if (data.length === 0) { lista.innerHTML=''; empty.style.display=''; return; }
+  empty.style.display = 'none';
+
+  const dateLabel = new Date(fecha+'T12:00:00').toLocaleDateString('es-ES',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+  let html = `<div class="parte-print-header"><h2>Parte de Guardias · ${dateLabel}</h2></div>`;
+
+  data.forEach((aus, idx) => {
+    const info = DB.docentes[aus.codigo];
+    if (!info) return;
+    const initials = info.nombre.split(' ').filter(w=>/^[A-ZÁÉÍÓÚÑ]/i.test(w)).slice(0,2).map(w=>w[0]).join('');
+    const horDia = info.horario[dayName] || {};
+
+    html += `<div class="aus-card">
+      <div class="aus-card-header">
+        <div class="aus-avatar">${initials}</div>
+        <div class="aus-nombre">${tc2(info.nombre)}</div>
+        <button class="aus-del-btn" onclick="ausEliminar(${idx})" title="Eliminar">🗑</button>
+      </div>
+      <div class="aus-sesiones-list">`;
+
+    const sesAusentes = aus.sesiones || [];
+    if (sesAusentes.length === 0) {
+      html += '<p style="color:var(--text-soft);font-size:.83rem;padding:4px 0">Sin sesiones marcadas</p>';
+    } else {
+      sesAusentes.forEach(sess => {
+        const slot = horDia[sess];
+        const meta_label = SESS_LABELS[sess] || sess;
+        const meta_hora  = SESS_HORAS[sess] || '';
+        let grupo='—', materia='—', aula='—';
+        if (slot) {
+          const arr = Array.isArray(slot) ? slot : [slot];
+          if (arr[0].tipo === 'clase') {
+            grupo   = arr[0].grupo   || '—';
+            materia = arr[0].materia || '—';
+            aula    = arr[0].aula    || '—';
+          } else {
+            materia = arr[0].sigla || arr[0].materia || '—';
+          }
+        }
+        html += `<div class="aus-ses-row">
+          <span class="ses-badge clase">${meta_label}<br><small>${meta_hora}</small></span>
+          <span class="aus-ses-val">${grupo !== '—' ? '👥 '+grupo : '<span class="empty">—</span>'}</span>
+          <span class="aus-ses-val">${materia}</span>
+          <span class="aus-ses-val">${aula !== '—' ? '🚪 Aula '+aula : '<span class="empty">—</span>'}</span>
+        </div>`;
+      });
+    }
+    html += `</div></div>`;
+  });
+
+  lista.innerHTML = html;
+}
+
+document.getElementById('aus-fecha').addEventListener('change', ausRender);
+
+// ── Modal: añadir docente ─────────────────────────────────────────────────
+function ausAddDocente() {
+  const fecha = ausGetFecha();
+  if (!fecha || !DB) { alert('Selecciona primero una fecha.'); return; }
+  const dayName = ausDayName(fecha);
+  if (!['Lunes','Martes','Miercoles','Jueves','Viernes'].includes(dayName)) {
+    alert('Este día no es lectivo.'); return;
+  }
+
+  // Populate docente selector (exclude already added)
+  const yaAusentes = ausGetData(fecha).map(a => a.codigo);
+  const sel = document.getElementById('aus-sel-docente');
+  sel.innerHTML = '<option value="">— Selecciona —</option>';
+  Object.entries(DB.docentes)
+    .sort((a,b) => a[1].nombre.localeCompare(b[1].nombre,'es'))
+    .forEach(([code, info]) => {
+      if (yaAusentes.includes(code)) return;
+      const opt = document.createElement('option');
+      opt.value = code; opt.textContent = info.nombre; sel.appendChild(opt);
+    });
+
+  document.getElementById('aus-sesiones-check').innerHTML = '<p style="color:var(--text-soft);font-size:.83rem">Selecciona primero un docente.</p>';
+  document.getElementById('aus-modal').classList.remove('hidden');
+
+  sel.onchange = () => ausLoadSesiones(dayName);
+}
+
+function ausLoadSesiones(dayName) {
+  const code = document.getElementById('aus-sel-docente').value;
+  const container = document.getElementById('aus-sesiones-check');
+  if (!code || !DB) { container.innerHTML = ''; return; }
+
+  const info = DB.docentes[code];
+  const horDia = info.horario[dayName] || {};
+
+  let html = '';
+  SESS_ORDER.forEach(sess => {
+    if (dayName === 'Viernes' && sess === '8') return;
+    const slot = horDia[sess];
+    const hasClase = !!slot;
+    const label = SESS_LABELS[sess];
+    const hora  = SESS_HORAS[sess];
+    let detail = 'Libre';
+    if (slot) {
+      const arr = Array.isArray(slot) ? slot : [slot];
+      detail = arr[0].tipo === 'clase'
+        ? (arr[0].grupo ? arr[0].grupo+' · ' : '') + (arr[0].materia || '') + (arr[0].aula ? ' · Aula '+arr[0].aula : '')
+        : arr[0].sigla || arr[0].materia || '';
+    }
+    html += `<label class="ses-check-row${!hasClase?' no-clase':''}">
+      <input type="checkbox" value="${sess}" ${!hasClase?'disabled':''} ${hasClase?'checked':''}>
+      <span class="ses-check-label">${label} <small style="font-weight:400;color:var(--text-soft)">${hora}</small></span>
+      <span class="ses-check-detail">${detail}</span>
+    </label>`;
+  });
+  container.innerHTML = html || '<p style="color:var(--text-soft)">No tiene clases este día.</p>';
+}
+
+function ausCloseModal() {
+  document.getElementById('aus-modal').classList.add('hidden');
+}
+
+function ausConfirmAdd() {
+  const fecha   = ausGetFecha();
+  const code    = document.getElementById('aus-sel-docente').value;
+  if (!code) { alert('Selecciona un docente.'); return; }
+
+  const checks = document.querySelectorAll('#aus-sesiones-check input[type=checkbox]:checked');
+  const sesiones = Array.from(checks).map(c => c.value);
+  if (sesiones.length === 0) { alert('Marca al menos una sesión.'); return; }
+
+  const data = ausGetData(fecha);
+  data.push({ codigo: code, sesiones });
+  ausSaveData(fecha, data);
+  ausCloseModal();
+  ausRender();
+}
+
+function ausEliminar(idx) {
+  if (!confirm('¿Eliminar este docente del parte?')) return;
+  const fecha = ausGetFecha();
+  const data = ausGetData(fecha);
+  data.splice(idx, 1);
+  ausSaveData(fecha, data);
+  ausRender();
+}
+
+// ── Imprimir ──────────────────────────────────────────────────────────────
+function ausPrintParte() {
+  const fecha = ausGetFecha();
+  if (!fecha || ausGetData(fecha).length === 0) { alert('No hay ausencias registradas para esta fecha.'); return; }
+  showView('ausencias');
+  setTimeout(() => window.print(), 300);
+}
+
+// ── Descargar Word ────────────────────────────────────────────────────────
+async function ausDownloadWord() {
+  const fecha = ausGetFecha();
+  if (!fecha || !DB) { alert('Selecciona una fecha.'); return; }
+  const data = ausGetData(fecha);
+  if (data.length === 0) { alert('No hay ausencias registradas para esta fecha.'); return; }
+
+  const dayName = ausDayName(fecha);
+  const dateLabel = new Date(fecha+'T12:00:00').toLocaleDateString('es-ES',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+  // Build rows for the Word table
+  const rows = [];
+  data.forEach(aus => {
+    const info = DB.docentes[aus.codigo];
+    if (!info) return;
+    (aus.sesiones || []).forEach(sess => {
+      const horDia = info.horario[dayName] || {};
+      const slot = horDia[sess];
+      let grupo='', materia='', aula='';
+      if (slot) {
+        const arr = Array.isArray(slot) ? slot : [slot];
+        if (arr[0].tipo === 'clase') {
+          grupo = arr[0].grupo || '';
+          materia = arr[0].materia || '';
+          aula = arr[0].aula || '';
+        } else {
+          materia = arr[0].sigla || '';
+        }
+      }
+      rows.push({
+        sesion: SESS_LABELS[sess] || sess,
+        hora: SESS_HORAS[sess] || '',
+        docente: tc2(info.nombre),
+        grupo, materia, aula
+      });
+    });
+  });
+
+  // Sort by session order
+  rows.sort((a,b) => {
+    const oi = r => SESS_ORDER.indexOf(Object.entries(SESS_LABELS).find(([k,v])=>v===r.sesion)?.[0] || '9');
+    return oi(a) - oi(b);
+  });
+
+  // Use Anthropic API to generate a structured Word-compatible HTML, then convert
+  // Since we can't use docx.js from browser, generate a clean printable HTML
+  // that the user can save as .docx via Word's "Save as"
+  const htmlDoc = generateParteHTML(rows, dateLabel, dayName);
+  const blob = new Blob([htmlDoc], {type:'application/msword'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Parte_Guardias_${fecha}.doc`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function generateParteHTML(rows, dateLabel, dayName) {
+  // Group rows by session
+  const bySession = {};
+  rows.forEach(r => {
+    const k = r.sesion + '|' + r.hora;
+    if (!bySession[k]) bySession[k] = [];
+    bySession[k].push(r);
+  });
+
+  let tableRows = '';
+  Object.entries(bySession).forEach(([key, sesRows]) => {
+    const [sesion, hora] = key.split('|');
+    sesRows.forEach((r, i) => {
+      tableRows += `<tr>
+        ${i===0?`<td rowspan="${sesRows.length}" style="font-weight:bold;text-align:center;vertical-align:middle;width:60px">${sesion}<br><small>${hora}</small></td>`:''}
+        <td>${r.docente}</td>
+        <td>${r.grupo}</td>
+        <td>${r.aula ? 'Aula '+r.aula : ''}</td>
+        <td>${r.materia}</td>
+        <td></td>
+        <td></td>
+      </tr>`;
+    });
+    // Convivencia / Biblioteca rows
+    tableRows += `<tr><td></td><td></td><td></td><td></td><td style="color:#666"><em>Convivencia:</em></td><td></td></tr>`;
+    tableRows += `<tr><td></td><td></td><td></td><td></td><td style="color:#666"><em>Biblioteca:</em></td><td></td></tr>`;
+  });
+
+  return `<html xmlns:o='urn:schemas-microsoft-com:office:office'
+    xmlns:w='urn:schemas-microsoft-com:office:word'
+    xmlns='http://www.w3.org/TR/REC-html40'>
+  <head><meta charset="UTF-8">
+  <style>
+    body { font-family: Arial, sans-serif; font-size: 11pt; margin: 2cm; }
+    h1 { font-size: 14pt; text-align: center; margin-bottom: 4px; }
+    h2 { font-size: 11pt; text-align: center; margin-bottom: 16px; font-weight: normal; }
+    table { width: 100%; border-collapse: collapse; font-size: 10pt; }
+    th { background: #1a3a6e; color: white; padding: 6px 8px; text-align: left; }
+    td { border: 1px solid #ccc; padding: 5px 8px; vertical-align: top; }
+    .footer { font-size: 9pt; color: #666; margin-top: 12px; font-style: italic; }
+  </style></head><body>
+  <h1>PARTE DIARIO DE GUARDIAS</h1>
+  <h2>IES Virgen de la Calle · Palencia · Curso 2025/26</h2>
+  <p style="margin-bottom:12px"><strong>${dateLabel}</strong></p>
+  <table>
+    <tr>
+      <th style="width:70px">Sesión</th>
+      <th>Profesor ausente</th>
+      <th style="width:70px">Curso</th>
+      <th style="width:70px">Aula</th>
+      <th>Tarea / Actividad</th>
+      <th>Profesor de guardia</th>
+      <th style="width:60px">Firma</th>
+    </tr>
+    ${tableRows}
+  </table>
+  <p class="footer">* La tarea se recogerá en el organizador de consejería</p>
+  </body></html>`;
+}
+
+// Set today's date by default
+(function() {
+  const today = new Date();
+  const y = today.getFullYear();
+  const m = String(today.getMonth()+1).padStart(2,'0');
+  const d = String(today.getDate()).padStart(2,'0');
+  document.getElementById('aus-fecha').value = `${y}-${m}-${d}`;
+})();
 
 document.getElementById('sel-docente').addEventListener('change', renderHorario);
 document.getElementById('sel-dia').addEventListener('change', renderHorario);
