@@ -499,7 +499,7 @@
   <button class="nav-btn" onclick="showView('horarios')" id="nav-horarios">📅 Horarios</button>
   <button class="nav-btn" onclick="showView('guardias')" id="nav-guardias">🛡️ Guardias</button>
   <button class="nav-btn" onclick="showView('ausencias')" id="nav-ausencias">📋 Ausencias</button>
-  <button class="nav-btn" onclick="showView('cobertura')" id="nav-cobertura">🔴 Cobertura</button>
+  <button class="nav-btn" onclick="showView('cobertura');cobBuildTable()" id="nav-cobertura">🔴 Cobertura</button>
 </nav>
 
 <!-- MAIN -->
@@ -531,7 +531,7 @@
         <div class="mc-desc">Registra docentes ausentes y genera el parte diario de guardias</div>
         <span class="mc-arrow">→</span>
       </div>
-      <div class="menu-card" onclick="showView('cobertura')">
+      <div class="menu-card" onclick="showView('cobertura');cobBuildTable()">
         <div class="mc-icon">🔴</div>
         <div class="mc-title">Cobertura</div>
         <div class="mc-desc">Semáforo semanal de guardianes disponibles vs ausencias a cubrir por sesión</div>
@@ -1123,6 +1123,8 @@ function ausConfirmAdd() {
   ausSaveData(fecha, data);
   ausCloseModal();
   ausRender();
+  const cobView = document.getElementById('view-cobertura');
+  if (cobView && cobView.classList.contains('active')) cobBuildTable();
 }
 
 function ausEliminar(idx) {
@@ -1132,6 +1134,8 @@ function ausEliminar(idx) {
   data.splice(idx, 1);
   ausSaveData(fecha, data);
   ausRender();
+  const cobView2 = document.getElementById('view-cobertura');
+  if (cobView2 && cobView2.classList.contains('active')) cobBuildTable();
 }
 
 // ── Imprimir ──────────────────────────────────────────────────────────────
@@ -1614,21 +1618,7 @@ function cobBuildTable() {
   document.getElementById('cob-table').innerHTML = html;
 }
 
-// Rebuild cobertura when view is shown or ausencias change
-const _origShowView = showView;
-function showView(name) {
-  _origShowView(name);
-  if (name === 'cobertura' && DB) cobBuildTable();
-}
-
-// Also update cobertura when ausencias are saved
-const _origAusSaveData = ausSaveData;
-function ausSaveData(fecha, data) {
-  _origAusSaveData(fecha, data);
-  // Refresh cobertura if visible
-  const cobView = document.getElementById('view-cobertura');
-  if (cobView && cobView.classList.contains('active')) cobBuildTable();
-}
+// cobertura hooks removed - handled inline
 
 document.getElementById('sel-docente').addEventListener('change', renderHorario);
 document.getElementById('sel-dia').addEventListener('change', renderHorario);
