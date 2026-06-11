@@ -775,21 +775,17 @@ function renderHorario() {
           if(s.aula)  html+=`<span class="tag aula">🚪 Aula ${s.aula}</span>`;
           html+=`</div>`;
         } else {
-          // tipo:'otro' = ESO groups parsed differently - show as class
-          const txt = s.materia || s.sigla || '';
-          // Extract clean subject: remove duplicate group+subject patterns
-          const cleanTxt = txt.replace(/\s*\([^)]*\)\s*/g,'').replace(/(\S+\s+\S+)\s+.*/,'$1').trim();
-          html+=`<div class="slot-materia">${cleanTxt}</div>`;
-          if(s.grupo) html+=`<div class="slot-meta"><span class="tag grupo">👥 ${s.grupo}</span></div>`;
-          else if(s.sigla && s.sigla.match(/^\d/)) {
-            // sigla starts with digit = it's a group code like "01D Inglés"
-            const parts = s.sigla.match(/^(\S+)\s+(.+)/);
-            if(parts) {
-              html+=`<div class="slot-meta"><span class="tag grupo">👥 ${parts[1]}</span>`;
-              if(s.aula) html+=`<span class="tag aula">🚪 Aula ${s.aula}</span>`;
-              html+=`</div>`;
-            } else if(s.aula) html+=`<div class="slot-meta"><span class="tag aula">🚪 Aula ${s.aula}</span></div>`;
-          } else if(s.aula) html+=`<div class="slot-meta"><span class="tag aula">🚪 Aula ${s.aula}</span></div>`;
+          // tipo:'otro' = ESO groups (e.g. "01D Inglés", "02B Inglés")
+          const sig = s.sigla || s.materia || '';
+          const grpMatch = sig.match(/^([0-9][A-Za-z0-9]+|[A-Z]{2,4}[0-9])\s+(.*)/);
+          const grupo = grpMatch ? grpMatch[1] : (s.grupo || '');
+          const subj  = grpMatch ? grpMatch[2].replace(/\s*\([^)]*\).*$/,'').trim() : sig.replace(/\s*\([^)]*\).*$/,'').trim();
+          const aula  = s.aula || '';
+          if(subj) html+=`<div class="slot-materia">${subj}</div>`;
+          html+=`<div class="slot-meta">`;
+          if(grupo) html+=`<span class="tag grupo">👥 ${grupo}</span>`;
+          if(aula)  html+=`<span class="tag aula">🚪 Aula ${aula}</span>`;
+          html+=`</div>`;
         }
       });
     }
@@ -879,7 +875,7 @@ function ausRender() {
         const slot = horDia[sess];
         if (!slot) return false;
         const arr = Array.isArray(slot) ? slot : [slot];
-        return arr[0].tipo === 'clase' || arr[0].sigla === 'G';
+        return arr[0].tipo === 'clase' || arr[0].tipo === 'otro' || arr[0].sigla === 'G';
       });
       sesValidas.forEach(sess => {
         const slot = horDia[sess];
@@ -957,9 +953,15 @@ function ausLoadSesiones(dayName) {
     let detail = 'Libre';
     if (slot) {
       const arr = Array.isArray(slot) ? slot : [slot];
-      detail = arr[0].tipo === 'clase'
-        ? (arr[0].grupo ? arr[0].grupo+' · ' : '') + (arr[0].materia || '') + (arr[0].aula ? ' · Aula '+arr[0].aula : '')
-        : arr[0].sigla || arr[0].materia || '';
+      if (arr[0].tipo === 'clase') {
+        detail = (arr[0].grupo ? arr[0].grupo+' · ' : '') + (arr[0].materia || '') + (arr[0].aula ? ' · Aula '+arr[0].aula : '');
+      } else if (arr[0].tipo === 'otro') {
+        const sig0 = arr[0].sigla || '';
+        const gm0 = sig0.match(/^([0-9][A-Za-z0-9]+)\s+(.*)/);
+        detail = (gm0 ? gm0[1]+' · ' : '') + (gm0 ? gm0[2].split('(')[0].trim() : sig0) + (arr[0].aula ? ' · Aula '+arr[0].aula : '');
+      } else {
+        detail = arr[0].sigla || arr[0].materia || '';
+      }
     }
     html += `<label class="ses-check-row${!hasClase?' no-clase':''}">
       <input type="checkbox" value="${sess}" ${!hasClase?'disabled':''} ${hasClase?'checked':''}>
@@ -1047,19 +1049,23 @@ async function ausDownloadWord() {
       return {
         codigo: aus.codigo,
         nombre: info ? tc2(info.nombre) : aus.codigo,
-        sesiones: aus.sesiones.map(sessKey => {
+                sesiones: aus.sesiones.map(sessKey => {
           const horDia = (info?.horario[dayName]) || {};
           const slot = horDia[sessKey];
           let grupo = '', aula = '', incluir = false;
           if (slot) {
             const arr = Array.isArray(slot) ? slot : [slot];
-            const s0 = arr[0];
-            if (s0.tipo === 'clase') {
-              grupo = s0.grupo||''; aula = s0.aula||''; incluir = true;
-            } else if (s0.sigla === 'G') {
-              incluir = true; // Guardia genera parte
+            if (arr[0].tipo === 'clase') {
+              grupo = arr[0].grupo||''; aula = arr[0].aula||''; incluir = true;
+            } else if (arr[0].tipo === 'otro') {
+              const sig = arr[0].sigla || '';
+              const pm = sig.match(/^([0-9][A-Za-z0-9]+)\s+/);
+              grupo = pm ? pm[1] : sig.split(' ')[0];
+              aula = arr[0].aula || '';
+              incluir = true;
+            } else if (arr[0].sigla === 'G') {
+              incluir = true;
             }
-            // CHL, AMP, JDEP, etc. -> incluir = false
           }
           return { sess: sessKey, grupo, aula, incluir };
         }).filter(s => s.incluir)
