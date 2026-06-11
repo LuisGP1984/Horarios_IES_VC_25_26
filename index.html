@@ -966,6 +966,13 @@ function ausRender() {
             grupo   = arr[0].grupo   || '—';
             materia = arr[0].materia || '—';
             aula    = arr[0].aula    || '—';
+          } else if (arr[0].tipo === 'otro') {
+            // ESO groups: extract group from sigla, aula is in arr[0].aula
+            const sig = arr[0].sigla || arr[0].materia || '';
+            const gm  = sig.match(/^([0-9][A-Za-z0-9]+)\s+(.*)/);
+            grupo   = gm ? gm[1] : '—';
+            materia = gm ? gm[2].replace(/\s*\([^)]*\).*$/,'').trim() : sig;
+            aula    = arr[0].aula || '—';
           } else {
             materia = arr[0].sigla || arr[0].materia || '—';
           }
