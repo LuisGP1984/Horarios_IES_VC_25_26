@@ -4215,46 +4215,6 @@
         }
       }
     },
-    "UMTXXX": {
-      "nombre": "URUEÑA MARTIN, TAMARA",
-      "horario": {
-        "Lunes": {
-          "3": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01A - 01B Inglés\nAula: B02", "aula": ""},
-          "3R": {"tipo": "actividad", "sigla": "AMP", "grupo": "", "materia": "", "aula": ""},
-          "5": {"tipo": "actividad", "sigla": "G", "grupo": "", "materia": "", "aula": ""},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "CG1", "materia": "Conversación en lengua extranjera (GM) (215B) CG1 Inglés profesional (GM)", "aula": "215B"},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "CG1", "materia": "Inglés profesional (GM) (215B) CG1 Conversación en lengua extranjera (GM)", "aula": "215B"}
-        },
-        "Martes": {
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "CG2", "materia": "Ampliación de lengua extranjera profesional", "aula": "204"},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "CG2", "materia": "Ampliación de lengua extranjera profesional", "aula": "204"},
-          "6": {"tipo": "actividad", "sigla": "G", "grupo": "", "materia": "", "aula": ""},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01A - 01B Inglés (B02) 01A - 01B Inglés\nAula: 114", "aula": ""}
-        },
-        "Miercoles": {
-          "2": {"tipo": "clase", "sigla": "", "grupo": "CG1", "materia": "Conversación en lengua extranjera (GM) (215B) CG1 Inglés profesional (GM)", "aula": "215B"},
-          "3": {"tipo": "clase", "sigla": "", "grupo": "CG1", "materia": "Conversación en lengua extranjera (GM) (215B) CG1 Inglés profesional (GM)", "aula": "215B"},
-          "3R": {"tipo": "actividad", "sigla": "CHL", "grupo": "", "materia": "", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "RSB SB", "aula": ""},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "CSB", "aula": ""},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01A - 01B Inglés\nAula: B02", "aula": ""}
-        },
-        "Jueves": {
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "CG2", "materia": "Ampliación de lengua extranjera profesional", "aula": "204"},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "DC1", "materia": "Inglés profesional (GS)", "aula": "218"},
-          "6": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "CSB", "aula": ""},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01A - 01B Inglés\nAula: B02", "aula": ""},
-          "8": {"tipo": "actividad", "sigla": "RDP", "grupo": "", "materia": "", "aula": ""}
-        },
-        "Viernes": {
-          "2": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "01A - 01B Inglés\nAula: B02", "aula": ""},
-          "3": {"tipo": "actividad", "sigla": "G", "grupo": "", "materia": "", "aula": ""},
-          "3R": {"tipo": "clase", "sigla": "", "grupo": "", "materia": "CSB", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "DC1", "materia": "Inglés profesional (GS)", "aula": "218"},
-          "6": {"tipo": "actividad", "sigla": "CHL", "grupo": "", "materia": "", "aula": ""}
-        }
-      }
-    },
     "VACXXX": {
       "nombre": "VALLEJO AYUSO, CRISTINA",
       "horario": {

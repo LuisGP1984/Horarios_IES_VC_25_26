@@ -775,8 +775,21 @@ function renderHorario() {
           if(s.aula)  html+=`<span class="tag aula">🚪 Aula ${s.aula}</span>`;
           html+=`</div>`;
         } else {
-          html+=`<span class="slot-sigla">${s.sigla||s.materia||''}</span>`;
-          if(s.aula) html+=`<div class="slot-meta"><span class="tag aula">🚪 Aula ${s.aula}</span></div>`;
+          // tipo:'otro' = ESO groups parsed differently - show as class
+          const txt = s.materia || s.sigla || '';
+          // Extract clean subject: remove duplicate group+subject patterns
+          const cleanTxt = txt.replace(/\s*\([^)]*\)\s*/g,'').replace(/(\S+\s+\S+)\s+.*/,'$1').trim();
+          html+=`<div class="slot-materia">${cleanTxt}</div>`;
+          if(s.grupo) html+=`<div class="slot-meta"><span class="tag grupo">👥 ${s.grupo}</span></div>`;
+          else if(s.sigla && s.sigla.match(/^\d/)) {
+            // sigla starts with digit = it's a group code like "01D Inglés"
+            const parts = s.sigla.match(/^(\S+)\s+(.+)/);
+            if(parts) {
+              html+=`<div class="slot-meta"><span class="tag grupo">👥 ${parts[1]}</span>`;
+              if(s.aula) html+=`<span class="tag aula">🚪 Aula ${s.aula}</span>`;
+              html+=`</div>`;
+            } else if(s.aula) html+=`<div class="slot-meta"><span class="tag aula">🚪 Aula ${s.aula}</span></div>`;
+          } else if(s.aula) html+=`<div class="slot-meta"><span class="tag aula">🚪 Aula ${s.aula}</span></div>`;
         }
       });
     }
@@ -1134,8 +1147,17 @@ function ausDownloadWordFallback(payload, fecha) {
     return ausentes
       .filter(a => a.sesiones.some(s => s.sess === sessKey && s.incluir !== false))
       .map(a => {
+        const info = DB.docentes[a.codigo];
+        const horDia = info?.horario[dayName] || {};
+        const slot = horDia[sessKey];
+        const arr = slot ? (Array.isArray(slot) ? slot : [slot]) : [];
+        const isGuardia = arr.length > 0 && arr[0].sigla === 'G';
         const s = a.sesiones.find(s => s.sess === sessKey);
-        return { docente: a.nombre, grupo: s?.grupo||'', aula: s?.aula||'' };
+        return {
+          docente: a.nombre,
+          grupo: isGuardia ? 'GUARDIA' : (s?.grupo||''),
+          aula: isGuardia ? '' : (s?.aula||'')
+        };
       });
   }
 
