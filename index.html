@@ -1467,7 +1467,7 @@ async function ausRender() {
       <div class="aus-card-header">
         <div class="aus-avatar">${initials}</div>
         <div class="aus-nombre">${tc2(info.nombre)}</div>
-        ${USER_ROLE === 'direccion' ? `<button class="aus-del-btn" onclick="ausEliminar(${idx})" title="Eliminar">🗑</button>` : ''}
+        ${USER_ROLE === 'direccion' ? `<button class="aus-del-btn" onclick="ausEliminar(\'${aus.id}\')" title="Eliminar">🗑</button>` : ''}
       </div>
       <div class="aus-sesiones-list">`;
 
