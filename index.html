@@ -493,6 +493,68 @@
       padding: 7px 14px; border-bottom: 1px solid var(--border);
     }
 
+
+    /* ── GRUPOS ──────────────────────────────────────── */
+    .grupos-header { margin-bottom: 16px; }
+    .grupos-header h2 { font-size: 1.25rem; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+    .grupos-header p  { font-size: 0.83rem; color: var(--text-mid); }
+    .grupos-toolbar {
+      display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap;
+      margin-bottom: 24px; background: var(--card);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 16px 20px; box-shadow: var(--shadow);
+    }
+    /* Grupos weekly table */
+    .grupos-table-wrap { overflow-x: auto; border-radius: 14px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+    table.grupos-table {
+      width: 100%; border-collapse: collapse; background: var(--card);
+      font-size: 0.82rem; min-width: 620px;
+    }
+    table.grupos-table thead th {
+      background: var(--navy); color: #bfdbfe;
+      padding: 11px 12px; font-weight: 700; font-size: 0.8rem;
+      text-align: center; border-bottom: 2px solid var(--navy2);
+      position: sticky; top: 0; z-index: 3;
+    }
+    table.grupos-table thead th:first-child {
+      text-align: left; width: 130px; padding-left: 14px;
+      position: sticky; left: 0; top: 0; z-index: 4; background: var(--navy);
+    }
+    table.grupos-table td {
+      padding: 8px 10px; border-bottom: 1px solid var(--border);
+      border-right: 1px solid var(--border); text-align: center;
+      vertical-align: middle;
+    }
+    table.grupos-table td:first-child {
+      text-align: left; font-weight: 700; font-size: 0.78rem;
+      color: var(--text-mid); padding-left: 14px;
+      background: var(--surface2);
+      position: sticky; left: 0; z-index: 1;
+    }
+    table.grupos-table tr:last-child td { border-bottom: none; }
+    table.grupos-table tr:hover td { background: #f0f6ff; }
+    table.grupos-table tr:hover td:first-child { background: #e0edff; }
+    .grupo-cel {
+      display: inline-block; text-align: left;
+      font-size: 0.78rem; line-height: 1.4;
+    }
+    .grupo-cel-materia { font-weight: 700; color: var(--text); display: block; }
+    .grupo-cel-doc     { color: var(--text-mid); font-size: 0.72rem; display: block; }
+    .grupo-cel-aula    { color: var(--accent); font-size: 0.7rem; display: block; }
+    .grupo-libre       { color: var(--text-soft); font-style: italic; font-size: 0.75rem; }
+    .grupo-recreo      { color: var(--green); font-weight: 600; font-size: 0.78rem; }
+    .grupos-title {
+      display: flex; align-items: center; gap: 14px; margin-bottom: 20px;
+    }
+    .grupos-title-badge {
+      background: linear-gradient(135deg, var(--navy), var(--accent));
+      color: #fff; font-size: 1.4rem; font-weight: 900;
+      padding: 10px 20px; border-radius: 12px;
+      box-shadow: 0 4px 14px #2563eb25; letter-spacing: -0.02em;
+    }
+    .grupos-title-info h3 { font-size: 1.05rem; font-weight: 800; color: var(--text); }
+    .grupos-title-info p  { font-size: 0.8rem; color: var(--text-soft); margin-top: 2px; }
+
     /* ── LEYENDA ─────────────────────────────────────── */
     details { margin-top: 32px; background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); }
     summary { padding: 14px 18px; font-size: 0.82rem; font-weight: 600; cursor: pointer; color: var(--text-mid); list-style: none; }
@@ -597,6 +659,7 @@
   <button class="nav-btn" onclick="showView('ausencias')" id="nav-ausencias">📋 Ausencias</button>
   <button class="nav-btn" onclick="showView('cobertura');cobBuildTable()" id="nav-cobertura">🔴 Cobertura</button>
   <button class="nav-btn" onclick="showView('aulas');aulasBuild()" id="nav-aulas">🏫 Aulas</button>
+  <button class="nav-btn" onclick="showView('grupos')" id="nav-grupos">👥 Grupos</button>
 </nav>
 
 <!-- MAIN -->
@@ -638,6 +701,12 @@
         <div class="mc-icon">🏫</div>
         <div class="mc-title">Aulas</div>
         <div class="mc-desc">Ocupación de todas las aulas del centro por día y sesión</div>
+        <span class="mc-arrow">→</span>
+      </div>
+      <div class="menu-card" onclick="showView('grupos')">
+        <div class="mc-icon">👥</div>
+        <div class="mc-title">Grupos</div>
+        <div class="mc-desc">Horario completo de cada grupo por día y sesión</div>
         <span class="mc-arrow">→</span>
       </div>
     </div>
@@ -828,6 +897,36 @@
         <button class="btn-secondary" onclick="cancelarCloseModal()">No, mantener</button>
         <button class="btn-primary" style="background:#dc2626" onclick="reservaCancelar()">🗑 Sí, cancelar</button>
       </div>
+    </div>
+  </div>
+
+
+  <!-- GRUPOS -->
+  <div class="view" id="view-grupos">
+    <div class="grupos-header">
+      <h2>👥 Horario de grupos</h2>
+      <p>Selecciona la etapa y el grupo para ver su horario semanal</p>
+    </div>
+    <div class="grupos-toolbar">
+      <div class="control-group" style="flex:0 0 200px">
+        <label for="grupo-etapa">Etapa</label>
+        <select id="grupo-etapa" onchange="gruposCargarGrupos()">
+          <option value="">— Selecciona etapa —</option>
+          <option value="eso">ESO</option>
+          <option value="bach">Bachillerato</option>
+          <option value="fpbasica">FP Básica</option>
+          <option value="fp">FP Grado Medio / Superior</option>
+        </select>
+      </div>
+      <div class="control-group" style="flex:0 0 220px">
+        <label for="grupo-sel">Grupo</label>
+        <select id="grupo-sel" onchange="gruposMostrar()" disabled>
+          <option value="">— Primero elige etapa —</option>
+        </select>
+      </div>
+    </div>
+    <div id="grupos-result">
+      <div class="state-msg"><div class="icon">👥</div><p>Selecciona una etapa y un grupo.</p></div>
     </div>
   </div>
 
@@ -2178,6 +2277,151 @@ document.getElementById('aulas-fecha').addEventListener('change', aulasBuild);
   const d = String(today.getDate()).padStart(2,'0');
   document.getElementById('aulas-fecha').value = `${y}-${m}-${d}`;
 })();
+
+
+// ── GRUPOS ─────────────────────────────────────────────────────────────────
+const ETAPAS = {
+  eso:      { label: 'ESO',                      test: g => /^(0[1-4][A-Z]|[34]E)/.test(g.split(' - ')[0]) },
+  bach:     { label: 'Bachillerato',              test: g => /^[12]B[CH]/.test(g.split(' - ')[0]) },
+  fpbasica: { label: 'FP Básica',                 test: g => /^FPB/.test(g.split(' - ')[0]) },
+  fp:       { label: 'FP Grado Medio / Superior', test: g => /^(AC|AD|AF|CG|CI|CIV|DC|GA|GAV|GEA|GU|SR|TL)[0-9]/.test(g.split(' - ')[0]) },
+};
+
+// Extract all unique single groups (not combined like "01A - 01B")
+function gruposExtraerTodos() {
+  const grupos = new Set();
+  if (!DB) return [];
+  Object.values(DB.docentes).forEach(info => {
+    Object.values(info.horario).forEach(dia => {
+      Object.values(dia).forEach(slot => {
+        const s = Array.isArray(slot) ? slot[0] : slot;
+        const g = s.grupo || '';
+        if (!g) return;
+        // Add each individual group (split combined ones)
+        g.split(/\s*-\s*/).forEach(part => {
+          const clean = part.trim();
+          if (clean) grupos.add(clean);
+        });
+      });
+    });
+  });
+  return [...grupos].sort((a, b) => a.localeCompare(b, 'es'));
+}
+
+function gruposCargarGrupos() {
+  const etapa = document.getElementById('grupo-etapa').value;
+  const sel   = document.getElementById('grupo-sel');
+  sel.innerHTML = '<option value="">— Selecciona grupo —</option>';
+
+  if (!etapa || !DB) { sel.disabled = true; return; }
+
+  const todos = gruposExtraerTodos();
+  const filtro = ETAPAS[etapa];
+  const filtrados = todos.filter(g => filtro.test(g));
+
+  filtrados.forEach(g => {
+    const opt = document.createElement('option');
+    opt.value = g; opt.textContent = g;
+    sel.appendChild(opt);
+  });
+
+  sel.disabled = false;
+  document.getElementById('grupos-result').innerHTML =
+    '<div class="state-msg"><div class="icon">👥</div><p>Ahora selecciona el grupo.</p></div>';
+}
+
+function gruposMostrar() {
+  const grupo = document.getElementById('grupo-sel').value;
+  const el    = document.getElementById('grupos-result');
+  if (!grupo || !DB) return;
+
+  const DAYS = ['Lunes','Martes','Miercoles','Jueves','Viernes'];
+  const DAY_LABELS2 = {Lunes:'Lunes',Martes:'Martes',Miercoles:'Miércoles',Jueves:'Jueves',Viernes:'Viernes'};
+  const SESS = ['1','2','3','3R','4','5','6','7','8'];
+
+  // Build horario: sess -> day -> {materia, docente, aula}
+  const horario = {};
+  SESS.forEach(s => { horario[s] = {}; });
+
+  Object.values(DB.docentes).forEach(info => {
+    DAYS.forEach(day => {
+      const horDia = info.horario[day] || {};
+      SESS.forEach(sess => {
+        const slot = horDia[sess];
+        if (!slot) return;
+        const arr = Array.isArray(slot) ? slot : [slot];
+        arr.forEach(s => {
+          // Check if this slot includes our group
+          const grupoSlot = s.grupo || '';
+          const gruposSlot = grupoSlot.split(/\s*-\s*/).map(g => g.trim());
+          if (!gruposSlot.includes(grupo)) return;
+          if (!horario[sess][day]) {
+            horario[sess][day] = {
+              materia: s.materia || s.sigla || '',
+              docente: info.nombre,
+              aula:    s.aula || '',
+            };
+          }
+        });
+      });
+    });
+  });
+
+  // Count sessions with content
+  let totalSesiones = 0;
+  SESS.forEach(sess => { DAYS.forEach(day => { if (horario[sess][day]) totalSesiones++; }); });
+
+  // Detect etapa label
+  const etapaSel = document.getElementById('grupo-etapa');
+  const etapaLabel = etapaSel.options[etapaSel.selectedIndex]?.text || '';
+
+  // Build table
+  let html = `<div class="grupos-title">
+    <div class="grupos-title-badge">${grupo}</div>
+    <div class="grupos-title-info">
+      <h3>${etapaLabel}</h3>
+      <p>${totalSesiones} sesiones lectivas semanales</p>
+    </div>
+  </div>
+  <div class="grupos-table-wrap"><table class="grupos-table">
+    <thead><tr><th>Sesión</th>`;
+
+  DAYS.forEach(d => { html += `<th>${DAY_LABELS2[d]}</th>`; });
+  html += '</tr></thead><tbody>';
+
+  SESS.forEach(sess => {
+    const meta = DB.sesiones[sess];
+    const isRecreo = sess === '4';
+    html += `<tr><td><strong>${meta.label}</strong><br><small style="font-weight:400">${meta.hora}</small></td>`;
+    DAYS.forEach(day => {
+      // Viernes has no session 8
+      if (day === 'Viernes' && sess === '8') {
+        html += `<td><span class="grupo-libre">—</span></td>`;
+        return;
+      }
+      if (isRecreo) {
+        html += `<td><span class="grupo-recreo">☕ Recreo</span></td>`;
+        return;
+      }
+      const entry = horario[sess][day];
+      if (!entry) {
+        html += `<td><span class="grupo-libre">Libre</span></td>`;
+      } else {
+        const docShort = abreviar(entry.docente);
+        const matShort = entry.materia.length > 25 ? entry.materia.substring(0,24)+'\u2026' : entry.materia;
+        html += `<td><div class="grupo-cel">
+          <span class="grupo-cel-materia" title="${entry.materia}">${matShort}</span>
+          <span class="grupo-cel-doc">${docShort}</span>
+          ${entry.aula ? `<span class="grupo-cel-aula">🚪 ${entry.aula}</span>` : ''}
+        </div></td>`;
+      }
+    });
+    html += '</tr>';
+  });
+
+  html += '</tbody></table></div>';
+  el.innerHTML = html;
+}
 
 document.getElementById('sel-docente').addEventListener('change', renderHorario);
 document.getElementById('sel-dia').addEventListener('change', renderHorario);
