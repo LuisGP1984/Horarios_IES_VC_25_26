@@ -1641,22 +1641,60 @@ function ausCloseModal() {
   document.getElementById('aus-modal').classList.add('hidden');
 }
 
-function ausConfirmAdd() {
-  const fecha   = ausGetFecha();
-  const code    = document.getElementById('aus-sel-docente').value;
+async function ausConfirmAdd() {
+  const fecha = ausGetFecha();
+  const code  = document.getElementById('aus-sel-docente').value;
   if (!code) { alert('Selecciona un docente.'); return; }
 
   const checks = document.querySelectorAll('#aus-sesiones-check input[type=checkbox]:checked');
   const sesiones = Array.from(checks).map(c => c.value);
   if (sesiones.length === 0) { alert('Marca al menos una sesión.'); return; }
 
-  const data = ausGetData(fecha);
-  data.push({ codigo: code, sesiones });
-  ausSaveData(fecha, data);
-  ausCloseModal();
-  ausRender();
-  const cobView = document.getElementById('view-cobertura');
-  if (cobView && cobView.classList.contains('active')) cobBuildTable();
+  const info = DB.docentes[code];
+  const nombre = info ? info.nombre : code;
+  const dayName = ausDayName(fecha);
+
+  // Build sesiones with full data for Supabase
+  const sesionesFull = sesiones.map(sessKey => {
+    const horDia = (info?.horario[dayName]) || {};
+    const slot = horDia[sessKey];
+    let grupo = '', aula = '', incluir = false;
+    if (slot) {
+      const arr = Array.isArray(slot) ? slot : [slot];
+      const s0 = arr[0];
+      if (s0.tipo === 'clase') {
+        grupo = s0.grupo||''; aula = s0.aula||''; incluir = true;
+      } else if (s0.tipo === 'otro') {
+        const pm = (s0.sigla||'').match(/^([0-9][A-Za-z0-9]+)\s+/);
+        grupo = pm ? pm[1] : (s0.sigla||'').split(' ')[0];
+        aula = s0.aula||''; incluir = true;
+      } else if (s0.sigla === 'G') {
+        incluir = true;
+      }
+    }
+    return { sess: sessKey, grupo, aula, incluir };
+  }).filter(s => s.incluir);
+
+  if (sesionesFull.length === 0) {
+    alert('Ninguna de las sesiones seleccionadas genera guardia (son actividades administrativas).');
+    return;
+  }
+
+  const btn = document.querySelector('#aus-modal .btn-primary');
+  const origTxt = btn.textContent;
+  btn.textContent = '⏳ Guardando...'; btn.disabled = true;
+
+  try {
+    await ausSaveNew(fecha, code, nombre, sesionesFull);
+    ausCloseModal();
+    await ausRender();
+    const cobView = document.getElementById('view-cobertura');
+    if (cobView && cobView.classList.contains('active')) cobBuildTable();
+  } catch(e) {
+    alert('Error al guardar: ' + e.message);
+  } finally {
+    btn.textContent = origTxt; btn.disabled = false;
+  }
 }
 
 async function ausEliminar(id) {
