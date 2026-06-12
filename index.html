@@ -419,7 +419,7 @@
     }
     .aula-pill.ocupada { background: #dbeafe; border-color: #93c5fd; color: var(--navy); }
     .aula-pill.libre   { background: var(--surface2); border-color: var(--border); color: var(--text-soft); }
-    .aulas-table-wrap { overflow-x: auto; border-radius: 14px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+    .aulas-table-wrap { overflow-x: auto; overflow-y: auto; max-height: 75vh; border-radius: 14px; border: 1px solid var(--border); box-shadow: var(--shadow); }
     table.aulas-table {
       width: 100%; border-collapse: collapse; background: var(--card);
       font-size: 0.78rem; min-width: 700px;
@@ -429,10 +429,11 @@
       padding: 10px 8px; font-weight: 700; font-size: 0.75rem;
       text-align: center; border-bottom: 2px solid var(--navy2);
       white-space: nowrap;
+      position: sticky; top: 0; z-index: 3;
     }
     table.aulas-table thead th:first-child {
       text-align: left; width: 70px; padding-left: 14px;
-      position: sticky; left: 0; z-index: 2; background: var(--navy);
+      position: sticky; left: 0; top: 0; z-index: 4; background: var(--navy);
     }
     table.aulas-table td {
       padding: 6px 6px; border-bottom: 1px solid var(--border);
