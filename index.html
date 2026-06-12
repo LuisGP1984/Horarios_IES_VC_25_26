@@ -463,6 +463,22 @@
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
       max-width: 110px;
     }
+
+    .aula-pill.reservada { background: #fef9c3; border-color: #fde047; color: #854d0e; }
+    .aula-cel-reservada {
+      background: #fef9c3; border-radius: 6px; padding: 3px 6px;
+      display: inline-block; font-size: 0.72rem; line-height: 1.35;
+      text-align: left; border: 1px solid #fde047; cursor: pointer;
+    }
+    .aula-cel-reservada:hover { background: #fef08a; }
+    .aula-btn-reservar {
+      display: inline-block; background: var(--accent-soft);
+      border: 1px dashed var(--accent); border-radius: 6px;
+      padding: 4px 8px; font-size: 0.7rem; font-weight: 600;
+      color: var(--accent); cursor: pointer; transition: all .15s;
+    }
+    .aula-btn-reservar:hover { background: var(--accent); color: #fff; }
+
     .aula-libre-dot {
       display: inline-block; width: 8px; height: 8px;
       border-radius: 50%; background: var(--border);
@@ -744,28 +760,69 @@
   <!-- AULAS -->
   <div class="view" id="view-aulas">
     <div class="aulas-header">
-      <h2>🏫 Ocupación de aulas</h2>
-      <p>Selecciona un día para ver el estado de todas las aulas por sesión</p>
+      <h2>🏫 Ocupación y reserva de aulas</h2>
+      <p>Consulta la ocupación y reserva aulas libres para cualquier día</p>
     </div>
     <div class="aulas-toolbar">
-      <div class="control-group" style="flex:0 0 200px">
-        <label for="aulas-dia">Día</label>
-        <select id="aulas-dia">
-          <option value="">— Selecciona un día —</option>
-          <option value="Lunes">Lunes</option>
-          <option value="Martes">Martes</option>
-          <option value="Miercoles">Miércoles</option>
-          <option value="Jueves">Jueves</option>
-          <option value="Viernes">Viernes</option>
-        </select>
+      <div class="control-group" style="flex:0 0 190px">
+        <label for="aulas-fecha">Fecha</label>
+        <input type="date" id="aulas-fecha">
       </div>
       <div class="aulas-legend">
-        <span class="aula-pill ocupada">Ocupada</span>
-        <span class="aula-pill libre">Libre</span>
+        <span class="aula-pill ocupada">🔵 Clase asignada</span>
+        <span class="aula-pill reservada">🟡 Reservada</span>
+        <span class="aula-pill libre">⚪ Libre</span>
       </div>
+      <button class="btn-secondary" style="margin-left:auto" onclick="aulasRefresh()">🔄 Actualizar</button>
     </div>
     <div id="aulas-table-wrap" class="aulas-table-wrap">
-      <div class="state-msg"><div class="icon">🏫</div><p>Selecciona un día para ver la ocupación.</p></div>
+      <div class="state-msg"><div class="icon">🏫</div><p>Selecciona una fecha para ver la ocupación.</p></div>
+    </div>
+  </div>
+
+  <!-- Modal reserva -->
+  <div id="reserva-modal" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width:420px">
+      <div class="modal-header">
+        <h3 id="reserva-modal-title">Reservar aula</h3>
+        <button class="modal-close" onclick="reservaCloseModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="reserva-info" style="background:var(--surface2);border-radius:8px;padding:12px;margin-bottom:16px;font-size:0.85rem;color:var(--text-mid)"></div>
+        <div class="control-group" style="margin-bottom:14px">
+          <label for="reserva-docente">Tu nombre</label>
+          <select id="reserva-docente">
+            <option value="">— Selecciona tu nombre —</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label for="reserva-motivo">Motivo (opcional)</label>
+          <input type="text" id="reserva-motivo" placeholder="Ej: Reunión, Examen, Desdoblamiento..."
+            style="width:100%;padding:11px 14px;background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);font-family:Inter,sans-serif;font-size:0.92rem;color:var(--text)">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="reservaCloseModal()">Cancelar</button>
+        <button class="btn-primary" onclick="reservaConfirmar()">✅ Confirmar reserva</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal cancelar reserva -->
+  <div id="cancelar-modal" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width:380px">
+      <div class="modal-header">
+        <h3>Cancelar reserva</h3>
+        <button class="modal-close" onclick="cancelarCloseModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p id="cancelar-info" style="font-size:0.88rem;color:var(--text-mid);margin-bottom:16px"></p>
+        <p style="font-size:0.85rem;color:var(--text)">¿Confirmas que quieres cancelar esta reserva?</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="cancelarCloseModal()">No, mantener</button>
+        <button class="btn-primary" style="background:#dc2626" onclick="reservaCancelar()">🗑 Sí, cancelar</button>
+      </div>
     </div>
   </div>
 
@@ -1829,7 +1886,264 @@ function aulasBuild() {
   wrap.innerHTML = thtml;
 }
 
-document.getElementById('aulas-dia').addEventListener('change', aulasBuild);
+// aulas-dia listener replaced by aulas-fecha
+
+
+// ── SUPABASE CONFIG ────────────────────────────────────────────────────────
+const SUPA_URL = 'https://afadwyvrbfyhqkqgxsgc.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFmYWR3eXZyYmZ5aHFrcWd4c2djIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyNTEwOTMsImV4cCI6MjA5NjgyNzA5M30.EvGScuiVqtP2Q4eBnckCT7ZeIv-XAHiBxhFDH1sDRMk';
+
+async function supaFetch(method, path, body) {
+  const res = await fetch(SUPA_URL + '/rest/v1/' + path, {
+    method,
+    headers: {
+      'apikey': SUPA_KEY,
+      'Authorization': 'Bearer ' + SUPA_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': method === 'POST' ? 'return=representation' : ''
+    },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  if (!res.ok) throw new Error(await res.text());
+  const text = await res.text();
+  return text ? JSON.parse(text) : [];
+}
+
+// Cache reservas
+let reservasCache = {};  // fecha -> [{id,aula,sesion,docente,motivo}]
+let reservaActual = null;  // {fecha,aula,sesion} pending
+let cancelarId = null;
+
+async function reservasCargar(fecha) {
+  try {
+    const rows = await supaFetch('GET', `reservas?fecha=eq.${fecha}&select=*`);
+    reservasCache[fecha] = rows;
+    return rows;
+  } catch(e) {
+    console.error('Error cargando reservas:', e);
+    return [];
+  }
+}
+
+function reservasDeAula(fecha, aula, sesion) {
+  const rows = reservasCache[fecha] || [];
+  return rows.filter(r => r.aula === aula && r.sesion === sesion);
+}
+
+// ── AULAS con reservas ─────────────────────────────────────────────────────
+async function aulasBuild() {
+  const fechaInput = document.getElementById('aulas-fecha').value;
+  const wrap = document.getElementById('aulas-table-wrap');
+  if (!fechaInput || !DB) {
+    wrap.innerHTML = '<div class="state-msg"><div class="icon">🏫</div><p>Selecciona una fecha para ver la ocupación.</p></div>';
+    return;
+  }
+
+  wrap.innerHTML = '<div class="state-msg"><div class="icon">⏳</div><p>Cargando...</p></div>';
+
+  // Get day name
+  const dt = new Date(fechaInput + 'T12:00:00');
+  const dowMap = {1:'Lunes',2:'Martes',3:'Miercoles',4:'Jueves',5:'Viernes'};
+  const dia = dowMap[dt.getDay()];
+  if (!dia) {
+    wrap.innerHTML = '<div class="state-msg"><div class="icon">🚫</div><p>Este día no es lectivo.</p></div>';
+    return;
+  }
+
+  // Load reservas for this date
+  await reservasCargar(fechaInput);
+
+  const sesiones = dia === 'Viernes'
+    ? SESS_ORDER_AULAS.filter(s => s !== '8')
+    : SESS_ORDER_AULAS;
+
+  // Build aula -> sess -> [{docente,grupo,materia}]
+  const aulaMap = {};
+  Object.values(DB.docentes).forEach(info => {
+    const horDia = info.horario[dia] || {};
+    sesiones.forEach(sess => {
+      const slot = horDia[sess];
+      if (!slot) return;
+      const arr = Array.isArray(slot) ? slot : [slot];
+      arr.forEach(s => {
+        const aula = s.aula || '';
+        if (!aula) return;
+        if (!aulaMap[aula]) aulaMap[aula] = {};
+        if (!aulaMap[aula][sess]) aulaMap[aula][sess] = [];
+        aulaMap[aula][sess].push({ docente: info.nombre, grupo: s.grupo||'', materia: s.materia||s.sigla||'' });
+      });
+    });
+  });
+
+  // Header
+  const fechaLabel = dt.toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});
+  let thtml = `<table class="aulas-table">
+    <thead><tr><th>Aula</th>`;
+  sesiones.forEach(sess => {
+    const meta = DB.sesiones[sess];
+    thtml += `<th>${meta.label}<br><small style="font-weight:400;opacity:.8">${meta.hora}</small></th>`;
+  });
+  thtml += '</tr></thead><tbody>';
+
+  AULAS_ORDEN.forEach(({ planta, aulas }) => {
+    thtml += `<tr class="planta-header"><td colspan="${sesiones.length + 1}">${planta}</td></tr>`;
+    aulas.forEach(aula => {
+      thtml += `<tr><td>${aula}</td>`;
+      sesiones.forEach(sess => {
+        const clases   = aulaMap[aula] && aulaMap[aula][sess] ? aulaMap[aula][sess] : [];
+        const reservas = reservasDeAula(fechaInput, aula, sess);
+
+        if (clases.length > 0) {
+          // Aula ocupada por clase
+          thtml += `<td>`;
+          clases.forEach(sl => {
+            const docShort = abreviar(sl.docente);
+            const matShort = sl.materia.length > 20 ? sl.materia.substring(0,19)+'…' : sl.materia;
+            thtml += `<div class="aula-bloque"><div class="aula-cel-ocupada">
+              ${sl.grupo ? `<span class="aula-cel-grupo">${sl.grupo}</span>` : ''}
+              <span class="aula-cel-doc">${docShort}</span>
+              ${matShort ? `<span class="aula-cel-materia" title="${sl.materia}">${matShort}</span>` : ''}
+            </div></div>`;
+          });
+          thtml += `</td>`;
+        } else if (reservas.length > 0) {
+          // Aula reservada
+          thtml += `<td>`;
+          reservas.forEach(r => {
+            thtml += `<div class="aula-bloque">
+              <div class="aula-cel-reservada" onclick="reservaMostrarCancelar('${r.id}','${aula}','${sess}','${r.docente}','${r.motivo||''}')">
+                <span style="font-weight:700;display:block">${abreviar(r.docente)}</span>
+                ${r.motivo ? `<span style="font-size:0.68rem;color:#92400e">${r.motivo}</span>` : ''}
+                <span style="font-size:0.65rem;color:#a16207">Toca para cancelar</span>
+              </div>
+            </div>`;
+          });
+          thtml += `</td>`;
+        } else {
+          // Libre — botón reservar
+          thtml += `<td><span class="aula-btn-reservar" onclick="reservaMostrarModal('${fechaInput}','${aula}','${sess}','${dia}')">+ Reservar</span></td>`;
+        }
+      });
+      thtml += '</tr>';
+    });
+  });
+
+  thtml += '</tbody></table>';
+  wrap.innerHTML = thtml;
+}
+
+async function aulasRefresh() {
+  const fechaInput = document.getElementById('aulas-fecha').value;
+  if (fechaInput) {
+    delete reservasCache[fechaInput];
+    await aulasBuild();
+  }
+}
+
+// ── Modal reservar ─────────────────────────────────────────────────────────
+function reservaMostrarModal(fecha, aula, sesion, dia) {
+  reservaActual = { fecha, aula, sesion, dia };
+  const meta = DB.sesiones[sesion];
+  const dt = new Date(fecha+'T12:00:00');
+  const fechaLabel = dt.toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});
+
+  document.getElementById('reserva-modal-title').textContent = `Reservar Aula ${aula}`;
+  document.getElementById('reserva-info').innerHTML =
+    `<strong>Aula:</strong> ${aula} &nbsp;|&nbsp; <strong>Sesión:</strong> ${meta.label} (${meta.hora})<br>
+     <strong>Fecha:</strong> ${fechaLabel}`;
+  document.getElementById('reserva-motivo').value = '';
+
+  // Populate docente selector
+  const sel = document.getElementById('reserva-docente');
+  if (sel.options.length <= 1 && DB) {
+    Object.entries(DB.docentes)
+      .sort((a,b) => a[1].nombre.localeCompare(b[1].nombre,'es'))
+      .forEach(([code, info]) => {
+        const opt = document.createElement('option');
+        opt.value = info.nombre; opt.textContent = info.nombre;
+        sel.appendChild(opt);
+      });
+  }
+  sel.value = '';
+  document.getElementById('reserva-modal').classList.remove('hidden');
+}
+
+function reservaCloseModal() {
+  document.getElementById('reserva-modal').classList.add('hidden');
+  reservaActual = null;
+}
+
+async function reservaConfirmar() {
+  if (!reservaActual) return;
+  const docente = document.getElementById('reserva-docente').value;
+  const motivo  = document.getElementById('reserva-motivo').value.trim();
+  if (!docente) { alert('Selecciona tu nombre.'); return; }
+
+  const btn = document.querySelector('#reserva-modal .btn-primary');
+  btn.textContent = '⏳ Guardando...'; btn.disabled = true;
+
+  try {
+    await supaFetch('POST', 'reservas', {
+      fecha:   reservaActual.fecha,
+      aula:    reservaActual.aula,
+      sesion:  reservaActual.sesion,
+      docente: docente,
+      motivo:  motivo || null
+    });
+    reservaCloseModal();
+    delete reservasCache[reservaActual?.fecha];
+    await aulasBuild();
+  } catch(e) {
+    alert('Error al guardar la reserva: ' + e.message);
+  } finally {
+    btn.textContent = '✅ Confirmar reserva'; btn.disabled = false;
+  }
+}
+
+// ── Modal cancelar ─────────────────────────────────────────────────────────
+function reservaMostrarCancelar(id, aula, sesion, docente, motivo) {
+  cancelarId = id;
+  const meta = DB.sesiones[sesion];
+  document.getElementById('cancelar-info').innerHTML =
+    `<strong>Aula ${aula}</strong> · ${meta.label} (${meta.hora})<br>
+     Reservada por: <strong>${abreviar(docente)}</strong>
+     ${motivo ? `<br>Motivo: ${motivo}` : ''}`;
+  document.getElementById('cancelar-modal').classList.remove('hidden');
+}
+
+function cancelarCloseModal() {
+  document.getElementById('cancelar-modal').classList.add('hidden');
+  cancelarId = null;
+}
+
+async function reservaCancelar() {
+  if (!cancelarId) return;
+  const btn = document.querySelector('#cancelar-modal .btn-primary');
+  btn.textContent = '⏳ Cancelando...'; btn.disabled = true;
+
+  try {
+    await supaFetch('DELETE', `reservas?id=eq.${cancelarId}`);
+    cancelarCloseModal();
+    const fecha = document.getElementById('aulas-fecha').value;
+    delete reservasCache[fecha];
+    await aulasBuild();
+  } catch(e) {
+    alert('Error al cancelar: ' + e.message);
+  } finally {
+    btn.textContent = '🗑 Sí, cancelar'; btn.disabled = false;
+  }
+}
+
+document.getElementById('aulas-fecha').addEventListener('change', aulasBuild);
+
+// Set today's date by default in aulas
+(function() {
+  const today = new Date();
+  const y = today.getFullYear();
+  const m = String(today.getMonth()+1).padStart(2,'0');
+  const d = String(today.getDate()).padStart(2,'0');
+  document.getElementById('aulas-fecha').value = `${y}-${m}-${d}`;
+})();
 
 document.getElementById('sel-docente').addEventListener('change', renderHorario);
 document.getElementById('sel-dia').addEventListener('change', renderHorario);
