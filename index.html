@@ -494,66 +494,95 @@
     }
 
 
-    /* ── GRUPOS ──────────────────────────────────────── */
-    .grupos-header { margin-bottom: 16px; }
-    .grupos-header h2 { font-size: 1.25rem; font-weight: 800; color: var(--text); margin-bottom: 4px; }
-    .grupos-header p  { font-size: 0.83rem; color: var(--text-mid); }
-    .grupos-toolbar {
-      display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap;
-      margin-bottom: 24px; background: var(--card);
-      border: 1px solid var(--border); border-radius: var(--radius);
-      padding: 16px 20px; box-shadow: var(--shadow);
+
+    /* ── AHORA ───────────────────────────────────────── */
+    .ahora-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+    @media (max-width: 600px) { .ahora-grid { grid-template-columns: 1fr; } }
+    .ahora-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 20px; box-shadow: var(--shadow);
     }
-    /* Grupos weekly table */
-    .grupos-table-wrap { overflow-x: auto; border-radius: 14px; border: 1px solid var(--border); box-shadow: var(--shadow); }
-    table.grupos-table {
-      width: 100%; border-collapse: collapse; background: var(--card);
-      font-size: 0.82rem; min-width: 620px;
+    .ahora-card h3 {
+      font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .07em; color: var(--text-soft); margin-bottom: 12px;
     }
-    table.grupos-table thead th {
-      background: var(--navy); color: #bfdbfe;
-      padding: 11px 12px; font-weight: 700; font-size: 0.8rem;
-      text-align: center; border-bottom: 2px solid var(--navy2);
-      position: sticky; top: 0; z-index: 3;
-    }
-    table.grupos-table thead th:first-child {
-      text-align: left; width: 130px; padding-left: 14px;
-      position: sticky; left: 0; top: 0; z-index: 4; background: var(--navy);
-    }
-    table.grupos-table td {
-      padding: 8px 10px; border-bottom: 1px solid var(--border);
-      border-right: 1px solid var(--border); text-align: center;
-      vertical-align: middle;
-    }
-    table.grupos-table td:first-child {
-      text-align: left; font-weight: 700; font-size: 0.78rem;
-      color: var(--text-mid); padding-left: 14px;
-      background: var(--surface2);
-      position: sticky; left: 0; z-index: 1;
-    }
-    table.grupos-table tr:last-child td { border-bottom: none; }
-    table.grupos-table tr:hover td { background: #f0f6ff; }
-    table.grupos-table tr:hover td:first-child { background: #e0edff; }
-    .grupo-cel {
-      display: inline-block; text-align: left;
-      font-size: 0.78rem; line-height: 1.4;
-    }
-    .grupo-cel-materia { font-weight: 700; color: var(--text); display: block; }
-    .grupo-cel-doc     { color: var(--text-mid); font-size: 0.72rem; display: block; }
-    .grupo-cel-aula    { color: var(--accent); font-size: 0.7rem; display: block; }
-    .grupo-libre       { color: var(--text-soft); font-style: italic; font-size: 0.75rem; }
-    .grupo-recreo      { color: var(--green); font-weight: 600; font-size: 0.78rem; }
-    .grupos-title {
-      display: flex; align-items: center; gap: 14px; margin-bottom: 20px;
-    }
-    .grupos-title-badge {
+    .ahora-sesion-badge {
+      display: inline-block;
       background: linear-gradient(135deg, var(--navy), var(--accent));
-      color: #fff; font-size: 1.4rem; font-weight: 900;
-      padding: 10px 20px; border-radius: 12px;
-      box-shadow: 0 4px 14px #2563eb25; letter-spacing: -0.02em;
+      color: #fff; font-size: 1.6rem; font-weight: 900;
+      padding: 10px 20px; border-radius: 12px; margin-bottom: 8px;
+      letter-spacing: -0.02em; box-shadow: 0 4px 14px #2563eb25;
     }
-    .grupos-title-info h3 { font-size: 1.05rem; font-weight: 800; color: var(--text); }
-    .grupos-title-info p  { font-size: 0.8rem; color: var(--text-soft); margin-top: 2px; }
+    .ahora-hora { font-size: 1rem; font-weight: 600; color: var(--text); }
+    .ahora-hora small { color: var(--text-soft); font-weight: 400; }
+    .ahora-clock { font-size: 2rem; font-weight: 900; color: var(--accent);
+      font-family: 'JetBrains Mono', monospace; letter-spacing: -0.02em; }
+    .ahora-dia { font-size: 0.9rem; color: var(--text-mid); margin-top: 2px; }
+
+    /* Buscador aula */
+    .aula-search-wrap { position: relative; }
+    .aula-search-wrap input {
+      width: 100%; padding: 10px 14px 10px 38px;
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--radius); font-family: 'Inter',sans-serif;
+      font-size: 0.92rem; color: var(--text); transition: border-color .15s;
+    }
+    .aula-search-wrap input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+    .aula-search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-soft); font-size: 1rem; pointer-events: none; }
+    .aula-search-result {
+      margin-top: 10px; font-size: 0.85rem;
+      min-height: 32px;
+    }
+    .aula-result-ocupada {
+      background: var(--accent-soft); border: 1px solid #93c5fd;
+      border-radius: 8px; padding: 8px 12px; color: var(--navy);
+    }
+    .aula-result-libre {
+      background: var(--green-soft); border: 1px solid #6ee7b7;
+      border-radius: 8px; padding: 8px 12px; color: var(--green);
+      font-weight: 600;
+    }
+
+    /* Guardias ahora */
+    .ahora-list { display: flex; flex-direction: column; gap: 6px; }
+    .ahora-list-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 7px 10px; background: var(--surface);
+      border-radius: 8px; font-size: 0.82rem;
+    }
+    .ahora-list-avatar {
+      width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--navy), var(--accent));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.62rem; font-weight: 800; color: #fff;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .ahora-empty { color: var(--text-soft); font-style: italic; font-size: 0.82rem; }
+
+    /* Aulas libres ahora */
+    .ahora-aulas-libres {
+      display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px;
+    }
+    .ahora-aula-tag {
+      background: var(--green-soft); border: 1px solid #6ee7b7;
+      color: var(--green); font-size: 0.75rem; font-weight: 700;
+      padding: 3px 10px; border-radius: 99px; cursor: pointer;
+      transition: all .15s;
+    }
+    .ahora-aula-tag:hover { background: var(--green); color: #fff; }
+    .ahora-fuera { text-align: center; padding: 40px 20px; }
+    .ahora-fuera .icon { font-size: 3rem; margin-bottom: 12px; }
+    .ahora-fuera h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 6px; }
+    .ahora-fuera p  { color: var(--text-mid); font-size: 0.85rem; }
+
+    /* PDF button */
+    .btn-pdf {
+      padding: 10px 18px; background: #dc2626; color: #fff; border: none;
+      border-radius: var(--radius); font-family: 'Inter',sans-serif;
+      font-size: 0.85rem; font-weight: 700; cursor: pointer;
+      transition: opacity .15s; white-space: nowrap;
+    }
+    .btn-pdf:hover { opacity: .88; }
 
     /* ── LEYENDA ─────────────────────────────────────── */
     details { margin-top: 32px; background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); }
@@ -659,7 +688,7 @@
   <button class="nav-btn" onclick="showView('ausencias')" id="nav-ausencias">📋 Ausencias</button>
   <button class="nav-btn" onclick="showView('cobertura');cobBuildTable()" id="nav-cobertura">🔴 Cobertura</button>
   <button class="nav-btn" onclick="showView('aulas');aulasBuild()" id="nav-aulas">🏫 Aulas</button>
-  <button class="nav-btn" onclick="showView('grupos')" id="nav-grupos">👥 Grupos</button>
+  <button class="nav-btn" onclick="showView('ahora');ahoraBuild()" id="nav-ahora">⚡ Ahora</button>
 </nav>
 
 <!-- MAIN -->
@@ -703,12 +732,7 @@
         <div class="mc-desc">Ocupación de todas las aulas del centro por día y sesión</div>
         <span class="mc-arrow">→</span>
       </div>
-      <div class="menu-card" onclick="showView('grupos')">
-        <div class="mc-icon">👥</div>
-        <div class="mc-title">Grupos</div>
-        <div class="mc-desc">Horario completo de cada grupo por día y sesión</div>
-        <span class="mc-arrow">→</span>
-      </div>
+
     </div>
   </div>
 
@@ -769,6 +793,7 @@
         <button class="btn-primary solo-direccion" onclick="ausAddDocente()">＋ Añadir ausente</button>
         <button class="btn-secondary solo-direccion" onclick="ausPrintParte()">🖨️ Imprimir parte</button>
         <button class="btn-secondary solo-direccion" onclick="ausDownloadWord()">⬇️ Descargar Word</button>
+        <button class="btn-pdf solo-direccion" onclick="ausDownloadPDF()">📄 Descargar PDF</button>
       </div>
     </div>
 
@@ -901,32 +926,11 @@
   </div>
 
 
-  <!-- GRUPOS -->
-  <div class="view" id="view-grupos">
-    <div class="grupos-header">
-      <h2>👥 Horario de grupos</h2>
-      <p>Selecciona la etapa y el grupo para ver su horario semanal</p>
-    </div>
-    <div class="grupos-toolbar">
-      <div class="control-group" style="flex:0 0 200px">
-        <label for="grupo-etapa">Etapa</label>
-        <select id="grupo-etapa" onchange="gruposCargarGrupos()">
-          <option value="">— Selecciona etapa —</option>
-          <option value="eso">ESO</option>
-          <option value="bach">Bachillerato</option>
-          <option value="fpbasica">FP Básica</option>
-          <option value="fp">FP Grado Medio / Superior</option>
-        </select>
-      </div>
-      <div class="control-group" style="flex:0 0 220px">
-        <label for="grupo-sel">Grupo</label>
-        <select id="grupo-sel" onchange="gruposMostrar()" disabled>
-          <option value="">— Primero elige etapa —</option>
-        </select>
-      </div>
-    </div>
-    <div id="grupos-result">
-      <div class="state-msg"><div class="icon">👥</div><p>Selecciona una etapa y un grupo.</p></div>
+
+  <!-- AHORA -->
+  <div class="view" id="view-ahora">
+    <div id="ahora-content">
+      <div class="state-msg"><div class="icon">⚡</div><p>Cargando...</p></div>
     </div>
   </div>
 
@@ -2279,153 +2283,321 @@ document.getElementById('aulas-fecha').addEventListener('change', aulasBuild);
 })();
 
 
-// ── GRUPOS ─────────────────────────────────────────────────────────────────
-const ETAPAS = {
-  eso:      { label: 'ESO',                      test: g => /^0[1-4][A-Z]$/.test(g) || /^[34]E$/.test(g) },
-  bach:     { label: 'Bachillerato',              test: g => /^[12]B[CH][A-Z]$/.test(g) },
-  fpbasica: { label: 'FP Básica',                 test: g => /^FPB\d$/.test(g) },
-  fp:       { label: 'FP Grado Medio / Superior', test: g => /^(AC|AD|AF|CG|CI|CIV|DC|GA|GAV|GEA|GU|SR|TL)\d/.test(g) },
-};
 
-// Grupos definidos por etapa (fijos, no extraídos del JSON para evitar combinados)
-const GRUPOS_FIJOS = {
-  eso:      ['01A','01B','01C','01D','02A','02B','02C','02D','03A','03B','03C','3E','04A','04B','04C','4E'],
-  bach:     ['1BCA','1BCB','1BHS','2BCT','2BHA','2BHB'],
-  fpbasica: ['FPB1','FPB2'],
-  fp:       ['AC1','AC2','AD2','AF1','AF2','CG1','CG2','CI1','CI2','CIV1','CIV2','DC1','DC2','GA1','GAV1','GAV2','GEA2','GU1','SR1','TL1'],
-};
 
-function gruposExtraerTodos(etapa) {
-  // Return fixed list filtered to only groups that actually exist in JSON
-  if (!DB || !etapa) return [];
-  const existentes = new Set();
-  Object.values(DB.docentes).forEach(info => {
-    Object.values(info.horario).forEach(dia => {
-      Object.values(dia).forEach(slot => {
-        const s = Array.isArray(slot) ? slot[0] : slot;
-        const g = s.grupo || '';
-        if (!g) return;
-        g.split(/\s*-\s*/).forEach(part => existentes.add(part.trim()));
-      });
-    });
-  });
-  return (GRUPOS_FIJOS[etapa] || []).filter(g => existentes.has(g));
+// ── AHORA ──────────────────────────────────────────────────────────────────
+const SESS_HORARIOS = [
+  {sess:'1',  start:'08:00', end:'08:30'},
+  {sess:'2',  start:'08:30', end:'09:20'},
+  {sess:'3',  start:'09:25', end:'10:15'},
+  {sess:'3R', start:'10:20', end:'11:10'},
+  {sess:'4',  start:'11:10', end:'11:35'},
+  {sess:'5',  start:'11:35', end:'12:25'},
+  {sess:'6',  start:'12:30', end:'13:25'},
+  {sess:'7',  start:'13:30', end:'14:20'},
+  {sess:'8',  start:'14:25', end:'15:15'},
+];
+
+function getSesionActual() {
+  const now = new Date();
+  const hm = now.getHours() * 60 + now.getMinutes();
+  for (const s of SESS_HORARIOS) {
+    const [sh, sm] = s.start.split(':').map(Number);
+    const [eh, em] = s.end.split(':').map(Number);
+    if (hm >= sh*60+sm && hm < eh*60+em) return s;
+  }
+  return null;
 }
 
-function gruposCargarGrupos() {
-  const etapa = document.getElementById('grupo-etapa').value;
-  const sel   = document.getElementById('grupo-sel');
-  sel.innerHTML = '<option value="">— Selecciona grupo —</option>';
-
-  if (!etapa || !DB) { sel.disabled = true; return; }
-
-  const filtrados = gruposExtraerTodos(etapa);
-
-  filtrados.forEach(g => {
-    const opt = document.createElement('option');
-    opt.value = g; opt.textContent = g;
-    sel.appendChild(opt);
-  });
-
-  sel.disabled = false;
-  document.getElementById('grupos-result').innerHTML =
-    '<div class="state-msg"><div class="icon">👥</div><p>Ahora selecciona el grupo.</p></div>';
+function getDayName() {
+  const map = {1:'Lunes',2:'Martes',3:'Miercoles',4:'Jueves',5:'Viernes'};
+  return map[new Date().getDay()] || null;
 }
 
-function gruposMostrar() {
-  const grupo = document.getElementById('grupo-sel').value;
-  const el    = document.getElementById('grupos-result');
-  if (!grupo || !DB) return;
+let ahoraTimer = null;
 
-  const DAYS = ['Lunes','Martes','Miercoles','Jueves','Viernes'];
-  const DAY_LABELS2 = {Lunes:'Lunes',Martes:'Martes',Miercoles:'Miércoles',Jueves:'Jueves',Viernes:'Viernes'};
-  const SESS = ['1','2','3','3R','4','5','6','7','8'];
+function ahoraBuild() {
+  if (ahoraTimer) clearInterval(ahoraTimer);
+  ahoraRender();
+  ahoraTimer = setInterval(ahoraRender, 30000); // refresh every 30s
+}
 
-  // Build horario: sess -> day -> {materia, docente, aula}
-  const horario = {};
-  SESS.forEach(s => { horario[s] = {}; });
+function ahoraRender() {
+  if (!DB) return;
+  const el = document.getElementById('ahora-content');
+  const now = new Date();
+  const dia = getDayName();
+  const timeStr = now.toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'});
+  const dateStr = now.toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'});
 
-  Object.values(DB.docentes).forEach(info => {
-    DAYS.forEach(day => {
-      const horDia = info.horario[day] || {};
-      SESS.forEach(sess => {
-        const slot = horDia[sess];
-        if (!slot) return;
-        const arr = Array.isArray(slot) ? slot : [slot];
-        arr.forEach(s => {
-          // Check if this slot includes our group
-          const grupoSlot = s.grupo || '';
-          // Match if grupo is part of the slot's grupo (handles combined groups like "01A - 01B")
-          const gruposSlot = grupoSlot.split(/\s*-\s*/).map(g => g.trim());
-          if (!gruposSlot.includes(grupo)) return;
-          // Skip if materia is just a sigla/activity (no real class content)
-          if (s.tipo === 'actividad') return;
-          if (!horario[sess][day]) {
-            horario[sess][day] = {
-              materia: s.materia || s.sigla || '',
-              docente: info.nombre,
-              aula:    s.aula || '',
-            };
-          }
-        });
-      });
+  if (!dia) {
+    el.innerHTML = `<div class="ahora-fuera">
+      <div class="icon">🏖️</div>
+      <h3>Fuera de jornada lectiva</h3>
+      <p>Hoy es ${dateStr}.<br>Los horarios son de lunes a viernes.</p>
+    </div>`;
+    return;
+  }
+
+  const sesActual = getSesionActual();
+  const metaSes = sesActual ? DB.sesiones[sesActual.sess] : null;
+
+  // ── Sesión actual card ──────────────────────────────────────────────
+  let sesHtml = '';
+  if (sesActual && metaSes) {
+    sesHtml = `<div class="ahora-sesion-badge">${metaSes.label}</div>
+      <div class="ahora-hora">${metaSes.hora} <small>· ${sesActual.sess === '4' ? '☕ Recreo' : 'En curso'}</small></div>`;
+  } else {
+    // Find next session
+    const hm = now.getHours()*60 + now.getMinutes();
+    const next = SESS_HORARIOS.find(s => {
+      const [h,m] = s.start.split(':').map(Number);
+      return h*60+m > hm;
     });
-  });
+    if (next) {
+      const nm = DB.sesiones[next.sess];
+      sesHtml = `<div style="color:var(--text-soft);font-size:.9rem;margin-bottom:6px">Entre sesiones</div>
+        <div class="ahora-hora">Próxima: <strong>${nm.label}</strong> a las ${next.start}</div>`;
+    } else {
+      sesHtml = `<div style="color:var(--text-soft);font-size:.9rem">Jornada finalizada</div>`;
+    }
+  }
 
-  // Count sessions with content
-  let totalSesiones = 0;
-  SESS.forEach(sess => { DAYS.forEach(day => { if (horario[sess][day]) totalSesiones++; }); });
+  // ── Guardias ahora ──────────────────────────────────────────────────
+  let guardiasHtml = '';
+  if (sesActual) {
+    const sigBuscar = sesActual.sess === '4' ? 'GREC' : 'G';
+    const guardias = [];
+    Object.values(DB.docentes).forEach(info => {
+      const slot = (info.horario[dia]||{})[sesActual.sess];
+      if (!slot) return;
+      const arr = Array.isArray(slot) ? slot : [slot];
+      if (arr.some(s => s.sigla === sigBuscar)) guardias.push(info.nombre);
+    });
+    if (guardias.length > 0) {
+      guardiasHtml = guardias.map(n => {
+        const ini = n.split(' ').filter(w=>/^[A-ZÁÉÍÓÚ]/i.test(w)).slice(0,2).map(w=>w[0]).join('');
+        return `<div class="ahora-list-item">
+          <div class="ahora-list-avatar">${ini}</div>
+          <span>${tc2(n)}</span>
+        </div>`;
+      }).join('');
+    } else {
+      guardiasHtml = '<span class="ahora-empty">Sin guardias asignadas</span>';
+    }
+  } else {
+    guardiasHtml = '<span class="ahora-empty">No hay sesión en curso</span>';
+  }
 
-  // Detect etapa label
-  const etapaSel = document.getElementById('grupo-etapa');
-  const etapaLabel = etapaSel.options[etapaSel.selectedIndex]?.text || '';
+  // ── Aulas libres ahora ──────────────────────────────────────────────
+  let aulasLibresHtml = '';
+  if (sesActual) {
+    const aulasOcupadas = new Set();
+    Object.values(DB.docentes).forEach(info => {
+      const slot = (info.horario[dia]||{})[sesActual.sess];
+      if (!slot) return;
+      const arr = Array.isArray(slot) ? slot : [slot];
+      arr.forEach(s => { if (s.aula) aulasOcupadas.add(s.aula); });
+    });
+    const todasAulas = AULAS_ORDEN.flatMap(p => p.aulas);
+    const libres = todasAulas.filter(a => !aulasOcupadas.has(a));
+    aulasLibresHtml = libres.map(a =>
+      `<span class="ahora-aula-tag" title="Aula ${a} libre" onclick="buscarAulaDesdeAhora('${a}')">${a}</span>`
+    ).join('');
+  } else {
+    aulasLibresHtml = '<span class="ahora-empty">No hay sesión en curso</span>';
+  }
 
-  // Build table
-  let html = `<div class="grupos-title">
-    <div class="grupos-title-badge">${grupo}</div>
-    <div class="grupos-title-info">
-      <h3>${etapaLabel}</h3>
-      <p>${totalSesiones} sesiones lectivas semanales</p>
+  el.innerHTML = `
+    <div style="margin-bottom:20px">
+      <div style="font-size:1.1rem;font-weight:800;color:var(--text);margin-bottom:2px">${dateStr.charAt(0).toUpperCase()+dateStr.slice(1)}</div>
+      <div class="ahora-clock">${timeStr}</div>
     </div>
-  </div>
-  <div class="grupos-table-wrap"><table class="grupos-table">
-    <thead><tr><th>Sesión</th>`;
 
-  DAYS.forEach(d => { html += `<th>${DAY_LABELS2[d]}</th>`; });
-  html += '</tr></thead><tbody>';
+    <div class="ahora-grid">
+      <div class="ahora-card">
+        <h3>⏰ Sesión actual</h3>
+        ${sesHtml}
+      </div>
+      <div class="ahora-card">
+        <h3>🔍 Buscar por aula</h3>
+        <div class="aula-search-wrap">
+          <span class="aula-search-icon">🚪</span>
+          <input type="text" id="aula-search-input" placeholder="Ej: 102, B06, GIM1..."
+            oninput="buscarAula(this.value)" autocomplete="off">
+        </div>
+        <div class="aula-search-result" id="aula-search-result"></div>
+      </div>
+    </div>
 
-  SESS.forEach(sess => {
-    const meta = DB.sesiones[sess];
-    const isRecreo = sess === '4';
-    html += `<tr><td><strong>${meta.label}</strong><br><small style="font-weight:400">${meta.hora}</small></td>`;
-    DAYS.forEach(day => {
-      // Viernes has no session 8
-      if (day === 'Viernes' && sess === '8') {
-        html += `<td><span class="grupo-libre">—</span></td>`;
-        return;
-      }
-      if (isRecreo) {
-        html += `<td><span class="grupo-recreo">☕ Recreo</span></td>`;
-        return;
-      }
-      const entry = horario[sess][day];
-      if (!entry) {
-        html += `<td><span class="grupo-libre">Libre</span></td>`;
-      } else {
-        const docShort = abreviar(entry.docente);
-        const matShort = entry.materia.length > 25 ? entry.materia.substring(0,24)+'\u2026' : entry.materia;
-        html += `<td><div class="grupo-cel">
-          <span class="grupo-cel-materia" title="${entry.materia}">${matShort}</span>
-          <span class="grupo-cel-doc">${docShort}</span>
-          ${entry.aula ? `<span class="grupo-cel-aula">🚪 ${entry.aula}</span>` : ''}
-        </div></td>`;
+    <div class="ahora-grid">
+      <div class="ahora-card">
+        <h3>🛡️ Guardias en esta sesión</h3>
+        <div class="ahora-list">${guardiasHtml}</div>
+      </div>
+      <div class="ahora-card">
+        <h3>✅ Aulas libres ahora</h3>
+        <div class="ahora-aulas-libres">${aulasLibresHtml}</div>
+      </div>
+    </div>`;
+}
+
+function buscarAula(query) {
+  const result = document.getElementById('aula-search-result');
+  if (!result || !DB || !query.trim()) { if(result) result.innerHTML=''; return; }
+
+  const dia = getDayName();
+  const sesActual = getSesionActual();
+  if (!dia || !sesActual) {
+    result.innerHTML = '<span style="color:var(--text-soft);font-size:.8rem">No hay sesión en curso</span>';
+    return;
+  }
+
+  const aula = query.trim().toUpperCase();
+  const ocupantes = [];
+  Object.values(DB.docentes).forEach(info => {
+    const slot = (info.horario[dia]||{})[sesActual.sess];
+    if (!slot) return;
+    const arr = Array.isArray(slot) ? slot : [slot];
+    arr.forEach(s => {
+      if ((s.aula||'').toUpperCase() === aula) {
+        ocupantes.push({nombre: info.nombre, grupo: s.grupo||'', materia: s.materia||s.sigla||''});
       }
     });
-    html += '</tr>';
   });
 
-  html += '</tbody></table></div>';
-  el.innerHTML = html;
+  if (ocupantes.length === 0) {
+    result.innerHTML = `<div class="aula-result-libre">✅ Aula ${aula} libre ahora</div>`;
+  } else {
+    result.innerHTML = ocupantes.map(o =>
+      `<div class="aula-result-ocupada">
+        <strong>${o.grupo ? o.grupo+' · ' : ''}${o.materia}</strong><br>
+        <span style="font-size:.78rem">${tc2(o.nombre)}</span>
+      </div>`
+    ).join('');
+  }
+}
+
+function buscarAulaDesdeAhora(aula) {
+  const input = document.getElementById('aula-search-input');
+  if (input) { input.value = aula; buscarAula(aula); }
+  input.scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+// Conflict check when reserving
+const _origReservaConfirmar = reservaConfirmar;
+async function reservaConfirmar() {
+  if (!reservaActual) return;
+  // Check if aula has a class at that time
+  const {fecha, aula, sesion, dia} = reservaActual;
+  const aulasOcupadas = new Set();
+  Object.values(DB.docentes).forEach(info => {
+    const slot = (info.horario[dia]||{})[sesion];
+    if (!slot) return;
+    const arr = Array.isArray(slot) ? slot : [slot];
+    arr.forEach(s => { if (s.aula) aulasOcupadas.add(s.aula); });
+  });
+  if (aulasOcupadas.has(aula)) {
+    if (!confirm(`⚠️ El aula ${aula} tiene clase asignada en esta sesión. ¿Seguro que quieres reservarla igualmente?`)) return;
+  }
+  await _origReservaConfirmar();
+}
+
+// ── PDF (punto 3) ──────────────────────────────────────────────────────────
+function ausDownloadPDF() {
+  const fecha = ausGetFecha();
+  if (!fecha || !DB) { alert('Selecciona una fecha.'); return; }
+  const data = ausGetData(fecha);
+  if (data.length === 0) { alert('No hay ausencias registradas para esta fecha.'); return; }
+
+  const dayName = ausDayName(fecha);
+  const [year, month, day] = fecha.split('-');
+  const monthNames = ['enero','febrero','marzo','abril','mayo','junio','julio',
+    'agosto','septiembre','octubre','noviembre','diciembre'];
+  const monthName = monthNames[parseInt(month)-1];
+  const SESS_NUMS  = {'2':1,'3':2,'3R':3,'5':4,'6':5,'7':6,'8':7};
+
+  function getAusForSess(sessKey) {
+    return data.filter(a => a.sesiones.some(s => s.sess === sessKey && s.incluir !== false))
+      .map(a => {
+        const s = a.sesiones.find(s => s.sess === sessKey);
+        return { docente: a.nombre, grupo: s?.grupo||'', aula: s?.aula||'' };
+      });
+  }
+
+  const daysLine = ['Lunes','Martes','Miércoles','Jueves','Viernes'].map(d => {
+    const dk = d==='Miércoles'?'Miercoles':d;
+    return dk===dayName ? `<strong style="font-size:12pt;text-transform:uppercase">${d}</strong>` : d;
+  }).join(' – ');
+
+  function tableHTML(sessKeys) {
+    const NC = 'white-space:nowrap;overflow:hidden;text-overflow:ellipsis';
+    let t = `<table style="width:100%;border-collapse:collapse;font-size:8pt;font-family:Arial;table-layout:fixed">
+      <colgroup><col style="width:5%"><col style="width:22%"><col style="width:7%"><col style="width:6%"><col style="width:9%"><col style="width:36%"><col style="width:15%"></colgroup>
+      <tr style="background:#1F3864;color:white">
+        <th style="border:1px solid #999;padding:3px 4px;text-align:center">Hª</th>
+        <th style="border:1px solid #999;padding:3px 4px">Profesor ausente</th>
+        <th style="border:1px solid #999;padding:3px 4px;text-align:center">Curso</th>
+        <th style="border:1px solid #999;padding:3px 4px;text-align:center">Aula</th>
+        <th style="border:1px solid #999;padding:3px 4px;text-align:center">Tarea</th>
+        <th style="border:1px solid #999;padding:3px 4px">Profesor que realiza de guardia</th>
+        <th style="border:1px solid #999;padding:3px 4px;text-align:center">Firmas</th>
+      </tr>`;
+    sessKeys.forEach(sk => {
+      const ausData = getAusForSess(sk);
+      const isSess7 = sk === '8';
+      for (let r = 0; r < (isSess7 ? 1 : 8); r++) {
+        const aus = ausData[r];
+        const numBg = r===0 ? 'background:#DCE6F1;font-weight:bold;text-align:center' : 'text-align:center';
+        const docName = aus ? (aus.docente.length>28?aus.docente.substring(0,27)+'\u2026':aus.docente) : '';
+        const grupoTxt = aus ? aus.grupo.replace(/ - /g,'/').replace(/ /g,'') : '';
+        t += `<tr style="height:15px">
+          <td style="border:1px solid #999;padding:1px 2px;${numBg}">${r===0?SESS_NUMS[sk]:''}</td>
+          <td style="border:1px solid #999;padding:1px 3px;${NC}">${docName}</td>
+          <td style="border:1px solid #999;padding:1px 2px;text-align:center;${NC}">${grupoTxt}</td>
+          <td style="border:1px solid #999;padding:1px 2px;text-align:center;${NC}">${aus&&aus.aula?aus.aula:''}</td>
+          <td style="border:1px solid #999;padding:1px 2px"></td>
+          <td style="border:1px solid #999;padding:1px 2px"></td>
+          <td style="border:1px solid #999;padding:1px 2px"></td>
+        </tr>`;
+      }
+      if (!isSess7) {
+        t += `<tr style="height:15px"><td style="border:1px solid #999"></td><td style="border:1px solid #999"></td><td style="border:1px solid #999"></td><td style="border:1px solid #999"></td><td style="border:1px solid #999"></td><td style="border:1px solid #999;padding:1px 3px;font-weight:bold">Convivencia:</td><td style="border:1px solid #999"></td></tr>`;
+        t += `<tr style="height:15px"><td style="border:1px solid #999"></td><td style="border:1px solid #999"></td><td style="border:1px solid #999"></td><td style="border:1px solid #999"></td><td style="border:1px solid #999"></td><td style="border:1px solid #999;padding:1px 3px;font-weight:bold">Biblioteca:</td><td style="border:1px solid #999"></td></tr>`;
+      }
+    });
+    return t + '</table>';
+  }
+
+  const footnote = `<p style="font-size:7.5pt;font-style:italic;margin:4px 0 2px">La tarea se recogerá en el <b>organizador de consejería</b></p>`;
+
+  const printWin = window.open('', '_blank');
+  printWin.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Parte Guardias ${fecha}</title>
+  <style>
+    @page { size: A4; margin: 1cm 1.2cm; }
+    body { font-family: Arial; font-size: 9pt; margin: 0; }
+    h1 { text-align:center; font-size:12pt; margin:3px 0; }
+    p  { margin:2px 0; font-size:8.5pt; }
+    .page2 { page-break-before: always; }
+    @media print { .no-print { display:none; } }
+  </style></head><body>
+  <div class="no-print" style="padding:10px;background:#f0f6ff;margin-bottom:10px;border-radius:8px;font-family:Arial;font-size:12px">
+    <strong>Vista previa del parte</strong> —
+    <button onclick="window.print()" style="background:#1F3864;color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-weight:bold">🖨️ Imprimir / Guardar PDF</button>
+    <button onclick="window.close()" style="margin-left:8px;background:#eee;border:none;padding:6px 14px;border-radius:6px;cursor:pointer">✕ Cerrar</button>
+  </div>
+  <h1>PARTE DIARIO DE GUARDIAS</h1>
+  <p style="text-align:center;font-size:9pt">CURSO 2025 - 26</p>
+  <p>Parte diario de guardia ${day} de ${monthName} de ${year}</p>
+  <p style="margin:3px 0 6px">${daysLine}</p>
+  ${tableHTML(['2','3','3R'])}
+  ${footnote}
+  <div class="page2">
+    ${tableHTML(['5','6','7','8'])}
+    ${footnote}
+  </div>
+  </body></html>`);
+  printWin.document.close();
 }
 
 document.getElementById('sel-docente').addEventListener('change', renderHorario);
