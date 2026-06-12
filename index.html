@@ -682,6 +682,17 @@
     }
     .btn-pdf:hover { opacity: .88; }
 
+
+    .perfil-btn {
+      width: 100%; padding: 12px 16px; text-align: left;
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--radius); font-family: 'Inter',sans-serif;
+      font-size: 0.9rem; font-weight: 700; color: var(--text);
+      cursor: pointer; transition: all .15s;
+    }
+    .perfil-btn:hover { border-color: var(--accent); background: var(--accent-soft); }
+    .perfil-btn.activo { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+
     /* ── LEYENDA ─────────────────────────────────────── */
     details { margin-top: 32px; background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); }
     summary { padding: 14px 18px; font-size: 0.82rem; font-weight: 600; cursor: pointer; color: var(--text-mid); list-style: none; }
@@ -775,7 +786,28 @@
       <p>Palencia · Gestión de Horarios</p>
     </div>
     <div class="header-badge">2025/26</div>
-    <div id="role-badge" style="background:#374151;color:#bfdbfe;font-size:0.7rem;font-weight:600;padding:4px 10px;border-radius:99px;border:1px solid #ffffff20">👤 Docente</div>
+    <div id="role-badge" style="background:#374151;color:#bfdbfe;font-size:0.7rem;font-weight:600;padding:4px 10px;border-radius:99px;border:1px solid #ffffff20;cursor:pointer" onclick="mostrarCambioPerfil()" title="Cambiar perfil">👤 Docente ▾</div>
+
+  <!-- Modal cambio perfil -->
+  <div id="perfil-modal" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width:340px">
+      <div class="modal-header">
+        <h3>Cambiar perfil</h3>
+        <button class="modal-close" onclick="cerrarCambioPerfil()">✕</button>
+      </div>
+      <div class="modal-body" style="display:flex;flex-direction:column;gap:10px">
+        <button onclick="cambiarPerfil('docente')" class="perfil-btn" id="perfil-btn-docente">
+          👤 Docente <span style="font-size:.75rem;color:var(--text-soft);font-weight:400">(VC2526)</span>
+        </button>
+        <button onclick="cambiarPerfil('direccion')" class="perfil-btn" id="perfil-btn-direccion">
+          👔 Equipo Directivo <span style="font-size:.75rem;color:var(--text-soft);font-weight:400">(EGL2530)</span>
+        </button>
+        <button onclick="cerrarSesion()" class="perfil-btn" style="background:var(--surface2);color:var(--red);border-color:#fca5a5">
+          🚪 Cerrar sesión
+        </button>
+      </div>
+    </div>
+  </div>
   </div>
 </header>
 
@@ -1333,18 +1365,36 @@ const SESS_HORAS = {
 };
 const SESS_ORDER = ['1','2','3','3R','4','5','6','7','8'];
 
-// Storage key: ausencias:YYYY-MM-DD
-function ausStorageKey(fecha) { return 'aus:' + fecha; }
+// ── AUSENCIAS EN SUPABASE ─────────────────────────────────────────────────
+let ausCache = {}; // fecha -> [{id, codigo, nombre, sesiones}]
 
-function ausGetData(fecha) {
+async function ausCargarDesdeSupa(fecha) {
   try {
-    const raw = localStorage.getItem(ausStorageKey(fecha));
-    return raw ? JSON.parse(raw) : [];
-  } catch(e) { return []; }
+    const rows = await supaFetch('GET', `ausencias?fecha=eq.${fecha}&select=*`);
+    ausCache[fecha] = rows;
+    return rows;
+  } catch(e) {
+    console.error('Error cargando ausencias:', e);
+    ausCache[fecha] = [];
+    return [];
+  }
 }
 
-function ausSaveData(fecha, data) {
-  try { localStorage.setItem(ausStorageKey(fecha), JSON.stringify(data)); } catch(e) {}
+function ausGetData(fecha) {
+  return ausCache[fecha] || [];
+}
+
+async function ausSaveNew(fecha, codigo, nombre, sesiones) {
+  const row = await supaFetch('POST', 'ausencias', { fecha, codigo, nombre, sesiones });
+  if (!ausCache[fecha]) ausCache[fecha] = [];
+  ausCache[fecha].push(Array.isArray(row) ? row[0] : row);
+}
+
+async function ausDeleteById(id, fecha) {
+  await supaFetch('DELETE', `ausencias?id=eq.${id}`);
+  if (ausCache[fecha]) {
+    ausCache[fecha] = ausCache[fecha].filter(a => a.id !== id);
+  }
 }
 
 function ausGetFecha() { return document.getElementById('aus-fecha').value; }
@@ -1357,11 +1407,13 @@ function ausDayName(fecha) {
 }
 
 // Render the list of ausentes for selected date
-function ausRender() {
+async function ausRender() {
   const fecha = ausGetFecha();
   const lista = document.getElementById('aus-lista');
   const empty = document.getElementById('aus-empty');
   if (!fecha || !DB) { lista.innerHTML=''; empty.style.display=''; return; }
+  // Load from Supabase
+  await ausCargarDesdeSupa(fecha);
 
   const dayName = ausDayName(fecha);
   if (!['Lunes','Martes','Miercoles','Jueves','Viernes'].includes(dayName)) {
@@ -1378,7 +1430,7 @@ function ausRender() {
 
   let html = `<div class="parte-print-header"><h2>Parte de Guardias · ${dateLabel}</h2></div>`;
 
-  data.forEach((aus, idx) => {
+  data.forEach((aus) => {
     const info = DB.docentes[aus.codigo];
     if (!info) return;
     const initials = info.nombre.split(' ').filter(w=>/^[A-ZÁÉÍÓÚÑ]/i.test(w)).slice(0,2).map(w=>w[0]).join('');
@@ -1397,13 +1449,11 @@ function ausRender() {
       html += '<p style="color:var(--text-soft);font-size:.83rem;padding:4px 0">Sin sesiones marcadas</p>';
     } else {
       // Only show sessions with clase or G
-      const sesValidas = sesAusentes.filter(sess => {
-        const slot = horDia[sess];
-        if (!slot) return false;
-        const arr = Array.isArray(slot) ? slot : [slot];
-        return arr[0].tipo === 'clase' || arr[0].tipo === 'otro' || arr[0].sigla === 'G';
-      });
-      sesValidas.forEach(sess => {
+      // sesiones from Supabase are objects {sess, grupo, aula, incluir}
+      const sesObjetos = Array.isArray(aus.sesiones) ? aus.sesiones : [];
+      const sesValidas = sesObjetos.filter(s => s.incluir !== false);
+      sesValidas.forEach(sesObj => {
+        const sess = sesObj.sess || sesObj;
         const slot = horDia[sess];
         const meta_label = SESS_LABELS[sess] || sess;
         const meta_hora  = SESS_HORAS[sess] || '';
@@ -1494,7 +1544,7 @@ function ausUpdateCobertura(fecha, dayName) {
   pills.innerHTML = html;
 }
 
-document.getElementById('aus-fecha').addEventListener('change', ausRender);
+document.getElementById('aus-fecha').addEventListener('change', () => ausRender());
 
 // ── Modal: añadir docente ─────────────────────────────────────────────────
 function ausAddDocente() {
@@ -1582,15 +1632,17 @@ function ausConfirmAdd() {
   if (cobView && cobView.classList.contains('active')) cobBuildTable();
 }
 
-function ausEliminar(idx) {
+async function ausEliminar(id) {
   if (!confirm('¿Eliminar este docente del parte?')) return;
   const fecha = ausGetFecha();
-  const data = ausGetData(fecha);
-  data.splice(idx, 1);
-  ausSaveData(fecha, data);
-  ausRender();
-  const cobView2 = document.getElementById('view-cobertura');
-  if (cobView2 && cobView2.classList.contains('active')) cobBuildTable();
+  try {
+    await ausDeleteById(id, fecha);
+    await ausRender();
+    const cobView2 = document.getElementById('view-cobertura');
+    if (cobView2 && cobView2.classList.contains('active')) cobBuildTable();
+  } catch(e) {
+    alert('Error al eliminar: ' + e.message);
+  }
 }
 
 // ── Imprimir ──────────────────────────────────────────────────────────────
@@ -1641,26 +1693,7 @@ async function ausDownloadWord() {
       return {
         codigo: aus.codigo,
         nombre: info ? tc2(info.nombre) : aus.codigo,
-                sesiones: aus.sesiones.map(sessKey => {
-          const horDia = (info?.horario[dayName]) || {};
-          const slot = horDia[sessKey];
-          let grupo = '', aula = '', incluir = false;
-          if (slot) {
-            const arr = Array.isArray(slot) ? slot : [slot];
-            if (arr[0].tipo === 'clase') {
-              grupo = arr[0].grupo||''; aula = arr[0].aula||''; incluir = true;
-            } else if (arr[0].tipo === 'otro') {
-              const sig = arr[0].sigla || '';
-              const pm = sig.match(/^([0-9][A-Za-z0-9]+)\s+/);
-              grupo = pm ? pm[1] : sig.split(' ')[0];
-              aula = arr[0].aula || '';
-              incluir = true;
-            } else if (arr[0].sigla === 'G') {
-              incluir = true;
-            }
-          }
-          return { sess: sessKey, grupo, aula, incluir };
-        }).filter(s => s.incluir)
+                sesiones: (Array.isArray(aus.sesiones) ? aus.sesiones : []).filter(s => s.incluir !== false)
       };
     })
   };
@@ -2809,6 +2842,31 @@ document.querySelectorAll('.sidebar-nav .nav-btn').forEach(btn => {
     if (window.innerWidth <= 700) closeSidebar();
   });
 });
+
+
+// ── CAMBIO DE PERFIL ────────────────────────────────────────────────────────
+function mostrarCambioPerfil() {
+  document.getElementById('perfil-modal').classList.remove('hidden');
+  // Mark active
+  document.getElementById('perfil-btn-docente').classList.toggle('activo', USER_ROLE==='docente');
+  document.getElementById('perfil-btn-direccion').classList.toggle('activo', USER_ROLE==='direccion');
+}
+function cerrarCambioPerfil() {
+  document.getElementById('perfil-modal').classList.add('hidden');
+}
+function cambiarPerfil(role) {
+  USER_ROLE = role;
+  sessionStorage.setItem('role', role);
+  cerrarCambioPerfil();
+  applyRole();
+}
+function cerrarSesion() {
+  sessionStorage.removeItem('auth');
+  sessionStorage.removeItem('role');
+  USER_ROLE = null;
+  cerrarCambioPerfil();
+  document.getElementById('login-screen').classList.remove('hidden');
+}
 
 document.getElementById('sel-docente').addEventListener('change', renderHorario);
 document.getElementById('sel-dia').addEventListener('change', renderHorario);
