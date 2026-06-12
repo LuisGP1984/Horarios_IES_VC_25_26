@@ -569,7 +569,10 @@
     </div>
     <button class="login-btn" onclick="checkLogin()">Entrar</button>
     <div class="login-error" id="login-error"></div>
-    <p class="login-hint">Acceso restringido al claustro del centro.<br>Contacta con el equipo directivo para obtener la contraseña.</p>
+    <p class="login-hint">
+  Usa la contraseña de <strong>docente</strong> para consultar horarios y reservar aulas.<br>
+  Usa la contraseña de <strong>dirección</strong> para gestionar ausencias y generar partes.
+</p>
   </div>
 </div>
 
@@ -582,6 +585,7 @@
       <p>Palencia · Gestión de Horarios</p>
     </div>
     <div class="header-badge">2025/26</div>
+    <div id="role-badge" style="background:#374151;color:#bfdbfe;font-size:0.7rem;font-weight:600;padding:4px 10px;border-radius:99px;border:1px solid #ffffff20">👤 Docente</div>
   </div>
 </header>
 
@@ -693,9 +697,9 @@
         <input type="date" id="aus-fecha">
       </div>
       <div class="aus-actions">
-        <button class="btn-primary" onclick="ausAddDocente()">＋ Añadir ausente</button>
-        <button class="btn-secondary" onclick="ausPrintParte()">🖨️ Imprimir parte</button>
-        <button class="btn-secondary" onclick="ausDownloadWord()">⬇️ Descargar Word</button>
+        <button class="btn-primary solo-direccion" onclick="ausAddDocente()">＋ Añadir ausente</button>
+        <button class="btn-secondary solo-direccion" onclick="ausPrintParte()">🖨️ Imprimir parte</button>
+        <button class="btn-secondary solo-direccion" onclick="ausDownloadWord()">⬇️ Descargar Word</button>
       </div>
     </div>
 
@@ -830,7 +834,9 @@
 </main>
 
 <script>
-const ACCESS_PASSWORD = 'EGL2530';
+const PWD_DIRECCION = 'EGL2530';
+const PWD_DOCENTE   = 'VC2526';
+let USER_ROLE = null; // 'direccion' | 'docente'
 const DAYS = ['Lunes','Martes','Miercoles','Jueves','Viernes'];
 const DAY_LABELS = {Lunes:'Lunes',Martes:'Martes',Miercoles:'Miércoles',Jueves:'Jueves',Viernes:'Viernes'};
 const SESSION_ORDER = ['1','2','3','3R','4','5','6','7','8'];
@@ -849,18 +855,45 @@ let DB = null;
 function checkLogin() {
   const val = document.getElementById('pw-input').value;
   const err = document.getElementById('login-error');
-  if (val === ACCESS_PASSWORD) {
+  if (val === PWD_DIRECCION) {
+    USER_ROLE = 'direccion';
     sessionStorage.setItem('auth','1');
+    sessionStorage.setItem('role','direccion');
     document.getElementById('login-screen').classList.add('hidden');
+    applyRole();
+  } else if (val === PWD_DOCENTE) {
+    USER_ROLE = 'docente';
+    sessionStorage.setItem('auth','1');
+    sessionStorage.setItem('role','docente');
+    document.getElementById('login-screen').classList.add('hidden');
+    applyRole();
   } else {
     err.textContent = 'Contraseña incorrecta.';
     document.getElementById('pw-input').value = '';
     document.getElementById('pw-input').focus();
   }
 }
+
+function applyRole() {
+  const isDireccion = USER_ROLE === 'direccion';
+  // Show/hide direccion-only elements
+  document.querySelectorAll('.solo-direccion').forEach(el => {
+    el.style.display = isDireccion ? '' : 'none';
+  });
+  // Show role badge in header
+  const badge = document.getElementById('role-badge');
+  if (badge) {
+    badge.textContent = isDireccion ? '👔 Dirección' : '👤 Docente';
+    badge.style.background = isDireccion ? '#1e4d9b' : '#374151';
+  }
+}
 function togglePw() { const i=document.getElementById('pw-input'); i.type=i.type==='password'?'text':'password'; }
 document.getElementById('pw-input').addEventListener('keydown', e => { if(e.key==='Enter') checkLogin(); });
-if (sessionStorage.getItem('auth')==='1') document.getElementById('login-screen').classList.add('hidden');
+if (sessionStorage.getItem('auth')==='1') {
+  USER_ROLE = sessionStorage.getItem('role') || 'docente';
+  document.getElementById('login-screen').classList.add('hidden');
+  setTimeout(applyRole, 100);
+}
 
 function showView(name) {
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
@@ -1109,7 +1142,7 @@ function ausRender() {
       <div class="aus-card-header">
         <div class="aus-avatar">${initials}</div>
         <div class="aus-nombre">${tc2(info.nombre)}</div>
-        <button class="aus-del-btn" onclick="ausEliminar(${idx})" title="Eliminar">🗑</button>
+        ${USER_ROLE === 'direccion' ? `<button class="aus-del-btn" onclick="ausEliminar(${idx})" title="Eliminar">🗑</button>` : ''}
       </div>
       <div class="aus-sesiones-list">`;
 
