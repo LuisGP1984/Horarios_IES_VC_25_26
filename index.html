@@ -796,12 +796,21 @@
         <button class="modal-close" onclick="cerrarCambioPerfil()">✕</button>
       </div>
       <div class="modal-body" style="display:flex;flex-direction:column;gap:10px">
-        <button onclick="cambiarPerfil('docente')" class="perfil-btn" id="perfil-btn-docente">
-          👤 Docente <span style="font-size:.75rem;color:var(--text-soft);font-weight:400">(VC2526)</span>
+        <button onclick="solicitarCambioPerfil('docente')" class="perfil-btn" id="perfil-btn-docente">
+          👤 Docente
         </button>
-        <button onclick="cambiarPerfil('direccion')" class="perfil-btn" id="perfil-btn-direccion">
-          👔 Equipo Directivo <span style="font-size:.75rem;color:var(--text-soft);font-weight:400">(EGL2530)</span>
+        <button onclick="solicitarCambioPerfil('direccion')" class="perfil-btn" id="perfil-btn-direccion">
+          👔 Equipo Directivo
         </button>
+        <!-- Campo contraseña oculto, aparece solo si hace falta -->
+        <div id="perfil-pw-wrap" style="display:none;flex-direction:column;gap:8px">
+          <div class="login-field">
+            <input type="password" id="perfil-pw-input" placeholder="Introduce la contraseña"
+              onkeydown="if(event.key==='Enter') confirmarCambioPerfil()">
+          </div>
+          <button class="btn-primary" onclick="confirmarCambioPerfil()">Confirmar</button>
+          <p id="perfil-pw-error" style="color:var(--red);font-size:.8rem;min-height:16px"></p>
+        </div>
         <button onclick="cerrarSesion()" class="perfil-btn" style="background:var(--surface2);color:var(--red);border-color:#fca5a5">
           🚪 Cerrar sesión
         </button>
@@ -2845,21 +2854,59 @@ document.querySelectorAll('.sidebar-nav .nav-btn').forEach(btn => {
 
 
 // ── CAMBIO DE PERFIL ────────────────────────────────────────────────────────
+let _perfilPendiente = null;
+
 function mostrarCambioPerfil() {
+  _perfilPendiente = null;
+  document.getElementById('perfil-pw-wrap').style.display = 'none';
+  document.getElementById('perfil-pw-input').value = '';
+  document.getElementById('perfil-pw-error').textContent = '';
   document.getElementById('perfil-modal').classList.remove('hidden');
-  // Mark active
   document.getElementById('perfil-btn-docente').classList.toggle('activo', USER_ROLE==='docente');
   document.getElementById('perfil-btn-direccion').classList.toggle('activo', USER_ROLE==='direccion');
 }
+
 function cerrarCambioPerfil() {
   document.getElementById('perfil-modal').classList.add('hidden');
+  _perfilPendiente = null;
 }
-function cambiarPerfil(role) {
+
+function solicitarCambioPerfil(role) {
+  if (role === USER_ROLE) { cerrarCambioPerfil(); return; }
+
+  // Docente -> Direccion: pide contraseña
+  if (role === 'direccion' && USER_ROLE === 'docente') {
+    _perfilPendiente = role;
+    const wrap = document.getElementById('perfil-pw-wrap');
+    wrap.style.display = 'flex';
+    document.getElementById('perfil-pw-input').focus();
+    return;
+  }
+
+  // Direccion -> Docente: cambio directo sin contraseña
+  aplicarCambioPerfil(role);
+}
+
+function confirmarCambioPerfil() {
+  const val = document.getElementById('perfil-pw-input').value;
+  const err = document.getElementById('perfil-pw-error');
+  if (val === PWD_DIRECCION) {
+    err.textContent = '';
+    aplicarCambioPerfil(_perfilPendiente);
+  } else {
+    err.textContent = 'Contraseña incorrecta.';
+    document.getElementById('perfil-pw-input').value = '';
+    document.getElementById('perfil-pw-input').focus();
+  }
+}
+
+function aplicarCambioPerfil(role) {
   USER_ROLE = role;
   sessionStorage.setItem('role', role);
   cerrarCambioPerfil();
   applyRole();
 }
+
 function cerrarSesion() {
   sessionStorage.removeItem('auth');
   sessionStorage.removeItem('role');
