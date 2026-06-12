@@ -96,6 +96,12 @@
       color: var(--text-mid); font-size: 0.72rem; font-weight: 600;
       padding: 3px 10px; border-radius: 99px;
     }
+    .acerca-email {
+      display: block; margin-top: 12px;
+      font-size: 0.8rem; color: var(--accent); font-weight: 600;
+      text-decoration: none;
+    }
+    .acerca-email:hover { text-decoration: underline; }
     .acerca-version { font-size: 0.72rem; color: var(--text-soft); margin-top: 16px; }
 
     /* Mobile menu button in header */
@@ -883,6 +889,15 @@
       </div>
 
     </div>
+
+    <!-- Widget AHORA en inicio -->
+    <div id="menu-ahora-widget" style="margin-top:24px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px 24px;box-shadow:var(--shadow)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <h3 style="font-size:0.9rem;font-weight:800;color:var(--text)">⚡ Ahora mismo</h3>
+        <button onclick="showView('ahora');ahoraBuild()" class="btn-secondary" style="padding:6px 12px;font-size:0.78rem">Ver más →</button>
+      </div>
+      <div id="menu-ahora-mini"></div>
+    </div>
   </div>
 
   <!-- HORARIOS -->
@@ -1102,7 +1117,7 @@
             <div class="acerca-center">IES Virgen de la Calle · Palencia</div>
           </div>
         </div>
-        <div class="acerca-tag">#soydelvirgendlacalle</div>
+        <div class="acerca-tag">#soydelvirgendelacalle</div>
         <div class="acerca-divider"></div>
         <div class="acerca-tech">
           <p>Desarrollado con</p>
@@ -1110,9 +1125,12 @@
             <span class="tech-pill">HTML · CSS · JS</span>
             <span class="tech-pill">Supabase</span>
             <span class="tech-pill">Claude AI</span>
-            <span class="tech-pill">GitHub Pages</span>
+            <span class="tech-pill">Netlify</span>
           </div>
         </div>
+        <a href="mailto:luis.gonpos@educa.jcyl.es" class="acerca-email">
+          ✉️ luis.gonpos@educa.jcyl.es
+        </a>
         <div class="acerca-version">v2.0 · Junio 2026</div>
       </div>
     </div>
@@ -2504,7 +2522,7 @@ let ahoraTimer = null;
 function ahoraBuild() {
   if (ahoraTimer) clearInterval(ahoraTimer);
   ahoraRender();
-  ahoraTimer = setInterval(ahoraRender, 30000); // refresh every 30s
+  ahoraTimer = setInterval(ahoraRender, 30000);
 }
 
 function ahoraRender() {
@@ -2526,6 +2544,21 @@ function ahoraRender() {
 
   const sesActual = getSesionActual();
   const metaSes = sesActual ? DB.sesiones[sesActual.sess] : null;
+
+  // Populate aula select if empty
+  const aulaSel = document.getElementById('aula-search-select');
+  if (aulaSel && aulaSel.options.length <= 1) {
+    AULAS_ORDEN.forEach(({planta, aulas}) => {
+      const og = document.createElement('optgroup');
+      og.label = planta;
+      aulas.forEach(a => {
+        const opt = document.createElement('option');
+        opt.value = a; opt.textContent = a;
+        og.appendChild(opt);
+      });
+      aulaSel.appendChild(og);
+    });
+  }
 
   // ── Sesión actual card ──────────────────────────────────────────────
   let sesHtml = '';
@@ -2643,13 +2676,12 @@ function ahoraRender() {
         ${sesHtml}
       </div>
       <div class="ahora-card">
-        <h3>🔍 Buscar por aula</h3>
-        <div class="aula-search-wrap">
-          <span class="aula-search-icon">🚪</span>
-          <input type="text" id="aula-search-input" placeholder="Ej: 102, B06, GIM1..."
-            oninput="buscarAula(this.value)" autocomplete="off">
-        </div>
-        <div class="aula-search-result" id="aula-search-result"></div>
+        <h3>🔍 Buscar aula ahora</h3>
+        <select id="aula-search-select" onchange="buscarAula(this.value)"
+          style="width:100%;appearance:none;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:10px 40px 10px 14px;font-family:Inter,sans-serif;font-size:.9rem;color:var(--text);cursor:pointer;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394a3b8' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 12px center">
+          <option value="">— Selecciona un aula —</option>
+        </select>
+        <div class="aula-search-result" id="aula-search-result" style="margin-top:10px"></div>
       </div>
     </div>
 
@@ -2706,9 +2738,9 @@ function buscarAula(query) {
 }
 
 function buscarAulaDesdeAhora(aula) {
-  const input = document.getElementById('aula-search-input');
-  if (input) { input.value = aula; buscarAula(aula); }
-  input.scrollIntoView({behavior:'smooth', block:'center'});
+  const sel = document.getElementById('aula-search-select');
+  if (sel) { sel.value = aula; buscarAula(aula); }
+  sel?.scrollIntoView({behavior:'smooth', block:'center'});
 }
 
 // Conflict check when reserving
@@ -2913,6 +2945,60 @@ function cerrarSesion() {
   USER_ROLE = null;
   cerrarCambioPerfil();
   document.getElementById('login-screen').classList.remove('hidden');
+}
+
+
+function ahoraMiniRender() {
+  const el = document.getElementById('menu-ahora-mini');
+  if (!el || !DB) return;
+  const dia = getDayName();
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+  const sesActual = getSesionActual();
+
+  if (!dia || !sesActual) {
+    const msgs = ['Ahora descansa, que te lo mereces 😴','¡A disfrutar del tiempo libre! ☀️','Fuera del horario lectivo ☕'];
+    el.innerHTML = `<p style="color:var(--text-soft);font-size:.85rem;font-style:italic">${msgs[now.getDay()%msgs.length]}</p>`;
+    return;
+  }
+
+  const meta = DB.sesiones[sesActual.sess];
+  const sigBuscar = sesActual.sess === '4' ? 'GREC' : 'G';
+  const guardias = [];
+  Object.values(DB.docentes).forEach(info => {
+    const slot = (info.horario[dia]||{})[sesActual.sess];
+    if (!slot) return;
+    const arr = Array.isArray(slot) ? slot : [slot];
+    if (arr.some(s => s.sigla === sigBuscar)) guardias.push(tc2(info.nombre));
+  });
+
+  // Aulas libres count
+  const aulasOcupadas = new Set();
+  Object.values(DB.docentes).forEach(info => {
+    const slot = (info.horario[dia]||{})[sesActual.sess];
+    if (!slot) return;
+    const arr = Array.isArray(slot) ? slot : [slot];
+    arr.forEach(s => { if(s.aula) aulasOcupadas.add(s.aula); });
+  });
+  const totalAulas = AULAS_ORDEN.flatMap(p=>p.aulas).length;
+  const libres = totalAulas - aulasOcupadas.size;
+
+  el.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+      <div style="text-align:center;background:var(--accent-soft);border-radius:10px;padding:10px 6px">
+        <div style="font-size:1.1rem;font-weight:900;color:var(--accent)">${meta.label}</div>
+        <div style="font-size:.7rem;color:var(--text-soft)">${meta.hora}</div>
+      </div>
+      <div style="text-align:center;background:var(--surface2);border-radius:10px;padding:10px 6px">
+        <div style="font-size:1.1rem;font-weight:900;color:var(--text)">${guardias.length}</div>
+        <div style="font-size:.7rem;color:var(--text-soft)">Guardianes</div>
+      </div>
+      <div style="text-align:center;background:var(--green-soft);border-radius:10px;padding:10px 6px">
+        <div style="font-size:1.1rem;font-weight:900;color:var(--green)">${libres}</div>
+        <div style="font-size:.7rem;color:var(--text-soft)">Aulas libres</div>
+      </div>
+    </div>
+    ${guardias.length > 0 ? `<div style="margin-top:10px;font-size:.78rem;color:var(--text-mid)">🛡️ ${guardias.slice(0,3).join(' · ')}${guardias.length>3?' +'+( guardias.length-3)+' más':''}</div>` : ''}`;
 }
 
 document.getElementById('sel-docente').addEventListener('change', renderHorario);
