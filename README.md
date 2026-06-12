@@ -4,7 +4,7 @@ Aplicación web para la gestión del profesorado del **IES Virgen de la Calle (P
 
 ## 🌐 Acceso
 
-**https://luisgp1984.github.io/Horarios_IES_VC_25_26/**
+**https://horarios-iesvc-2526.netlify.app**
 
 > Acceso restringido con contraseña. Contacta con el equipo directivo.
 
@@ -16,22 +16,40 @@ En Chrome (móvil o escritorio), abre la URL y pulsa **"Añadir a pantalla de in
 
 ---
 
-## 🧩 Módulos disponibles
+## 🔐 Perfiles de acceso
+
+| Perfil | Acceso |
+|---|---|
+| 👤 **Docente** | Consulta horarios, guardias, cobertura, aulas y reservas. Ve las ausencias registradas. |
+| 👔 **Equipo Directivo** | Acceso completo. Registra ausencias, genera partes de guardia (Word y PDF). |
+
+Para cambiar de perfil pulsa el badge de usuario en la cabecera. Pasar de Docente a Equipo Directivo requiere contraseña.
+
+---
+
+## 🧩 Módulos
+
+### ⚡ Ahora
+Muestra en tiempo real la sesión en curso, guardianes asignados, ausencias a cubrir y aulas libres. Incluye buscador de aula instantáneo.
 
 ### 📅 Horarios
-Consulta el horario completo de cualquier docente seleccionando nombre y día de la semana. Muestra sesión por sesión con grupo, aula y actividad.
+Consulta el horario completo de cualquier docente seleccionando nombre y día de la semana.
 
 ### 🛡️ Guardias
-Tabla semanal con los docentes de guardia en cada sesión (lunes a viernes). Incluye contador por día y resalta el día actual.
+Tabla semanal con los docentes de guardia en cada sesión (lunes a viernes), con contador por día y día actual resaltado.
 
-### 📋 Ausencias y parte de guardias
-- Selecciona una fecha del calendario lectivo
-- Añade los docentes ausentes — el sistema carga automáticamente sus clases de ese día
-- Solo se incluyen sesiones con **clase asignada** o **guardia (G)**; las actividades administrativas (CHL, AMP, JDEP…) se descartan automáticamente
-- Los datos se **guardan automáticamente** en el navegador por fecha — puedes añadir más ausentes otro día sin perder los anteriores
-- Genera el parte en dos formatos:
-  - 🖨️ **Imprimir** — vista limpia directamente desde el navegador
-  - ⬇️ **Descargar Word** — parte en formato `.doc` fiel a la plantilla oficial, con sesiones 1–3 en la primera página y sesiones 4–7 en la segunda
+### 📋 Ausencias
+- Registra docentes ausentes por fecha (solo Equipo Directivo)
+- El sistema carga automáticamente las clases del docente ese día
+- Solo incluye sesiones con clase asignada o guardia (G)
+- Datos guardados en Supabase — visibles para todo el claustro en tiempo real
+- Genera parte en **Word** (.doc) y **PDF** con dos páginas (sesiones 1-3 / 4-7)
+
+### 🔴 Cobertura
+Semáforo semanal (L-V × sesiones) mostrando si hay suficientes guardianes para cubrir las ausencias registradas.
+
+### 🏫 Aulas
+Ocupación de todas las aulas del centro por fecha y sesión. Permite **reservar aulas libres** directamente desde la app. Las reservas son visibles para todo el claustro en tiempo real.
 
 ---
 
@@ -39,7 +57,7 @@ Tabla semanal con los docentes de guardia en cada sesión (lunes a viernes). Inc
 
 | Archivo | Descripción |
 |---|---|
-| `index.html` | Aplicación web completa (HTML + CSS + JS, todo en un archivo) |
+| `index.html` | Aplicación web completa (HTML + CSS + JS) |
 | `horarios.json` | Base de datos de horarios generada desde el Excel |
 | `Horarios_Profesorado.xlsx` | Excel con una hoja por día, para consulta y edición |
 | `macro_horarios.bas` | Macro VBA para regenerar `horarios.json` desde el Excel |
@@ -48,13 +66,18 @@ Tabla semanal con los docentes de guardia en cada sesión (lunes a viernes). Inc
 
 ## 🔄 Actualizar los horarios
 
-Cuando haya cambios en el horario (sustituciones, bajas, nuevos grupos):
+Cuando haya cambios en el horario:
 
-1. Edita el **Excel** (`Horarios_Profesorado.xlsx`) en la hoja del día correspondiente
-2. Abre el editor de macros: `Alt + F11`
-3. Ejecuta la macro: `Alt + F8` → `GenerarJSON` → **Ejecutar**
-4. Sube el `horarios.json` generado a este repositorio
-5. En 1–2 minutos la web se actualiza automáticamente
+1. Edita el **Excel** (`Horarios_Profesorado.xlsx`)
+2. `Alt + F11` → `Alt + F8` → `GenerarJSON` → **Ejecutar**
+3. Sube el `horarios.json` generado a GitHub
+4. Netlify lo publica automáticamente en segundos
+
+---
+
+## 🗄️ Base de datos (Supabase)
+
+Las **reservas de aulas** y las **ausencias** se guardan en Supabase (PostgreSQL), accesibles en tiempo real desde cualquier dispositivo.
 
 ---
 
@@ -72,11 +95,11 @@ Cuando haya cambios en el horario (sustituciones, bajas, nuevos grupos):
 | 7 | Sesión 6 | 13:30–14:20 |
 | 8 | Sesión 7 | 14:25–15:15 |
 
-> **Nota:** Los viernes no hay Sesión 7 (clave 8).
+> Los viernes no hay Sesión 7 (clave 8).
 
 ---
 
-## 🔤 Siglas
+## 🔤 Siglas frecuentes
 
 | Sigla | Significado |
 |---|---|
@@ -86,31 +109,20 @@ Cuando haya cambios en el horario (sustituciones, bajas, nuevos grupos):
 | CHL | Compensación de Horario Lectivo |
 | RT | Reunión de Tutores |
 | RDP | Reunión de Departamento |
-| FCT | Formación en Centros de Trabajo (Prácticas) |
+| FCT | Formación en Centros de Trabajo |
 | JDEP | Jefatura de Departamento |
 | TLEC | Tutoría Lectiva |
-| GREC | Guardia de Recreo |
 | DD | Despacho Dirección |
 | ED | Equipo Directivo |
-| APO | Apoyo |
-| AC | Actividades Complementarias |
-| RTIC | Reunión Coordinación TIC |
 
 ---
 
-## 🚀 Uso local
+## 👤 Autor
 
-```bash
-# Clona el repositorio
-git clone https://github.com/LuisGP1984/Horarios_IES_VC_25_26.git
-cd Horarios_IES_VC_25_26
-
-# Lanza un servidor local (necesario para cargar el JSON)
-python3 -m http.server 8080
-```
-
-Accede en `http://localhost:8080`
+**Luis González Posada**  
+Jefe de Estudios · IES Virgen de la Calle · Palencia  
+\#soydelvirgendlacalle
 
 ---
 
-*Desarrollado para el IES Virgen de la Calle · Palencia · Curso 2025/26*
+*Desarrollado con HTML · CSS · JS · Supabase · Netlify · Claude AI · Curso 2025/26*
