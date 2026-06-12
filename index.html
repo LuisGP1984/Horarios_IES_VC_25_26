@@ -2281,31 +2281,35 @@ document.getElementById('aulas-fecha').addEventListener('change', aulasBuild);
 
 // ── GRUPOS ─────────────────────────────────────────────────────────────────
 const ETAPAS = {
-  eso:      { label: 'ESO',                      test: g => /^(0[1-4][A-Z]|[34]E)/.test(g.split(' - ')[0]) },
-  bach:     { label: 'Bachillerato',              test: g => /^[12]B[CH]/.test(g.split(' - ')[0]) },
-  fpbasica: { label: 'FP Básica',                 test: g => /^FPB/.test(g.split(' - ')[0]) },
-  fp:       { label: 'FP Grado Medio / Superior', test: g => /^(AC|AD|AF|CG|CI|CIV|DC|GA|GAV|GEA|GU|SR|TL)[0-9]/.test(g.split(' - ')[0]) },
+  eso:      { label: 'ESO',                      test: g => /^0[1-4][A-Z]$/.test(g) || /^[34]E$/.test(g) },
+  bach:     { label: 'Bachillerato',              test: g => /^[12]B[CH][A-Z]$/.test(g) },
+  fpbasica: { label: 'FP Básica',                 test: g => /^FPB\d$/.test(g) },
+  fp:       { label: 'FP Grado Medio / Superior', test: g => /^(AC|AD|AF|CG|CI|CIV|DC|GA|GAV|GEA|GU|SR|TL)\d/.test(g) },
 };
 
-// Extract all unique single groups (not combined like "01A - 01B")
-function gruposExtraerTodos() {
-  const grupos = new Set();
-  if (!DB) return [];
+// Grupos definidos por etapa (fijos, no extraídos del JSON para evitar combinados)
+const GRUPOS_FIJOS = {
+  eso:      ['01A','01B','01C','01D','02A','02B','02C','02D','03A','03B','03C','3E','04A','04B','04C','4E'],
+  bach:     ['1BCA','1BCB','1BHS','2BCT','2BHA','2BHB'],
+  fpbasica: ['FPB1','FPB2'],
+  fp:       ['AC1','AC2','AD2','AF1','AF2','CG1','CG2','CI1','CI2','CIV1','CIV2','DC1','DC2','GA1','GAV1','GAV2','GEA2','GU1','SR1','TL1'],
+};
+
+function gruposExtraerTodos(etapa) {
+  // Return fixed list filtered to only groups that actually exist in JSON
+  if (!DB || !etapa) return [];
+  const existentes = new Set();
   Object.values(DB.docentes).forEach(info => {
     Object.values(info.horario).forEach(dia => {
       Object.values(dia).forEach(slot => {
         const s = Array.isArray(slot) ? slot[0] : slot;
         const g = s.grupo || '';
         if (!g) return;
-        // Add each individual group (split combined ones)
-        g.split(/\s*-\s*/).forEach(part => {
-          const clean = part.trim();
-          if (clean) grupos.add(clean);
-        });
+        g.split(/\s*-\s*/).forEach(part => existentes.add(part.trim()));
       });
     });
   });
-  return [...grupos].sort((a, b) => a.localeCompare(b, 'es'));
+  return (GRUPOS_FIJOS[etapa] || []).filter(g => existentes.has(g));
 }
 
 function gruposCargarGrupos() {
@@ -2315,9 +2319,7 @@ function gruposCargarGrupos() {
 
   if (!etapa || !DB) { sel.disabled = true; return; }
 
-  const todos = gruposExtraerTodos();
-  const filtro = ETAPAS[etapa];
-  const filtrados = todos.filter(g => filtro.test(g));
+  const filtrados = gruposExtraerTodos(etapa);
 
   filtrados.forEach(g => {
     const opt = document.createElement('option');
@@ -2353,8 +2355,11 @@ function gruposMostrar() {
         arr.forEach(s => {
           // Check if this slot includes our group
           const grupoSlot = s.grupo || '';
+          // Match if grupo is part of the slot's grupo (handles combined groups like "01A - 01B")
           const gruposSlot = grupoSlot.split(/\s*-\s*/).map(g => g.trim());
           if (!gruposSlot.includes(grupo)) return;
+          // Skip if materia is just a sigla/activity (no real class content)
+          if (s.tipo === 'actividad') return;
           if (!horario[sess][day]) {
             horario[sess][day] = {
               materia: s.materia || s.sigla || '',
