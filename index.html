@@ -2457,6 +2457,19 @@ async function reservaConfirmar() {
   const motivo  = document.getElementById('reserva-motivo').value.trim();
   if (!docente) { alert('Selecciona tu nombre.'); return; }
 
+  // Check if aula has a class at that time
+  const {fecha, aula, sesion, dia} = reservaActual;
+  const aulasOcupadas = new Set();
+  Object.values(DB.docentes).forEach(info => {
+    const slot = (info.horario[dia]||{})[sesion];
+    if (!slot) return;
+    const arr = Array.isArray(slot) ? slot : [slot];
+    arr.forEach(s => { if (s.aula) aulasOcupadas.add(s.aula); });
+  });
+  if (aulasOcupadas.has(aula)) {
+    if (!confirm(`⚠️ El aula ${aula} tiene clase asignada en esta sesión. ¿Seguro que quieres reservarla igualmente?`)) return;
+  }
+
   const btn = document.querySelector('#reserva-modal .btn-primary');
   btn.textContent = '⏳ Guardando...'; btn.disabled = true;
 
@@ -2781,24 +2794,7 @@ function buscarAulaDesdeAhora(aula) {
   sel?.scrollIntoView({behavior:'smooth', block:'center'});
 }
 
-// Conflict check when reserving
-const _origReservaConfirmar = reservaConfirmar;
-async function reservaConfirmar() {
-  if (!reservaActual) return;
-  // Check if aula has a class at that time
-  const {fecha, aula, sesion, dia} = reservaActual;
-  const aulasOcupadas = new Set();
-  Object.values(DB.docentes).forEach(info => {
-    const slot = (info.horario[dia]||{})[sesion];
-    if (!slot) return;
-    const arr = Array.isArray(slot) ? slot : [slot];
-    arr.forEach(s => { if (s.aula) aulasOcupadas.add(s.aula); });
-  });
-  if (aulasOcupadas.has(aula)) {
-    if (!confirm(`⚠️ El aula ${aula} tiene clase asignada en esta sesión. ¿Seguro que quieres reservarla igualmente?`)) return;
-  }
-  await _origReservaConfirmar();
-}
+
 
 // ── PDF (punto 3) ──────────────────────────────────────────────────────────
 function ausDownloadPDF() {
