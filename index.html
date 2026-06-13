@@ -1403,17 +1403,17 @@ LEYENDA.forEach(([s,d]) => { legGrid.innerHTML += `<div class="leyenda-item"><sp
 
 fetch('horarios.json')
   .then(r=>r.json())
-  .then(data => {
+  .then(async data => {
     DB = data;
-    const sel = document.getElementById('sel-docente');
-    Object.entries(data.docentes).sort((a,b)=>a[1].nombre.localeCompare(b[1].nombre,'es')).forEach(([code,info])=>{
-      const opt = document.createElement('option');
-      opt.value = code; opt.textContent = info.nombre; sel.appendChild(opt);
-    });
+    // Load sustituciones FIRST so selectors are built correctly
+    await getSustituciones();
+    // Build docente selector with sustituciones applied
+    rebuildDocenteSelectors();
     const todayMap = {1:'Lunes',2:'Martes',3:'Miercoles',4:'Jueves',5:'Viernes'};
     const t = todayMap[new Date().getDay()];
     if (t) document.getElementById('sel-dia').value = t;
     buildGuardiasTable(data);
+    ahoraMiniRender();
     document.getElementById('loading').classList.add('fade');
     setTimeout(()=>document.getElementById('loading').style.display='none', 450);
   })
@@ -1762,6 +1762,7 @@ function ausUpdateCobertura(fecha, dayName) {
 }
 
 document.getElementById('aus-fecha').addEventListener('change', () => ausRender());
+document.getElementById('ahora-fecha')?.addEventListener('change', () => ahoraRender());
 
 // ── Modal: añadir docente ─────────────────────────────────────────────────
 function ausAddDocente() {
@@ -3392,52 +3393,53 @@ async function getSustituciones() {
 
 function rebuildDocenteSelectors() {
   if (!DB) return;
-  // Rebuild main horarios selector
-  const sel = document.getElementById('sel-docente');
-  if (sel) {
+
+  // Get set of substituted codes (docentes that have an active sustitución)
+  const sustituidos = new Set(sustCache.filter(s=>s.activa).map(s=>s.codigo_original));
+
+  function buildOptions(sel, includeSubstitutos) {
+    if (!sel) return;
     const current = sel.value;
     sel.innerHTML = '<option value="">— Selecciona un docente —</option>';
+
+    // First add sustitutos (docentes that are substituting someone)
+    sustCache.filter(s=>s.activa).forEach(sust => {
+      const opt = document.createElement('option');
+      opt.value = sust.codigo_original; // use original code for schedule lookup
+      opt.textContent = sust.docente_sustituto + ' 🔄 (por ' + sust.docente_original.split(',')[0] + ')';
+      opt.dataset.sustituto = '1';
+      sel.appendChild(opt);
+    });
+
+    // Add separator if there are sustituciones
+    if (sustCache.filter(s=>s.activa).length > 0) {
+      const sep = document.createElement('option');
+      sep.disabled = true;
+      sep.textContent = '──────────────';
+      sel.appendChild(sep);
+    }
+
+    // Then add rest of docentes (excluding sustituidos)
     Object.entries(DB.docentes)
       .sort((a,b) => a[1].nombre.localeCompare(b[1].nombre,'es'))
       .forEach(([code, info]) => {
-        const ef = getDocenteEfectivo(code, info.nombre);
+        if (sustituidos.has(code)) return; // skip - has a sustituto
         const opt = document.createElement('option');
         opt.value = code;
-        if (ef.esSubstituto) {
-          // Show sustituto name with indication
-          opt.textContent = ef.nombre + ' 🔄 (sust. ' + info.nombre.split(',')[0] + ')';
-          opt.style.fontStyle = 'italic';
-        } else {
-          // Hide if this docente is being substituted
-          const isSustituido = sustCache.some(s => s.codigo_original === code && s.activa);
-          if (isSustituido) return; // skip - appears under sustituto entry
-          opt.textContent = info.nombre;
-        }
+        opt.textContent = info.nombre;
         sel.appendChild(opt);
       });
+
     if (current) sel.value = current;
   }
 
-  // Rebuild ausencias selector
+  buildOptions(document.getElementById('sel-docente'));
+  // Only rebuild aus-sel-docente if it's been populated before
   const ausEl = document.getElementById('aus-sel-docente');
-  if (ausEl && ausEl.options.length > 1) {
-    const currentAus = ausEl.value;
-    ausEl.innerHTML = '<option value="">— Selecciona —</option>';
-    Object.entries(DB.docentes)
-      .sort((a,b) => a[1].nombre.localeCompare(b[1].nombre,'es'))
-      .forEach(([code, info]) => {
-        const ef = getDocenteEfectivo(code, info.nombre);
-        const isSustituido = sustCache.some(s => s.codigo_original === code && s.activa);
-        if (isSustituido) return; // skip sustituidos
-        const opt = document.createElement('option');
-        opt.value = code;
-        opt.textContent = ef.esSubstituto
-          ? ef.nombre + ' 🔄 (sust. ' + info.nombre.split(',')[0] + ')'
-          : info.nombre;
-        ausEl.appendChild(opt);
-      });
-    if (currentAus) ausEl.value = currentAus;
-  }
+  if (ausEl && ausEl.options.length > 1) buildOptions(ausEl);
+
+  // Rebuild guardias table with updated names
+  if (DB) buildGuardiasTable(DB);
 }
 
 // Get effective docente name (considering sustituciones)
