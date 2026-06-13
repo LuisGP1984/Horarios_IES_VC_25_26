@@ -1166,6 +1166,11 @@
 
   <!-- AHORA -->
   <div class="view" id="view-ahora">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;box-shadow:var(--shadow)">
+      <span style="font-size:0.85rem;font-weight:700;color:var(--text-mid)">📅 Fecha</span>
+      <input type="date" id="ahora-fecha" style="padding:8px 12px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);font-family:Inter,sans-serif;font-size:.88rem;color:var(--text)">
+      <button class="btn-secondary" onclick="ahoraBuild()" style="padding:8px 14px;font-size:.82rem">🔄 Actualizar</button>
+    </div>
     <div id="ahora-content">
       <div class="state-msg"><div class="icon">⚡</div><p>Cargando...</p></div>
     </div>
@@ -2553,8 +2558,9 @@ async function aulasBuild() {
   let thtml = `<table class="aulas-table">
     <thead><tr><th>Aula</th>`;
   sesiones.forEach(sess => {
-    const meta = DB.sesiones[sess];
-    thtml += `<th>${meta.label}<br><small style="font-weight:400;opacity:.8">${meta.hora}</small></th>`;
+    const meta = DB.sesiones[sess] || {label: sess==='V'?'Vespertino':sess, hora: sess==='V'?'16:00–21:00':''};
+    const isVesp = sess === 'V';
+    thtml += `<th${isVesp?' style="background:#6d28d9"':''}>${meta.label}<br><small style="font-weight:400;opacity:.8">${meta.hora}</small></th>`;
   });
   thtml += '</tr></thead><tbody>';
 
@@ -2724,13 +2730,17 @@ async function reservaCancelar() {
 
 document.getElementById('aulas-fecha').addEventListener('change', aulasBuild);
 
-// Set today's date by default in aulas
+// Set today's date by default
 (function() {
   const today = new Date();
   const y = today.getFullYear();
   const m = String(today.getMonth()+1).padStart(2,'0');
   const d = String(today.getDate()).padStart(2,'0');
-  document.getElementById('aulas-fecha').value = `${y}-${m}-${d}`;
+  const ymd = `${y}-${m}-${d}`;
+  const aulasEl = document.getElementById('aulas-fecha');
+  if (aulasEl) aulasEl.value = ymd;
+  const ahoraEl = document.getElementById('ahora-fecha');
+  if (ahoraEl) ahoraEl.value = ymd;
 })();
 
 
@@ -2777,7 +2787,16 @@ async function ahoraRender() {
   if (!DB) return;
   const el = document.getElementById('ahora-content');
   const now = new Date();
-  const dia = getDayName();
+  // Use selected date if available
+  const ahoraFechaEl = document.getElementById('ahora-fecha');
+  let dia;
+  if (ahoraFechaEl && ahoraFechaEl.value) {
+    const selDt = new Date(ahoraFechaEl.value + 'T12:00:00');
+    const dowMap2 = {1:'Lunes',2:'Martes',3:'Miercoles',4:'Jueves',5:'Viernes'};
+    dia = dowMap2[selDt.getDay()] || null;
+  } else {
+    dia = getDayName();
+  }
   const timeStr = now.toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'});
   const dateStr = now.toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'});
 
@@ -3353,6 +3372,7 @@ async function sustGuardar() {
     });
     sustCerrarModal();
     await sustBuild();
+    rebuildDocenteSelectors();
   } catch(e) {
     alert('Error: ' + e.message);
   } finally {
@@ -3365,6 +3385,7 @@ async function sustCancelar(id) {
   try {
     await supaFetch('PATCH', `sustituciones?id=eq.${id}`, { activa: false });
     await sustBuild();
+    rebuildDocenteSelectors();
   } catch(e) {
     alert('Error: ' + e.message);
   }
@@ -3372,10 +3393,58 @@ async function sustCancelar(id) {
 
 // ── Apply sustituciones to horario lookups ─────────────────────────────────
 async function getSustituciones() {
-  if (sustCache.length === 0) {
-    try { sustCache = await supaFetch('GET', 'sustituciones?activa=eq.true&select=*'); } catch(e) {}
-  }
+  try { sustCache = await supaFetch('GET', 'sustituciones?activa=eq.true&select=*'); } catch(e) {}
   return sustCache;
+}
+
+function rebuildDocenteSelectors() {
+  if (!DB) return;
+  // Rebuild main horarios selector
+  const sel = document.getElementById('sel-docente');
+  if (sel) {
+    const current = sel.value;
+    sel.innerHTML = '<option value="">— Selecciona un docente —</option>';
+    Object.entries(DB.docentes)
+      .sort((a,b) => a[1].nombre.localeCompare(b[1].nombre,'es'))
+      .forEach(([code, info]) => {
+        const ef = getDocenteEfectivo(code, info.nombre);
+        const opt = document.createElement('option');
+        opt.value = code;
+        if (ef.esSubstituto) {
+          // Show sustituto name with indication
+          opt.textContent = ef.nombre + ' 🔄 (sust. ' + info.nombre.split(',')[0] + ')';
+          opt.style.fontStyle = 'italic';
+        } else {
+          // Hide if this docente is being substituted
+          const isSustituido = sustCache.some(s => s.codigo_original === code && s.activa);
+          if (isSustituido) return; // skip - appears under sustituto entry
+          opt.textContent = info.nombre;
+        }
+        sel.appendChild(opt);
+      });
+    if (current) sel.value = current;
+  }
+
+  // Rebuild ausencias selector
+  const ausEl = document.getElementById('aus-sel-docente');
+  if (ausEl && ausEl.options.length > 1) {
+    const currentAus = ausEl.value;
+    ausEl.innerHTML = '<option value="">— Selecciona —</option>';
+    Object.entries(DB.docentes)
+      .sort((a,b) => a[1].nombre.localeCompare(b[1].nombre,'es'))
+      .forEach(([code, info]) => {
+        const ef = getDocenteEfectivo(code, info.nombre);
+        const isSustituido = sustCache.some(s => s.codigo_original === code && s.activa);
+        if (isSustituido) return; // skip sustituidos
+        const opt = document.createElement('option');
+        opt.value = code;
+        opt.textContent = ef.esSubstituto
+          ? ef.nombre + ' 🔄 (sust. ' + info.nombre.split(',')[0] + ')'
+          : info.nombre;
+        ausEl.appendChild(opt);
+      });
+    if (currentAus) ausEl.value = currentAus;
+  }
 }
 
 // Get effective docente name (considering sustituciones)
@@ -3484,7 +3553,7 @@ function acexAbrirModal(id) {
   const wrap = document.getElementById('acex-sesiones-wrap');
   wrap.innerHTML = SESS_ALL.map(s =>
     `<label class="ses-check-box">
-      <input type="checkbox" name="acex-ses" value="${s}"> ${SESS_LABELS_ACEX[s]}
+      <input type="checkbox" name="acex-ses" value="${s}" checked> ${SESS_LABELS_ACEX[s]}
     </label>`
   ).join('');
 
