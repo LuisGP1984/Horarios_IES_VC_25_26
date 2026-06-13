@@ -720,6 +720,47 @@
     .sust-card-body { padding: 12px 16px; font-size: .85rem; color: var(--text-mid); }
     .sust-arrow { font-size: 1.2rem; color: var(--gold); }
 
+
+    /* ── ACEX ────────────────────────────────────────── */
+    .acex-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-left: 4px solid #8b5cf6;
+      border-radius: var(--radius); margin-bottom: 12px;
+      box-shadow: var(--shadow); overflow: hidden;
+    }
+    .acex-card-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 16px; background: #f5f3ff;
+      border-bottom: 1px solid #e9d5ff;
+    }
+    .acex-fecha-badge {
+      background: #8b5cf6; color: #fff; font-size: .72rem;
+      font-weight: 700; padding: 3px 9px; border-radius: 99px;
+    }
+    .acex-ses-badge {
+      background: #ede9fe; color: #6d28d9; font-size: .72rem;
+      font-weight: 600; padding: 2px 7px; border-radius: 99px;
+      border: 1px solid #c4b5fd;
+    }
+    .acex-card-body { padding: 12px 16px; }
+    .acex-row { display:flex; gap:8px; margin-bottom:6px; font-size:.83rem; align-items:flex-start; }
+    .acex-row-label { font-weight:700; color:var(--text-mid); min-width:80px; flex-shrink:0; }
+    .acex-row-val { color:var(--text); }
+    .acex-semana-header {
+      font-size:.75rem; font-weight:800; text-transform:uppercase;
+      letter-spacing:.07em; color:var(--text-soft);
+      padding:8px 0 6px; margin-bottom:8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .ses-check-box {
+      display:inline-flex; align-items:center; gap:6px;
+      padding:6px 12px; border-radius:8px; border:1.5px solid var(--border);
+      background:var(--surface); cursor:pointer; font-size:.82rem;
+      font-weight:600; color:var(--text); transition:all .15s; user-select:none;
+    }
+    .ses-check-box input { accent-color:#8b5cf6; width:14px; height:14px; }
+    .ses-check-box:has(input:checked) { border-color:#8b5cf6; background:#f5f3ff; color:#6d28d9; }
+
     /* ── LEYENDA ─────────────────────────────────────── */
     details { margin-top: 32px; background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); }
     summary { padding: 14px 18px; font-size: 0.82rem; font-weight: 600; cursor: pointer; color: var(--text-mid); list-style: none; }
@@ -856,12 +897,13 @@
       <button class="nav-btn" onclick="showView('ahora');ahoraBuild()" id="nav-ahora"><span class="nav-icon">⚡</span><span class="nav-label">Ahora</span></button>
       <div class="nav-separator"></div>
       <button class="nav-btn" onclick="showView('horarios')" id="nav-horarios"><span class="nav-icon">📅</span><span class="nav-label">Horarios</span></button>
-      <button class="nav-btn" onclick="showView('guardias')" id="nav-guardias"><span class="nav-icon">🛡️</span><span class="nav-label">Guardias</span></button>
+      <button class="nav-btn" onclick="showView('guardias')" id="nav-guardias"><span class="nav-icon">🛡️</span><span class="nav-label">Guardianes</span></button>
       <button class="nav-btn" onclick="showView('ausencias')" id="nav-ausencias"><span class="nav-icon">📋</span><span class="nav-label">Ausencias</span></button>
       <button class="nav-btn" onclick="showView('cobertura');cobBuildTable()" id="nav-cobertura"><span class="nav-icon">🔴</span><span class="nav-label">Cobertura</span></button>
       <button class="nav-btn" onclick="showView('aulas');aulasBuild()" id="nav-aulas"><span class="nav-icon">🏫</span><span class="nav-label">Aulas</span></button>
       <div class="nav-separator"></div>
       <button class="nav-btn solo-direccion" onclick="showView('sustituciones');sustBuild()" id="nav-sustituciones"><span class="nav-icon">🔄</span><span class="nav-label">Sustituciones</span></button>
+      <button class="nav-btn" onclick="showView('acex');acexBuild()" id="nav-acex"><span class="nav-icon">🎒</span><span class="nav-label">ACEX</span></button>
       <button class="nav-btn" onclick="showView('acerca')" id="nav-acerca"><span class="nav-icon">ℹ️</span><span class="nav-label">Acerca de</span></button>
     </nav>
   </aside>
@@ -1214,6 +1256,68 @@
     </div>
   </div>
 
+
+  <!-- ACEX -->
+  <div class="view" id="view-acex">
+    <div class="aus-header">
+      <h2>🎒 Actividades Complementarias y Extraescolares</h2>
+      <p>ACEX programadas — semana actual</p>
+    </div>
+    <div class="aus-toolbar" style="margin-bottom:20px">
+      <div class="control-group" style="flex:0 0 190px">
+        <label for="acex-fecha-filtro">Semana</label>
+        <input type="date" id="acex-fecha-filtro">
+      </div>
+      <div class="aus-actions">
+        <button class="btn-primary solo-direccion" onclick="acexAbrirModal()">＋ Nueva ACEX</button>
+        <button class="btn-secondary" onclick="acexBuild()">🔄 Actualizar</button>
+      </div>
+    </div>
+    <div id="acex-lista">
+      <div class="state-msg"><div class="icon">🎒</div><p>Cargando ACEX...</p></div>
+    </div>
+  </div>
+
+  <!-- Modal ACEX -->
+  <div id="acex-modal" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width:520px">
+      <div class="modal-header">
+        <h3 id="acex-modal-title">Nueva ACEX</h3>
+        <button class="modal-close" onclick="acexCerrarModal()">✕</button>
+      </div>
+      <div class="modal-body" style="display:flex;flex-direction:column;gap:14px">
+        <div class="control-group">
+          <label for="acex-fecha">Fecha</label>
+          <input type="date" id="acex-fecha">
+        </div>
+        <div class="control-group">
+          <label>Sesiones</label>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px" id="acex-sesiones-wrap">
+          </div>
+        </div>
+        <div class="control-group">
+          <label for="acex-docentes">Docentes participantes</label>
+          <textarea id="acex-docentes" rows="2" placeholder="Ej: García López, Martínez Ruiz..."
+            style="width:100%;padding:10px 14px;background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);font-family:Inter,sans-serif;font-size:.88rem;color:var(--text);resize:vertical"></textarea>
+        </div>
+        <div class="control-group">
+          <label for="acex-grupos">Grupos que participan</label>
+          <input type="text" id="acex-grupos" placeholder="Ej: 1BCB, 2BHA, 03A..."
+            style="width:100%;padding:11px 14px;background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);font-family:Inter,sans-serif;font-size:.92rem;color:var(--text)">
+        </div>
+        <div class="control-group">
+          <label for="acex-obs">Observaciones</label>
+          <textarea id="acex-obs" rows="2" placeholder="Destino, actividad, información adicional..."
+            style="width:100%;padding:10px 14px;background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);font-family:Inter,sans-serif;font-size:.88rem;color:var(--text);resize:vertical"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="acexCerrarModal()">Cancelar</button>
+        <button class="btn-primary" onclick="acexGuardar()">✅ Guardar ACEX</button>
+      </div>
+    </div>
+  </div>
+
 </main>
 
 <script>
@@ -1410,7 +1514,7 @@ function renderHorario() {
   let html=`<div class="result-header">
     <div class="result-avatar">${initials}</div>
     <div>
-      <div class="result-name">${tc2(docente.nombre)}</div>
+      <div class="result-name">${tc2(getDocenteEfectivo(code, docente.nombre).nombre)}${getDocenteEfectivo(code, docente.nombre).esSubstituto ? ' <span style="font-size:.72rem;background:#fef9c3;color:#92400e;padding:2px 7px;border-radius:99px;font-weight:700">🔄 Sustituto</span>' : ''}</div>
       <div class="result-day">${diaLabel} · ${activas} sesión${activas!==1?'es':''} con actividad</div>
     </div>
   </div><div class="timeline">`;
@@ -1489,8 +1593,8 @@ function ausGetData(fecha) {
   return ausCache[fecha] || [];
 }
 
-async function ausSaveNew(fecha, codigo, nombre, sesiones, tipo) {
-  const row = await supaFetch('POST', 'ausencias', { fecha, codigo, nombre, sesiones, tipo: tipo||'ausencia' });
+async function ausSaveNew(fecha, codigo, nombre, sesiones) {
+  const row = await supaFetch('POST', 'ausencias', { fecha, codigo, nombre, sesiones });
   if (!ausCache[fecha]) ausCache[fecha] = [];
   ausCache[fecha].push(Array.isArray(row) ? row[0] : row);
 }
@@ -1674,9 +1778,7 @@ function ausAddDocente() {
 
   document.getElementById('aus-sesiones-check').innerHTML = '<p style="color:var(--text-soft);font-size:.83rem">Selecciona primero un docente.</p>';
   document.getElementById('aus-modal').classList.remove('hidden');
-  // Show tipo only for direccion
-  const tipoWrap = document.getElementById('aus-tipo-wrap');
-  if (tipoWrap) tipoWrap.style.display = USER_ROLE === 'direccion' ? '' : 'none';
+
 
   sel.onchange = () => ausLoadSesiones(dayName);
 }
@@ -1766,8 +1868,7 @@ async function ausConfirmAdd() {
   btn.textContent = '⏳ Guardando...'; btn.disabled = true;
 
   try {
-    const tipoAus = document.getElementById('aus-tipo')?.value || 'ausencia';
-    await ausSaveNew(fecha, code, nombre, sesionesFull, tipoAus);
+    await ausSaveNew(fecha, code, nombre, sesionesFull);
     ausCloseModal();
     await ausRender();
     const cobView = document.getElementById('view-cobertura');
@@ -2658,7 +2759,7 @@ function ahoraBuild() {
   ahoraTimer = setInterval(ahoraRender, 30000);
 }
 
-function ahoraRender() {
+async function ahoraRender() {
   if (!DB) return;
   const el = document.getElementById('ahora-content');
   const now = new Date();
@@ -2778,6 +2879,28 @@ function ahoraRender() {
     guardiasCoberturaHtml = '<span class="ahora-empty">No hay sesión en curso</span>';
   }
 
+  // ── ACEX activas ahora ──────────────────────────────────────────────────
+  let acexAhoraHtml = '';
+  if (sesActual) {
+    try {
+      const todayStr = now.toISOString().split('T')[0];
+      const acexHoy = await supaFetch('GET', `acex?fecha=eq.${todayStr}&select=*`);
+      const acexActivas = acexHoy.filter(a => (a.sesiones||[]).includes(sesActual.sess));
+      if (acexActivas.length > 0) {
+        acexAhoraHtml = acexActivas.map(a =>
+          `<div class="ahora-list-item" style="background:#f5f3ff;border:1px solid #e9d5ff">
+            <span style="font-size:1.1rem">🎒</span>
+            <div>
+              <div style="font-weight:700;font-size:.82rem;color:#6d28d9">ACEX en curso</div>
+              ${a.grupos?`<div style="font-size:.75rem;color:var(--text-mid)">👥 ${a.grupos}</div>`:''}
+              ${a.docentes?`<div style="font-size:.75rem;color:var(--text-mid)">👨‍🏫 ${a.docentes}</div>`:''}
+            </div>
+          </div>`
+        ).join('');
+      }
+    } catch(e) {}
+  }
+
   // ── Aulas libres ahora ──────────────────────────────────────────────
   let aulasLibresHtml = '';
   if (sesActual) {
@@ -2828,6 +2951,10 @@ function ahoraRender() {
         <div class="ahora-list">${guardiasCoberturaHtml}</div>
       </div>
     </div>
+    ${acexAhoraHtml ? `<div class="ahora-card" style="margin-top:16px;border-left:4px solid #8b5cf6">
+      <h3 style="color:#6d28d9">🎒 ACEX en curso</h3>
+      <div class="ahora-list">${acexAhoraHtml}</div>
+    </div>` : ''}
     <div class="ahora-card" style="margin-top:16px">
       <h3>✅ Aulas libres ahora</h3>
       <div class="ahora-aulas-libres">${aulasLibresHtml}</div>
@@ -3230,14 +3357,202 @@ async function getSustituciones() {
 // Get effective docente name (considering sustituciones)
 function getDocenteEfectivo(code, nombre) {
   const today = new Date().toISOString().split('T')[0];
-  const sust = sustCache.find(s => {
-    if (s.codigo_original !== code) return false;
-    if (s.fecha_inicio > today) return false;
-    if (s.fecha_fin && s.fecha_fin < today) return false;
-    return s.activa;
-  });
-  return sust ? { nombre: sust.docente_sustituto, esSubstituto: true, original: nombre } : { nombre, esSubstituto: false };
+  const sust = sustCache.find(s =>
+    s.codigo_original === code &&
+    s.activa &&
+    s.fecha_inicio <= today &&
+    (!s.fecha_fin || s.fecha_fin >= today)
+  );
+  return sust
+    ? { nombre: sust.docente_sustituto, esSubstituto: true, original: nombre, sustId: sust.id }
+    : { nombre, esSubstituto: false };
 }
+
+// Apply sustituciones to renderHorario docente name
+function getNombreEfectivo(code) {
+  if (!DB || !DB.docentes[code]) return '';
+  const info = DB.docentes[code];
+  const ef = getDocenteEfectivo(code, info.nombre);
+  return ef.nombre;
+}
+
+
+// ── ACEX ───────────────────────────────────────────────────────────────────
+let acexCache = [];
+let acexEditId = null;
+
+const SESS_ALL = ['1','2','3','3R','4','5','6','7','8'];
+const SESS_LABELS_ACEX = {
+  '1':'Guardia mañana','2':'Sesión 1','3':'Sesión 2','3R':'Sesión 3',
+  '4':'Recreo','5':'Sesión 4','6':'Sesión 5','7':'Sesión 6','8':'Sesión 7'
+};
+
+function getWeekRange(dateStr) {
+  const dt = dateStr ? new Date(dateStr+'T12:00:00') : new Date();
+  const dow = dt.getDay();
+  const monday = new Date(dt);
+  monday.setDate(dt.getDate() - (dow===0?6:dow-1));
+  const friday = new Date(monday);
+  friday.setDate(monday.getDate() + 4);
+  const fmt = d => d.toISOString().split('T')[0];
+  return { start: fmt(monday), end: fmt(friday) };
+}
+
+async function acexBuild() {
+  const fechaInput = document.getElementById('acex-fecha-filtro').value;
+  const { start, end } = getWeekRange(fechaInput);
+  const el = document.getElementById('acex-lista');
+  el.innerHTML = '<div class="state-msg"><div class="icon">⏳</div><p>Cargando...</p></div>';
+  try {
+    acexCache = await supaFetch('GET', `acex?fecha=gte.${start}&fecha=lte.${end}&order=fecha.asc,created_at.asc&select=*`);
+    acexRender(start, end);
+  } catch(e) {
+    el.innerHTML = '<div class="state-msg"><p>Error: '+e.message+'</p></div>';
+  }
+}
+
+function acexRender(start, end) {
+  const el = document.getElementById('acex-lista');
+  if (acexCache.length === 0) {
+    el.innerHTML = '<div class="state-msg"><div class="icon">🎒</div><p>No hay ACEX programadas esta semana.</p></div>';
+    return;
+  }
+
+  // Group by date
+  const byDate = {};
+  acexCache.forEach(a => {
+    if (!byDate[a.fecha]) byDate[a.fecha] = [];
+    byDate[a.fecha].push(a);
+  });
+
+  let html = '';
+  Object.entries(byDate).sort(([a],[b])=>a.localeCompare(b)).forEach(([fecha, items]) => {
+    const dt = new Date(fecha+'T12:00:00');
+    const dayLabel = dt.toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});
+    html += `<div class="acex-semana-header">${dayLabel.charAt(0).toUpperCase()+dayLabel.slice(1)}</div>`;
+    items.forEach(a => {
+      const sesLabels = (a.sesiones||[]).map(s => SESS_LABELS_ACEX[s]||s);
+      html += `<div class="acex-card">
+        <div class="acex-card-header">
+          <span class="acex-fecha-badge">🎒 ACEX</span>
+          ${sesLabels.map(s=>`<span class="acex-ses-badge">${s}</span>`).join('')}
+          <div style="margin-left:auto;display:flex;gap:6px">
+            ${USER_ROLE==='direccion'?`<button class="aus-del-btn" onclick="acexEditar('${a.id}')" title="Editar">✏️</button>
+            <button class="aus-del-btn" onclick="acexEliminar('${a.id}')" title="Eliminar">🗑</button>`:''}
+          </div>
+        </div>
+        <div class="acex-card-body">
+          ${a.docentes?`<div class="acex-row"><span class="acex-row-label">👨‍🏫 Docentes:</span><span class="acex-row-val">${a.docentes}</span></div>`:''}
+          ${a.grupos?`<div class="acex-row"><span class="acex-row-label">👥 Grupos:</span><span class="acex-row-val">${a.grupos}</span></div>`:''}
+          ${a.observaciones?`<div class="acex-row"><span class="acex-row-label">📝 Notas:</span><span class="acex-row-val">${a.observaciones}</span></div>`:''}
+        </div>
+      </div>`;
+    });
+  });
+  el.innerHTML = html;
+}
+
+function acexAbrirModal(id) {
+  acexEditId = id || null;
+  document.getElementById('acex-modal-title').textContent = id ? 'Editar ACEX' : 'Nueva ACEX';
+
+  // Build sesiones checkboxes
+  const wrap = document.getElementById('acex-sesiones-wrap');
+  wrap.innerHTML = SESS_ALL.map(s =>
+    `<label class="ses-check-box">
+      <input type="checkbox" name="acex-ses" value="${s}"> ${SESS_LABELS_ACEX[s]}
+    </label>`
+  ).join('');
+
+  // Set today as default
+  if (!id) {
+    const today = new Date();
+    const ymd = today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+    document.getElementById('acex-fecha').value = ymd;
+    document.getElementById('acex-docentes').value = '';
+    document.getElementById('acex-grupos').value = '';
+    document.getElementById('acex-obs').value = '';
+  } else {
+    const a = acexCache.find(x => x.id === id);
+    if (a) {
+      document.getElementById('acex-fecha').value = a.fecha;
+      document.getElementById('acex-docentes').value = a.docentes||'';
+      document.getElementById('acex-grupos').value = a.grupos||'';
+      document.getElementById('acex-obs').value = a.observaciones||'';
+      document.querySelectorAll('input[name="acex-ses"]').forEach(cb => {
+        cb.checked = (a.sesiones||[]).includes(cb.value);
+      });
+    }
+  }
+  document.getElementById('acex-modal').classList.remove('hidden');
+}
+
+function acexCerrarModal() {
+  document.getElementById('acex-modal').classList.add('hidden');
+  acexEditId = null;
+}
+
+async function acexGuardar() {
+  const fecha    = document.getElementById('acex-fecha').value;
+  const docentes = document.getElementById('acex-docentes').value.trim();
+  const grupos   = document.getElementById('acex-grupos').value.trim();
+  const obs      = document.getElementById('acex-obs').value.trim();
+  const sesiones = Array.from(document.querySelectorAll('input[name="acex-ses"]:checked')).map(c=>c.value);
+
+  if (!fecha) { alert('Selecciona una fecha.'); return; }
+  if (sesiones.length === 0) { alert('Selecciona al menos una sesión.'); return; }
+
+  const btn = document.querySelector('#acex-modal .btn-primary');
+  btn.textContent = '⏳ Guardando...'; btn.disabled = true;
+
+  const payload = { fecha, sesiones, docentes: docentes||null, grupos: grupos||null, observaciones: obs||null };
+
+  try {
+    if (acexEditId) {
+      await supaFetch('PATCH', `acex?id=eq.${acexEditId}`, payload);
+    } else {
+      await supaFetch('POST', 'acex', payload);
+    }
+    acexCerrarModal();
+    await acexBuild();
+  } catch(e) {
+    alert('Error: ' + e.message);
+  } finally {
+    btn.textContent = '✅ Guardar ACEX'; btn.disabled = false;
+  }
+}
+
+async function acexEliminar(id) {
+  if (!confirm('¿Eliminar esta ACEX?')) return;
+  try {
+    await supaFetch('DELETE', `acex?id=eq.${id}`);
+    await acexBuild();
+  } catch(e) { alert('Error: '+e.message); }
+}
+
+function acexEditar(id) { acexAbrirModal(id); }
+
+// Show ACEX in "Ahora" view
+async function acexDeAhora(dia, sess) {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    const rows = await supaFetch('GET', `acex?fecha=eq.${today}&select=*`);
+    return rows.filter(a => (a.sesiones||[]).includes(sess));
+  } catch(e) { return []; }
+}
+
+// Init fecha filtro to current week's monday
+(function() {
+  const today = new Date();
+  const dow = today.getDay();
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - (dow===0?6:dow-1));
+  const ymd = monday.getFullYear()+'-'+String(monday.getMonth()+1).padStart(2,'0')+'-'+String(monday.getDate()).padStart(2,'0');
+  const el = document.getElementById('acex-fecha-filtro');
+  if (el) el.value = ymd;
+})();
+
+document.getElementById('acex-fecha-filtro')?.addEventListener('change', acexBuild);
 
 document.getElementById('sel-docente').addEventListener('change', renderHorario);
 document.getElementById('sel-dia').addEventListener('change', renderHorario);
