@@ -930,38 +930,55 @@
       <p>IES Virgen de la Calle · Palencia · Curso 2025/26</p>
     </div>
     <div class="menu-grid">
+      <div class="menu-card" onclick="showView('ahora');ahoraBuild()" style="border-left:4px solid var(--accent)">
+        <div class="mc-icon">⚡</div>
+        <div class="mc-title">Ahora</div>
+        <div class="mc-desc">Sesión actual, guardianes, aulas libres y búsqueda en tiempo real</div>
+        <span class="mc-arrow">→</span>
+      </div>
       <div class="menu-card" onclick="showView('horarios')">
         <div class="mc-icon">📅</div>
         <div class="mc-title">Horarios</div>
-        <div class="mc-desc">Consulta el horario completo de cualquier docente por día y sesión</div>
+        <div class="mc-desc">Consulta el horario completo de cualquier docente</div>
         <span class="mc-arrow">→</span>
       </div>
       <div class="menu-card" onclick="showView('guardias')">
         <div class="mc-icon">🛡️</div>
-        <div class="mc-title">Guardias</div>
-        <div class="mc-desc">Docentes de guardia a primera hora y en el recreo, de lunes a viernes</div>
+        <div class="mc-title">Guardianes</div>
+        <div class="mc-desc">Docentes de guardia por sesión, de lunes a viernes</div>
         <span class="mc-arrow">→</span>
       </div>
       <div class="menu-card" onclick="showView('ausencias')">
         <div class="mc-icon">📋</div>
         <div class="mc-title">Ausencias</div>
-        <div class="mc-desc">Registra docentes ausentes y genera el parte diario de guardias</div>
+        <div class="mc-desc">Registra ausentes y genera el parte de guardias</div>
         <span class="mc-arrow">→</span>
       </div>
       <div class="menu-card" onclick="showView('cobertura');cobBuildTable()">
         <div class="mc-icon">🔴</div>
         <div class="mc-title">Cobertura</div>
-        <div class="mc-desc">Semáforo semanal de guardianes disponibles vs ausencias a cubrir por sesión</div>
+        <div class="mc-desc">Semáforo semanal de guardianes vs ausencias</div>
         <span class="mc-arrow">→</span>
       </div>
       <div class="menu-card" onclick="showView('aulas');aulasBuild()">
         <div class="mc-icon">🏫</div>
         <div class="mc-title">Aulas</div>
-        <div class="mc-desc">Ocupación de todas las aulas del centro por día y sesión</div>
+        <div class="mc-desc">Ocupación y reserva de aulas por fecha y sesión</div>
         <span class="mc-arrow">→</span>
       </div>
-
-    </div>
+      <div class="menu-card" onclick="showView('acex');acexBuild()">
+        <div class="mc-icon">🎒</div>
+        <div class="mc-title">ACEX</div>
+        <div class="mc-desc">Actividades Complementarias y Extraescolares</div>
+        <span class="mc-arrow">→</span>
+      </div>
+      <div class="menu-card solo-direccion" onclick="showView('sustituciones');sustBuild()">
+        <div class="mc-icon">🔄</div>
+        <div class="mc-title">Sustituciones</div>
+        <div class="mc-desc">Gestiona sustituciones de docentes activas</div>
+        <span class="mc-arrow">→</span>
+      </div>
+    </div>    </div>
 
     <!-- Widget AHORA en inicio -->
     <div id="menu-ahora-widget" style="margin-top:24px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px 24px;box-shadow:var(--shadow)">
@@ -3048,90 +3065,92 @@ function ausDownloadPDF() {
   const SESS_NUMS  = {'2':1,'3':2,'3R':3,'5':4,'6':5,'7':6,'8':7};
 
   function getAusForSess(sessKey) {
-    return data.filter(a => a.sesiones.some(s => s.sess === sessKey && s.incluir !== false))
+    return data.filter(a => (Array.isArray(a.sesiones)?a.sesiones:[]).some(s => (s.sess||s) === sessKey && s.incluir !== false))
       .map(a => {
-        const s = a.sesiones.find(s => s.sess === sessKey);
-        return { docente: a.nombre, grupo: s?.grupo||'', aula: s?.aula||'' };
+        const s = Array.isArray(a.sesiones) ? a.sesiones.find(s=>(s.sess||s)===sessKey) : null;
+        return {
+          docente: a.nombre,
+          grupo: s?.grupo||'',
+          aula: s?.aula||''
+        };
       });
   }
 
-  const daysLine = ['Lunes','Martes','Miércoles','Jueves','Viernes'].map(d => {
-    const dk = d==='Miércoles'?'Miercoles':d;
+  const daysLine = ['Lunes','Martes','Mi\u00e9rcoles','Jueves','Viernes'].map(d => {
+    const dk = d==='Mi\u00e9rcoles'?'Miercoles':d;
     return dk===dayName ? `<strong style="font-size:12pt;text-transform:uppercase">${d}</strong>` : d;
-  }).join(' – ');
+  }).join(' \u2013 ');
 
   function tableHTML(sessKeys) {
-    const NC = 'white-space:nowrap;overflow:hidden;text-overflow:ellipsis';
-    let t = `<table style="width:100%;border-collapse:collapse;font-size:8pt;font-family:Arial;table-layout:fixed">
-      <colgroup><col style="width:5%"><col style="width:22%"><col style="width:7%"><col style="width:6%"><col style="width:9%"><col style="width:36%"><col style="width:15%"></colgroup>
-      <tr style="background:#1F3864;color:white">
-        <th style="border:1px solid #999;padding:3px 4px;text-align:center">Hª</th>
-        <th style="border:1px solid #999;padding:3px 4px">Profesor ausente</th>
-        <th style="border:1px solid #999;padding:3px 4px;text-align:center">Curso</th>
-        <th style="border:1px solid #999;padding:3px 4px;text-align:center">Aula</th>
-        <th style="border:1px solid #999;padding:3px 4px;text-align:center">Tarea</th>
-        <th style="border:1px solid #999;padding:3px 4px">Profesor que realiza de guardia</th>
-        <th style="border:1px solid #999;padding:3px 4px;text-align:center">Firmas</th>
-      </tr>`;
+    let t = `<table><colgroup><col><col><col><col><col><col><col></colgroup>
+      <tr><th>H\u00aa</th><th style="text-align:left">Profesor ausente</th><th>Curso</th><th>Aula</th><th>Tarea</th><th style="text-align:left">Profesor que realiza de guardia</th><th>Firmas</th></tr>`;
     sessKeys.forEach(sk => {
       const ausData = getAusForSess(sk);
       const isSess7 = sk === '8';
       for (let r = 0; r < (isSess7 ? 1 : 8); r++) {
         const aus = ausData[r];
-        const numBg = r===0 ? 'background:#DCE6F1;font-weight:bold;text-align:center' : 'text-align:center';
         const docName = aus ? (aus.docente.length>28?aus.docente.substring(0,27)+'\u2026':aus.docente) : '';
         const grupoTxt = aus ? aus.grupo.replace(/ - /g,'/').replace(/ /g,'') : '';
-        t += `<tr style="height:15px">
-          <td style="border:1px solid #999;padding:1px 2px;${numBg}">${r===0?SESS_NUMS[sk]:''}</td>
-          <td style="border:1px solid #999;padding:1px 3px;${NC}">${docName}</td>
-          <td style="border:1px solid #999;padding:1px 2px;text-align:center;${NC}">${grupoTxt}</td>
-          <td style="border:1px solid #999;padding:1px 2px;text-align:center;${NC}">${aus&&aus.aula?aus.aula:''}</td>
-          <td style="border:1px solid #999;padding:1px 2px"></td>
-          <td style="border:1px solid #999;padding:1px 2px"></td>
-          <td style="border:1px solid #999;padding:1px 2px"></td>
+        t += `<tr>
+          <td class="${r===0?'sess-num':''}" style="${r!==0?'text-align:center':''}">${r===0?SESS_NUMS[sk]:''}</td>
+          <td>${docName}</td>
+          <td style="text-align:center">${grupoTxt}</td>
+          <td style="text-align:center">${aus&&aus.aula?aus.aula:''}</td>
+          <td></td><td></td><td></td>
         </tr>`;
       }
       if (!isSess7) {
-        t += `<tr style="height:15px"><td style="border:1px solid #999"></td><td style="border:1px solid #999"></td><td style="border:1px solid #999"></td><td style="border:1px solid #999"></td><td style="border:1px solid #999"></td><td style="border:1px solid #999;padding:1px 3px;font-weight:bold">Convivencia:</td><td style="border:1px solid #999"></td></tr>`;
-        t += `<tr style="height:15px"><td style="border:1px solid #999"></td><td style="border:1px solid #999"></td><td style="border:1px solid #999"></td><td style="border:1px solid #999"></td><td style="border:1px solid #999"></td><td style="border:1px solid #999;padding:1px 3px;font-weight:bold">Biblioteca:</td><td style="border:1px solid #999"></td></tr>`;
+        t += `<tr class="conv"><td></td><td></td><td></td><td></td><td></td><td>Convivencia:</td><td></td></tr>`;
+        t += `<tr class="conv"><td></td><td></td><td></td><td></td><td></td><td>Biblioteca:</td><td></td></tr>`;
       }
     });
     return t + '</table>';
   }
 
-  const footnote = `<p style="font-size:7.5pt;font-style:italic;margin:4px 0 2px">La tarea se recogerá en el <b>organizador de consejería</b></p>`;
-
   const printWin = window.open('', '_blank');
   printWin.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Parte Guardias ${fecha}</title>
   <style>
-    @page { size: A4; margin: 1cm 1.2cm; }
-    body { font-family: Arial; font-size: 9pt; margin: 0; }
+    @page { size: A4; margin: 1.0cm 1.2cm; }
+    body { font-family: Arial; font-size: 8pt; margin: 0; padding: 0; }
     h1 { text-align:center; font-size:12pt; margin:3px 0; }
-    p  { margin:2px 0; font-size:8.5pt; }
+    h2 { text-align:center; font-size:9pt; font-weight:normal; margin:2px 0; }
+    p  { margin:2px 0; font-size:8pt; }
+    table { width:100%; border-collapse:collapse; font-size:7.5pt; font-family:Arial; table-layout:fixed; }
+    colgroup col:nth-child(1) { width:4%; }
+    colgroup col:nth-child(2) { width:23%; }
+    colgroup col:nth-child(3) { width:7%; }
+    colgroup col:nth-child(4) { width:6%; }
+    colgroup col:nth-child(5) { width:8%; }
+    colgroup col:nth-child(6) { width:37%; }
+    colgroup col:nth-child(7) { width:15%; }
+    th { background:#1F3864; color:white; padding:3px 4px; border:1px solid #999; font-size:7.5pt; text-align:center; }
+    td { border:1px solid #999; padding:1px 3px; height:16px; vertical-align:middle; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+    .sess-num { background:#DCE6F1; font-weight:bold; text-align:center; font-size:9pt; }
+    .conv td { font-weight:bold; }
+    .footnote { font-size:7.5pt; font-style:italic; margin:4px 0 2px; }
     .page2 { page-break-before: always; }
     @media print { .no-print { display:none; } }
   </style></head><body>
-  <div class="no-print" style="padding:10px;background:#f0f6ff;margin-bottom:10px;border-radius:8px;font-family:Arial;font-size:12px">
-    <strong>Vista previa del parte</strong> —
-    <button onclick="window.print()" style="background:#1F3864;color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-weight:bold">🖨️ Imprimir / Guardar PDF</button>
-    <button onclick="window.close()" style="margin-left:8px;background:#eee;border:none;padding:6px 14px;border-radius:6px;cursor:pointer">✕ Cerrar</button>
+  <div class="no-print" style="padding:10px;background:#f0f6ff;margin-bottom:10px;border-radius:8px;font-family:Arial;font-size:12px;display:flex;align-items:center;gap:10px">
+    <strong>Vista previa del parte de guardias</strong>
+    <button onclick="window.print()" style="background:#1F3864;color:#fff;border:none;padding:6px 16px;border-radius:6px;cursor:pointer;font-weight:bold;margin-left:auto">\ud83d\udda8\ufe0f Imprimir / Guardar PDF</button>
+    <button onclick="window.close()" style="background:#eee;border:none;padding:6px 12px;border-radius:6px;cursor:pointer">\u2715 Cerrar</button>
   </div>
   <h1>PARTE DIARIO DE GUARDIAS</h1>
-  <p style="text-align:center;font-size:9pt">CURSO 2025 - 26</p>
+  <h2>CURSO 2025 - 26</h2>
   <p>Parte diario de guardia ${day} de ${monthName} de ${year}</p>
-  <p style="margin:3px 0 6px">${daysLine}</p>
+  <p style="margin:3px 0 8px;font-size:9pt">${daysLine}</p>
   ${tableHTML(['2','3','3R'])}
-  ${footnote}
+  <p class="footnote">La tarea se recoger\u00e1 en el <b>organizador de consejer\u00eda</b></p>
   <div class="page2">
     ${tableHTML(['5','6','7','8'])}
-    ${footnote}
+    <p class="footnote">La tarea se recoger\u00e1 en el <b>organizador de consejer\u00eda</b></p>
   </div>
-    </div>
-</div>
-</body></html>`);
+  </body></html>`);
   printWin.document.close();
 }
 
+// listeners moved to missing_js block
 
 // ── SIDEBAR ────────────────────────────────────────────────────────────────
 function toggleSidebar() {
@@ -3144,31 +3163,13 @@ function toggleSidebar() {
     sb.classList.toggle('collapsed');
   }
 }
-// Also allow sidebar-toggle button click on desktop
-document.addEventListener('DOMContentLoaded', () => {
-  const toggleBtn = document.querySelector('.sidebar-toggle');
-  if (toggleBtn) {
-    toggleBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      toggleSidebar();
-    });
-  }
-});
 function closeSidebar() {
   document.getElementById('sidebar').classList.remove('open');
   document.getElementById('sidebar-overlay').classList.remove('open');
 }
-// Close sidebar on nav click on mobile
-document.querySelectorAll('.sidebar-nav .nav-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    if (window.innerWidth <= 700) closeSidebar();
-  });
-});
-
 
 // ── CAMBIO DE PERFIL ────────────────────────────────────────────────────────
 let _perfilPendiente = null;
-
 function mostrarCambioPerfil() {
   _perfilPendiente = null;
   document.getElementById('perfil-pw-wrap').style.display = 'none';
@@ -3178,28 +3179,20 @@ function mostrarCambioPerfil() {
   document.getElementById('perfil-btn-docente').classList.toggle('activo', USER_ROLE==='docente');
   document.getElementById('perfil-btn-direccion').classList.toggle('activo', USER_ROLE==='direccion');
 }
-
 function cerrarCambioPerfil() {
   document.getElementById('perfil-modal').classList.add('hidden');
   _perfilPendiente = null;
 }
-
 function solicitarCambioPerfil(role) {
   if (role === USER_ROLE) { cerrarCambioPerfil(); return; }
-
-  // Docente -> Direccion: pide contraseña
   if (role === 'direccion' && USER_ROLE === 'docente') {
     _perfilPendiente = role;
-    const wrap = document.getElementById('perfil-pw-wrap');
-    wrap.style.display = 'flex';
+    document.getElementById('perfil-pw-wrap').style.display = 'flex';
     document.getElementById('perfil-pw-input').focus();
     return;
   }
-
-  // Direccion -> Docente: cambio directo sin contraseña
   aplicarCambioPerfil(role);
 }
-
 function confirmarCambioPerfil() {
   const val = document.getElementById('perfil-pw-input').value;
   const err = document.getElementById('perfil-pw-error');
@@ -3212,14 +3205,12 @@ function confirmarCambioPerfil() {
     document.getElementById('perfil-pw-input').focus();
   }
 }
-
 function aplicarCambioPerfil(role) {
   USER_ROLE = role;
   sessionStorage.setItem('role', role);
   cerrarCambioPerfil();
   applyRole();
 }
-
 function cerrarSesion() {
   sessionStorage.removeItem('auth');
   sessionStorage.removeItem('role');
@@ -3228,63 +3219,67 @@ function cerrarSesion() {
   document.getElementById('login-screen').classList.remove('hidden');
 }
 
-
-function ahoraMiniRender() {
-  const el = document.getElementById('menu-ahora-mini');
-  if (!el || !DB) return;
-  const dia = getDayName();
-  const now = new Date();
-  const timeStr = now.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
-  const sesActual = getSesionActual();
-
-  if (!dia || !sesActual) {
-    const msgs = ['Ahora descansa, que te lo mereces 😴','¡A disfrutar del tiempo libre! ☀️','Fuera del horario lectivo ☕'];
-    el.innerHTML = `<p style="color:var(--text-soft);font-size:.85rem;font-style:italic">${msgs[now.getDay()%msgs.length]}</p>`;
-    return;
-  }
-
-  const meta = DB.sesiones[sesActual.sess];
-  const sigBuscar = sesActual.sess === '4' ? 'GREC' : 'G';
-  const guardias = [];
-  Object.values(DB.docentes).forEach(info => {
-    const slot = (info.horario[dia]||{})[sesActual.sess];
-    if (!slot) return;
-    const arr = Array.isArray(slot) ? slot : [slot];
-    if (arr.some(s => s.sigla === sigBuscar)) guardias.push(tc2(info.nombre));
-  });
-
-  // Aulas libres count
-  const aulasOcupadas = new Set();
-  Object.values(DB.docentes).forEach(info => {
-    const slot = (info.horario[dia]||{})[sesActual.sess];
-    if (!slot) return;
-    const arr = Array.isArray(slot) ? slot : [slot];
-    arr.forEach(s => { if(s.aula) aulasOcupadas.add(s.aula); });
-  });
-  const totalAulas = AULAS_ORDEN.flatMap(p=>p.aulas).length;
-  const libres = totalAulas - aulasOcupadas.size;
-
-  el.innerHTML = `
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
-      <div style="text-align:center;background:var(--accent-soft);border-radius:10px;padding:10px 6px">
-        <div style="font-size:1.1rem;font-weight:900;color:var(--accent)">${meta.label}</div>
-        <div style="font-size:.7rem;color:var(--text-soft)">${meta.hora}</div>
-      </div>
-      <div style="text-align:center;background:var(--surface2);border-radius:10px;padding:10px 6px">
-        <div style="font-size:1.1rem;font-weight:900;color:var(--text)">${guardias.length}</div>
-        <div style="font-size:.7rem;color:var(--text-soft)">Guardianes</div>
-      </div>
-      <div style="text-align:center;background:var(--green-soft);border-radius:10px;padding:10px 6px">
-        <div style="font-size:1.1rem;font-weight:900;color:var(--green)">${libres}</div>
-        <div style="font-size:.7rem;color:var(--text-soft)">Aulas libres</div>
-      </div>
-    </div>
-    ${guardias.length > 0 ? `<div style="margin-top:10px;font-size:.78rem;color:var(--text-mid)">🛡️ ${guardias.slice(0,3).join(' · ')}${guardias.length>3?' +'+( guardias.length-3)+' más':''}</div>` : ''}`;
-}
-
-
 // ── SUSTITUCIONES ──────────────────────────────────────────────────────────
 let sustCache = [];
+
+async function getSustituciones() {
+  try { sustCache = await supaFetch('GET', 'sustituciones?activa=eq.true&select=*'); } catch(e) {}
+  return sustCache;
+}
+
+function getDocenteEfectivo(code, nombre) {
+  const today = new Date().toISOString().split('T')[0];
+  const sust = sustCache.find(s =>
+    s.codigo_original === code && s.activa &&
+    s.fecha_inicio <= today && (!s.fecha_fin || s.fecha_fin >= today)
+  );
+  return sust
+    ? { nombre: sust.docente_sustituto, esSubstituto: true, original: nombre, sustId: sust.id }
+    : { nombre, esSubstituto: false };
+}
+
+function getNombreEfectivo(code) {
+  if (!DB || !DB.docentes[code]) return '';
+  const info = DB.docentes[code];
+  return getDocenteEfectivo(code, info.nombre).nombre;
+}
+
+function rebuildDocenteSelectors() {
+  if (!DB) return;
+  const sustituidos = new Set(sustCache.filter(s=>s.activa).map(s=>s.codigo_original));
+
+  function buildOptions(sel) {
+    if (!sel) return;
+    const current = sel.value;
+    sel.innerHTML = '<option value="">— Selecciona un docente —</option>';
+    // Sustitutos primero
+    sustCache.filter(s=>s.activa).forEach(sust => {
+      const opt = document.createElement('option');
+      opt.value = sust.codigo_original;
+      opt.textContent = sust.docente_sustituto + ' 🔄 (por ' + sust.docente_original.split(',')[0] + ')';
+      sel.appendChild(opt);
+    });
+    if (sustCache.filter(s=>s.activa).length > 0) {
+      const sep = document.createElement('option');
+      sep.disabled = true; sep.textContent = '──────────────';
+      sel.appendChild(sep);
+    }
+    Object.entries(DB.docentes)
+      .sort((a,b) => a[1].nombre.localeCompare(b[1].nombre,'es'))
+      .forEach(([code, info]) => {
+        if (sustituidos.has(code)) return;
+        const opt = document.createElement('option');
+        opt.value = code; opt.textContent = info.nombre;
+        sel.appendChild(opt);
+      });
+    if (current) sel.value = current;
+  }
+
+  buildOptions(document.getElementById('sel-docente'));
+  const ausEl = document.getElementById('aus-sel-docente');
+  if (ausEl && ausEl.options.length > 1) buildOptions(ausEl);
+  if (DB) buildGuardiasTable(DB);
+}
 
 async function sustBuild() {
   const el = document.getElementById('sust-lista');
@@ -3298,23 +3293,23 @@ async function sustBuild() {
 
 function sustRender() {
   const el = document.getElementById('sust-lista');
+  if (!el) return;
   if (sustCache.length === 0) {
     el.innerHTML = '<div class="state-msg"><div class="icon">✅</div><p>No hay sustituciones activas.</p></div>';
     return;
   }
   let html = '';
   sustCache.forEach(s => {
-    const fin = s.fecha_fin ? ` hasta ${new Date(s.fecha_fin+'T12:00:00').toLocaleDateString('es-ES')}` : ' (indefinida)';
     const inicio = new Date(s.fecha_inicio+'T12:00:00').toLocaleDateString('es-ES');
     html += `<div class="sust-card">
       <div class="sust-card-header">
         <span class="sust-badge">🔄 Activa</span>
         <strong style="flex:1">${tc2(s.docente_original)}</strong>
-        <button class="aus-del-btn" onclick="sustCancelar('${s.id}')" title="Cancelar sustitución">✕</button>
+        <button class="aus-del-btn" onclick="sustCancelar('${s.id}')" title="Cancelar">✕</button>
       </div>
       <div class="sust-card-body">
         <span class="sust-arrow">→</span> Sustituido por: <strong>${s.docente_sustituto}</strong><br>
-        <small>Desde ${inicio}${fin}</small>
+        <small>Desde ${inicio} (indefinida)</small>
       </div>
     </div>`;
   });
@@ -3322,7 +3317,6 @@ function sustRender() {
 }
 
 function sustAbrirModal() {
-  // Populate original docente selector
   const sel = document.getElementById('sust-original');
   if (sel.options.length <= 1 && DB) {
     Object.entries(DB.docentes).sort((a,b)=>a[1].nombre.localeCompare(b[1].nombre,'es'))
@@ -3333,11 +3327,9 @@ function sustAbrirModal() {
         sel.appendChild(opt);
       });
   }
-  // Set today as default start date
   const today = new Date();
   const ymd = today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
   document.getElementById('sust-inicio').value = ymd;
-  document.getElementById('sust-fin').value = '';
   document.getElementById('sust-nuevo').value = '';
   document.getElementById('sust-modal').classList.remove('hidden');
 }
@@ -3350,19 +3342,18 @@ async function sustGuardar() {
   const selVal = document.getElementById('sust-original').value;
   const nuevo  = document.getElementById('sust-nuevo').value.trim();
   const inicio = document.getElementById('sust-inicio').value;
-  if (!selVal || !nuevo || !inicio) { alert('Rellena los campos obligatorios.'); return; }
-  const [codigo, nombre] = selVal.split('|');
+  if (!selVal || !nuevo || !inicio) { alert('Rellena todos los campos.'); return; }
+  const pipeIdx = selVal.indexOf('|');
+  const codigo = selVal.substring(0, pipeIdx);
+  const nombre = selVal.substring(pipeIdx + 1);
 
   const btn = document.querySelector('#sust-modal .btn-primary');
   btn.textContent = '⏳ Guardando...'; btn.disabled = true;
   try {
     await supaFetch('POST', 'sustituciones', {
-      docente_original: nombre,
-      codigo_original:  codigo,
-      docente_sustituto: nuevo,
-      fecha_inicio: inicio,
-      fecha_fin:    null,
-      activa: true
+      docente_original: nombre, codigo_original: codigo,
+      docente_sustituto: nuevo, fecha_inicio: inicio,
+      fecha_fin: null, activa: true
     });
     sustCerrarModal();
     await sustBuild();
@@ -3375,95 +3366,13 @@ async function sustGuardar() {
 }
 
 async function sustCancelar(id) {
-  if (!confirm('¿Cancelar esta sustitución? El docente original volverá a aparecer en los horarios.')) return;
+  if (!confirm('¿Cancelar esta sustitución? El docente original volverá a aparecer.')) return;
   try {
     await supaFetch('PATCH', `sustituciones?id=eq.${id}`, { activa: false });
     await sustBuild();
     rebuildDocenteSelectors();
-  } catch(e) {
-    alert('Error: ' + e.message);
-  }
+  } catch(e) { alert('Error: ' + e.message); }
 }
-
-// ── Apply sustituciones to horario lookups ─────────────────────────────────
-async function getSustituciones() {
-  try { sustCache = await supaFetch('GET', 'sustituciones?activa=eq.true&select=*'); } catch(e) {}
-  return sustCache;
-}
-
-function rebuildDocenteSelectors() {
-  if (!DB) return;
-
-  // Get set of substituted codes (docentes that have an active sustitución)
-  const sustituidos = new Set(sustCache.filter(s=>s.activa).map(s=>s.codigo_original));
-
-  function buildOptions(sel, includeSubstitutos) {
-    if (!sel) return;
-    const current = sel.value;
-    sel.innerHTML = '<option value="">— Selecciona un docente —</option>';
-
-    // First add sustitutos (docentes that are substituting someone)
-    sustCache.filter(s=>s.activa).forEach(sust => {
-      const opt = document.createElement('option');
-      opt.value = sust.codigo_original; // use original code for schedule lookup
-      opt.textContent = sust.docente_sustituto + ' 🔄 (por ' + sust.docente_original.split(',')[0] + ')';
-      opt.dataset.sustituto = '1';
-      sel.appendChild(opt);
-    });
-
-    // Add separator if there are sustituciones
-    if (sustCache.filter(s=>s.activa).length > 0) {
-      const sep = document.createElement('option');
-      sep.disabled = true;
-      sep.textContent = '──────────────';
-      sel.appendChild(sep);
-    }
-
-    // Then add rest of docentes (excluding sustituidos)
-    Object.entries(DB.docentes)
-      .sort((a,b) => a[1].nombre.localeCompare(b[1].nombre,'es'))
-      .forEach(([code, info]) => {
-        if (sustituidos.has(code)) return; // skip - has a sustituto
-        const opt = document.createElement('option');
-        opt.value = code;
-        opt.textContent = info.nombre;
-        sel.appendChild(opt);
-      });
-
-    if (current) sel.value = current;
-  }
-
-  buildOptions(document.getElementById('sel-docente'));
-  // Only rebuild aus-sel-docente if it's been populated before
-  const ausEl = document.getElementById('aus-sel-docente');
-  if (ausEl && ausEl.options.length > 1) buildOptions(ausEl);
-
-  // Rebuild guardias table with updated names
-  if (DB) buildGuardiasTable(DB);
-}
-
-// Get effective docente name (considering sustituciones)
-function getDocenteEfectivo(code, nombre) {
-  const today = new Date().toISOString().split('T')[0];
-  const sust = sustCache.find(s =>
-    s.codigo_original === code &&
-    s.activa &&
-    s.fecha_inicio <= today &&
-    (!s.fecha_fin || s.fecha_fin >= today)
-  );
-  return sust
-    ? { nombre: sust.docente_sustituto, esSubstituto: true, original: nombre, sustId: sust.id }
-    : { nombre, esSubstituto: false };
-}
-
-// Apply sustituciones to renderHorario docente name
-function getNombreEfectivo(code) {
-  if (!DB || !DB.docentes[code]) return '';
-  const info = DB.docentes[code];
-  const ef = getDocenteEfectivo(code, info.nombre);
-  return ef.nombre;
-}
-
 
 // ── ACEX ───────────────────────────────────────────────────────────────────
 let acexCache = [];
@@ -3487,32 +3396,28 @@ function getWeekRange(dateStr) {
 }
 
 async function acexBuild() {
-  const fechaInput = document.getElementById('acex-fecha-filtro').value;
+  const fechaInput = document.getElementById('acex-fecha-filtro')?.value;
   const { start, end } = getWeekRange(fechaInput);
   const el = document.getElementById('acex-lista');
+  if (!el) return;
   el.innerHTML = '<div class="state-msg"><div class="icon">⏳</div><p>Cargando...</p></div>';
   try {
     acexCache = await supaFetch('GET', `acex?fecha=gte.${start}&fecha=lte.${end}&order=fecha.asc,created_at.asc&select=*`);
-    acexRender(start, end);
+    acexRender();
   } catch(e) {
     el.innerHTML = '<div class="state-msg"><p>Error: '+e.message+'</p></div>';
   }
 }
 
-function acexRender(start, end) {
+function acexRender() {
   const el = document.getElementById('acex-lista');
+  if (!el) return;
   if (acexCache.length === 0) {
     el.innerHTML = '<div class="state-msg"><div class="icon">🎒</div><p>No hay ACEX programadas esta semana.</p></div>';
     return;
   }
-
-  // Group by date
   const byDate = {};
-  acexCache.forEach(a => {
-    if (!byDate[a.fecha]) byDate[a.fecha] = [];
-    byDate[a.fecha].push(a);
-  });
-
+  acexCache.forEach(a => { if (!byDate[a.fecha]) byDate[a.fecha] = []; byDate[a.fecha].push(a); });
   let html = '';
   Object.entries(byDate).sort(([a],[b])=>a.localeCompare(b)).forEach(([fecha, items]) => {
     const dt = new Date(fecha+'T12:00:00');
@@ -3525,8 +3430,8 @@ function acexRender(start, end) {
           <span class="acex-fecha-badge">🎒 ACEX</span>
           ${sesLabels.map(s=>`<span class="acex-ses-badge">${s}</span>`).join('')}
           <div style="margin-left:auto;display:flex;gap:6px">
-            ${USER_ROLE==='direccion'?`<button class="aus-del-btn" onclick="acexEditar('${a.id}')" title="Editar">✏️</button>
-            <button class="aus-del-btn" onclick="acexEliminar('${a.id}')" title="Eliminar">🗑</button>`:''}
+            ${USER_ROLE==='direccion'?`<button class="aus-del-btn" onclick="acexEditar('${a.id}')">✏️</button>
+            <button class="aus-del-btn" onclick="acexEliminar('${a.id}')">🗑</button>`:''}
           </div>
         </div>
         <div class="acex-card-body">
@@ -3543,16 +3448,10 @@ function acexRender(start, end) {
 function acexAbrirModal(id) {
   acexEditId = id || null;
   document.getElementById('acex-modal-title').textContent = id ? 'Editar ACEX' : 'Nueva ACEX';
-
-  // Build sesiones checkboxes
   const wrap = document.getElementById('acex-sesiones-wrap');
   wrap.innerHTML = SESS_ALL.map(s =>
-    `<label class="ses-check-box">
-      <input type="checkbox" name="acex-ses" value="${s}" checked> ${SESS_LABELS_ACEX[s]}
-    </label>`
+    `<label class="ses-check-box"><input type="checkbox" name="acex-ses" value="${s}" checked> ${SESS_LABELS_ACEX[s]}</label>`
   ).join('');
-
-  // Set today as default
   if (!id) {
     const today = new Date();
     const ymd = today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
@@ -3586,15 +3485,12 @@ async function acexGuardar() {
   const grupos   = document.getElementById('acex-grupos').value.trim();
   const obs      = document.getElementById('acex-obs').value.trim();
   const sesiones = Array.from(document.querySelectorAll('input[name="acex-ses"]:checked')).map(c=>c.value);
-
   if (!fecha) { alert('Selecciona una fecha.'); return; }
   if (sesiones.length === 0) { alert('Selecciona al menos una sesión.'); return; }
 
   const btn = document.querySelector('#acex-modal .btn-primary');
   btn.textContent = '⏳ Guardando...'; btn.disabled = true;
-
   const payload = { fecha, sesiones, docentes: docentes||null, grupos: grupos||null, observaciones: obs||null };
-
   try {
     if (acexEditId) {
       await supaFetch('PATCH', `acex?id=eq.${acexEditId}`, payload);
@@ -3612,24 +3508,68 @@ async function acexGuardar() {
 
 async function acexEliminar(id) {
   if (!confirm('¿Eliminar esta ACEX?')) return;
-  try {
-    await supaFetch('DELETE', `acex?id=eq.${id}`);
-    await acexBuild();
-  } catch(e) { alert('Error: '+e.message); }
+  try { await supaFetch('DELETE', `acex?id=eq.${id}`); await acexBuild(); }
+  catch(e) { alert('Error: '+e.message); }
 }
 
 function acexEditar(id) { acexAbrirModal(id); }
 
-// Show ACEX in "Ahora" view
-async function acexDeAhora(dia, sess) {
-  try {
-    const today = new Date().toISOString().split('T')[0];
-    const rows = await supaFetch('GET', `acex?fecha=eq.${today}&select=*`);
-    return rows.filter(a => (a.sesiones||[]).includes(sess));
-  } catch(e) { return []; }
+// ── AHORA MINI (widget en inicio) ─────────────────────────────────────────
+function ahoraMiniRender() {
+  const el = document.getElementById('menu-ahora-mini');
+  if (!el || !DB) return;
+  const dia = getDayName();
+  const now = new Date();
+  const sesActual = getSesionActual();
+
+  if (!dia || !sesActual) {
+    const msgs = ['Ahora descansa, que te lo mereces 😴','¡A disfrutar! ☀️','Fuera del horario lectivo ☕'];
+    el.innerHTML = `<p style="color:var(--text-soft);font-size:.85rem;font-style:italic">${msgs[now.getDay()%msgs.length]}</p>`;
+    return;
+  }
+
+  const meta = DB.sesiones[sesActual.sess];
+  const sigBuscar = sesActual.sess === '4' ? 'GREC' : 'G';
+  const guardias = [];
+  Object.entries(DB.docentes).forEach(([code, info]) => {
+    const slot = (info.horario[dia]||{})[sesActual.sess];
+    if (!slot) return;
+    const arr = Array.isArray(slot) ? slot : [slot];
+    if (arr.some(s => s.sigla === sigBuscar)) {
+      const ef = getDocenteEfectivo(code, info.nombre);
+      guardias.push(tc2(ef.nombre));
+    }
+  });
+
+  const aulasOcupadas = new Set();
+  Object.values(DB.docentes).forEach(info => {
+    const slot = (info.horario[dia]||{})[sesActual.sess];
+    if (!slot) return;
+    const arr = Array.isArray(slot) ? slot : [slot];
+    arr.forEach(s => { if(s.aula) aulasOcupadas.add(s.aula); });
+  });
+  const totalAulas = AULAS_ORDEN.flatMap(p=>p.aulas).length;
+  const libres = totalAulas - aulasOcupadas.size;
+
+  el.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+      <div style="text-align:center;background:var(--accent-soft);border-radius:10px;padding:10px 6px">
+        <div style="font-size:1.1rem;font-weight:900;color:var(--accent)">${meta.label}</div>
+        <div style="font-size:.7rem;color:var(--text-soft)">${meta.hora}</div>
+      </div>
+      <div style="text-align:center;background:var(--surface2);border-radius:10px;padding:10px 6px">
+        <div style="font-size:1.1rem;font-weight:900;color:var(--text)">${guardias.length}</div>
+        <div style="font-size:.7rem;color:var(--text-soft)">Guardianes</div>
+      </div>
+      <div style="text-align:center;background:var(--green-soft);border-radius:10px;padding:10px 6px">
+        <div style="font-size:1.1rem;font-weight:900;color:var(--green)">${libres}</div>
+        <div style="font-size:.7rem;color:var(--text-soft)">Aulas libres</div>
+      </div>
+    </div>
+    ${guardias.length > 0 ? `<div style="margin-top:10px;font-size:.78rem;color:var(--text-mid)">🛡️ ${guardias.slice(0,3).join(' · ')}${guardias.length>3?' +'+(guardias.length-3)+' más':''}</div>` : ''}`;
 }
 
-// Init fecha filtro to current week's monday
+// Init fecha filtro ACEX to current week's monday
 (function() {
   const today = new Date();
   const dow = today.getDay();
@@ -3638,12 +3578,19 @@ async function acexDeAhora(dia, sess) {
   const ymd = monday.getFullYear()+'-'+String(monday.getMonth()+1).padStart(2,'0')+'-'+String(monday.getDate()).padStart(2,'0');
   const el = document.getElementById('acex-fecha-filtro');
   if (el) el.value = ymd;
+  // Set today in ahora-fecha and aulas-fecha
+  const todayStr = today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+  const aulasEl = document.getElementById('aulas-fecha');
+  if (aulasEl) aulasEl.value = todayStr;
+  const ahoraEl = document.getElementById('ahora-fecha');
+  if (ahoraEl) ahoraEl.value = todayStr;
 })();
 
 document.getElementById('acex-fecha-filtro')?.addEventListener('change', acexBuild);
-
+document.getElementById('ahora-fecha')?.addEventListener('change', () => ahoraRender());
 document.getElementById('sel-docente').addEventListener('change', renderHorario);
 document.getElementById('sel-dia').addEventListener('change', renderHorario);
+
 </script>
 </body>
 </html>
