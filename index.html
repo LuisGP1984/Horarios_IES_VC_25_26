@@ -21,6 +21,7 @@
       position: sticky; top: 0; height: 100vh;
       overflow-y: auto; z-index: 50;
       transition: width .25s, transform .25s;
+      isolation: isolate;
     }
     .sidebar.collapsed { width: 56px; }
     .sidebar-toggle {
@@ -699,6 +700,26 @@
     .perfil-btn:hover { border-color: var(--accent); background: var(--accent-soft); }
     .perfil-btn.activo { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
 
+
+    /* ── SUSTITUCIONES ───────────────────────────────── */
+    .sust-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); margin-bottom: 10px;
+      box-shadow: var(--shadow); overflow: hidden;
+    }
+    .sust-card-header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 16px; background: #fef3c7;
+      border-bottom: 1px solid #fde68a;
+    }
+    .sust-badge {
+      background: #f59e0b; color: #fff; font-size: .7rem;
+      font-weight: 700; padding: 2px 8px; border-radius: 99px;
+      white-space: nowrap;
+    }
+    .sust-card-body { padding: 12px 16px; font-size: .85rem; color: var(--text-mid); }
+    .sust-arrow { font-size: 1.2rem; color: var(--gold); }
+
     /* ── LEYENDA ─────────────────────────────────────── */
     details { margin-top: 32px; background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); }
     summary { padding: 14px 18px; font-size: 0.82rem; font-weight: 600; cursor: pointer; color: var(--text-mid); list-style: none; }
@@ -840,6 +861,7 @@
       <button class="nav-btn" onclick="showView('cobertura');cobBuildTable()" id="nav-cobertura"><span class="nav-icon">🔴</span><span class="nav-label">Cobertura</span></button>
       <button class="nav-btn" onclick="showView('aulas');aulasBuild()" id="nav-aulas"><span class="nav-icon">🏫</span><span class="nav-label">Aulas</span></button>
       <div class="nav-separator"></div>
+      <button class="nav-btn solo-direccion" onclick="showView('sustituciones');sustBuild()" id="nav-sustituciones"><span class="nav-icon">🔄</span><span class="nav-label">Sustituciones</span></button>
       <button class="nav-btn" onclick="showView('acerca')" id="nav-acerca"><span class="nav-icon">ℹ️</span><span class="nav-label">Acerca de</span></button>
     </nav>
   </aside>
@@ -1136,6 +1158,62 @@
     </div>
   </div>
 
+
+  <!-- SUSTITUCIONES -->
+  <div class="view" id="view-sustituciones">
+    <div class="aus-header">
+      <h2>🔄 Sustituciones activas</h2>
+      <p>Gestiona las sustituciones de docentes. Solo visible para el Equipo Directivo.</p>
+    </div>
+    <div class="aus-toolbar" style="margin-bottom:20px">
+      <div class="control-group" style="flex:0 0 190px">
+        <label for="sust-fecha">Desde fecha</label>
+        <input type="date" id="sust-fecha">
+      </div>
+      <div class="aus-actions">
+        <button class="btn-primary" onclick="sustAbrirModal()">＋ Nueva sustitución</button>
+      </div>
+    </div>
+    <div id="sust-lista">
+      <div class="state-msg"><div class="icon">🔄</div><p>Cargando sustituciones...</p></div>
+    </div>
+  </div>
+
+  <!-- Modal nueva sustitución -->
+  <div id="sust-modal" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width:480px">
+      <div class="modal-header">
+        <h3>Nueva sustitución</h3>
+        <button class="modal-close" onclick="sustCerrarModal()">✕</button>
+      </div>
+      <div class="modal-body" style="display:flex;flex-direction:column;gap:14px">
+        <div class="control-group">
+          <label for="sust-original">Docente sustituido</label>
+          <select id="sust-original"><option value="">— Selecciona —</option></select>
+        </div>
+        <div class="control-group">
+          <label for="sust-nuevo">Docente sustituto</label>
+          <input type="text" id="sust-nuevo" placeholder="Nombre del sustituto"
+            style="width:100%;padding:11px 14px;background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);font-family:Inter,sans-serif;font-size:.92rem;color:var(--text)">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="control-group">
+            <label for="sust-inicio">Fecha inicio</label>
+            <input type="date" id="sust-inicio">
+          </div>
+          <div class="control-group">
+            <label for="sust-fin">Fecha fin (opcional)</label>
+            <input type="date" id="sust-fin">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="sustCerrarModal()">Cancelar</button>
+        <button class="btn-primary" onclick="sustGuardar()">✅ Guardar sustitución</button>
+      </div>
+    </div>
+  </div>
+
 </main>
 
 <script>
@@ -1411,8 +1489,8 @@ function ausGetData(fecha) {
   return ausCache[fecha] || [];
 }
 
-async function ausSaveNew(fecha, codigo, nombre, sesiones) {
-  const row = await supaFetch('POST', 'ausencias', { fecha, codigo, nombre, sesiones });
+async function ausSaveNew(fecha, codigo, nombre, sesiones, tipo) {
+  const row = await supaFetch('POST', 'ausencias', { fecha, codigo, nombre, sesiones, tipo: tipo||'ausencia' });
   if (!ausCache[fecha]) ausCache[fecha] = [];
   ausCache[fecha].push(Array.isArray(row) ? row[0] : row);
 }
@@ -1685,7 +1763,8 @@ async function ausConfirmAdd() {
   btn.textContent = '⏳ Guardando...'; btn.disabled = true;
 
   try {
-    await ausSaveNew(fecha, code, nombre, sesionesFull);
+    const tipoAus = document.getElementById('aus-tipo')?.value || 'ausencia';
+    await ausSaveNew(fecha, code, nombre, sesionesFull, tipoAus);
     ausCloseModal();
     await ausRender();
     const cobView = document.getElementById('view-cobertura');
@@ -3033,6 +3112,128 @@ function ahoraMiniRender() {
       </div>
     </div>
     ${guardias.length > 0 ? `<div style="margin-top:10px;font-size:.78rem;color:var(--text-mid)">🛡️ ${guardias.slice(0,3).join(' · ')}${guardias.length>3?' +'+( guardias.length-3)+' más':''}</div>` : ''}`;
+}
+
+
+// ── SUSTITUCIONES ──────────────────────────────────────────────────────────
+let sustCache = [];
+
+async function sustBuild() {
+  const el = document.getElementById('sust-lista');
+  try {
+    sustCache = await supaFetch('GET', 'sustituciones?activa=eq.true&order=fecha_inicio.desc&select=*');
+    sustRender();
+  } catch(e) {
+    el.innerHTML = '<div class="state-msg"><p>Error cargando sustituciones</p></div>';
+  }
+}
+
+function sustRender() {
+  const el = document.getElementById('sust-lista');
+  if (sustCache.length === 0) {
+    el.innerHTML = '<div class="state-msg"><div class="icon">✅</div><p>No hay sustituciones activas.</p></div>';
+    return;
+  }
+  let html = '';
+  sustCache.forEach(s => {
+    const fin = s.fecha_fin ? ` hasta ${new Date(s.fecha_fin+'T12:00:00').toLocaleDateString('es-ES')}` : ' (indefinida)';
+    const inicio = new Date(s.fecha_inicio+'T12:00:00').toLocaleDateString('es-ES');
+    html += `<div class="sust-card">
+      <div class="sust-card-header">
+        <span class="sust-badge">🔄 Activa</span>
+        <strong style="flex:1">${tc2(s.docente_original)}</strong>
+        <button class="aus-del-btn" onclick="sustCancelar('${s.id}')" title="Cancelar sustitución">✕</button>
+      </div>
+      <div class="sust-card-body">
+        <span class="sust-arrow">→</span> Sustituido por: <strong>${s.docente_sustituto}</strong><br>
+        <small>Desde ${inicio}${fin}</small>
+      </div>
+    </div>`;
+  });
+  el.innerHTML = html;
+}
+
+function sustAbrirModal() {
+  // Populate original docente selector
+  const sel = document.getElementById('sust-original');
+  if (sel.options.length <= 1 && DB) {
+    Object.entries(DB.docentes).sort((a,b)=>a[1].nombre.localeCompare(b[1].nombre,'es'))
+      .forEach(([code, info]) => {
+        const opt = document.createElement('option');
+        opt.value = code + '|' + info.nombre;
+        opt.textContent = info.nombre;
+        sel.appendChild(opt);
+      });
+  }
+  // Set today as default start date
+  const today = new Date();
+  const ymd = today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+  document.getElementById('sust-inicio').value = ymd;
+  document.getElementById('sust-fin').value = '';
+  document.getElementById('sust-nuevo').value = '';
+  document.getElementById('sust-modal').classList.remove('hidden');
+}
+
+function sustCerrarModal() {
+  document.getElementById('sust-modal').classList.add('hidden');
+}
+
+async function sustGuardar() {
+  const selVal = document.getElementById('sust-original').value;
+  const nuevo  = document.getElementById('sust-nuevo').value.trim();
+  const inicio = document.getElementById('sust-inicio').value;
+  const fin    = document.getElementById('sust-fin').value;
+  if (!selVal || !nuevo || !inicio) { alert('Rellena los campos obligatorios.'); return; }
+  const [codigo, nombre] = selVal.split('|');
+
+  const btn = document.querySelector('#sust-modal .btn-primary');
+  btn.textContent = '⏳ Guardando...'; btn.disabled = true;
+  try {
+    await supaFetch('POST', 'sustituciones', {
+      docente_original: nombre,
+      codigo_original:  codigo,
+      docente_sustituto: nuevo,
+      fecha_inicio: inicio,
+      fecha_fin:    fin || null,
+      activa: true
+    });
+    sustCerrarModal();
+    await sustBuild();
+  } catch(e) {
+    alert('Error: ' + e.message);
+  } finally {
+    btn.textContent = '✅ Guardar sustitución'; btn.disabled = false;
+  }
+}
+
+async function sustCancelar(id) {
+  if (!confirm('¿Cancelar esta sustitución? El docente original volverá a aparecer en los horarios.')) return;
+  try {
+    await supaFetch('PATCH', `sustituciones?id=eq.${id}`, { activa: false });
+    await sustBuild();
+  } catch(e) {
+    alert('Error: ' + e.message);
+  }
+}
+
+// ── Apply sustituciones to horario lookups ─────────────────────────────────
+async function getSustituciones() {
+  if (sustCache.length === 0) {
+    try { sustCache = await supaFetch('GET', 'sustituciones?activa=eq.true&select=*'); } catch(e) {}
+  }
+  return sustCache;
+}
+
+// Get effective docente name (considering sustituciones)
+function getDocenteEfectivo(code, nombre) {
+  const today = new Date().toISOString().split('T')[0];
+  const sust = sustCache.find(s => {
+    if (s.codigo_original !== code) return false;
+    if (s.fecha_inicio > today) return false;
+    if (s.fecha_fin && s.fecha_fin < today) return false;
+    return s.activa;
+  });
+  return sust ? { nombre: sust.docente_sustituto, esSubstituto: true, original: nombre } : { nombre, esSubstituto: false };
 }
 
 document.getElementById('sel-docente').addEventListener('change', renderHorario);
