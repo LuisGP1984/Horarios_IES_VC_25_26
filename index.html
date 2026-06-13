@@ -1252,15 +1252,9 @@
           <input type="text" id="sust-nuevo" placeholder="Nombre del sustituto"
             style="width:100%;padding:11px 14px;background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);font-family:Inter,sans-serif;font-size:.92rem;color:var(--text)">
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-          <div class="control-group">
-            <label for="sust-inicio">Fecha inicio</label>
-            <input type="date" id="sust-inicio">
-          </div>
-          <div class="control-group">
-            <label for="sust-fin">Fecha fin (opcional)</label>
-            <input type="date" id="sust-fin">
-          </div>
+        <div class="control-group">
+          <label for="sust-inicio">Fecha inicio</label>
+          <input type="date" id="sust-inicio">
         </div>
       </div>
       <div class="modal-footer">
@@ -3355,7 +3349,6 @@ async function sustGuardar() {
   const selVal = document.getElementById('sust-original').value;
   const nuevo  = document.getElementById('sust-nuevo').value.trim();
   const inicio = document.getElementById('sust-inicio').value;
-  const fin    = document.getElementById('sust-fin').value;
   if (!selVal || !nuevo || !inicio) { alert('Rellena los campos obligatorios.'); return; }
   const [codigo, nombre] = selVal.split('|');
 
@@ -3367,7 +3360,7 @@ async function sustGuardar() {
       codigo_original:  codigo,
       docente_sustituto: nuevo,
       fecha_inicio: inicio,
-      fecha_fin:    fin || null,
+      fecha_fin:    null,
       activa: true
     });
     sustCerrarModal();
