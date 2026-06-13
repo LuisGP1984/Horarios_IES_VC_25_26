@@ -203,6 +203,8 @@
     .header-title { flex: 1; }
     .header-title h1 { font-size: 1rem; font-weight: 800; color: #fff; letter-spacing: -0.01em; }
     .header-title p  { font-size: 0.72rem; color: #93c5fd; margin-top: 1px; }
+    #breadcrumb span:first-child:hover { opacity: 1 !important; text-decoration: underline; }
+    #breadcrumb-sep, #breadcrumb-current { }
     .header-badge { background: #ffffff20; border: 1px solid #ffffff30; color: #bfdbfe; font-size: 0.7rem; font-weight: 600; padding: 4px 10px; border-radius: 99px; }
 
     /* ── NAV ─────────────────────────────────────────── */
@@ -863,6 +865,11 @@
       <p>Palencia · Gestión de Horarios</p>
     </div>
     <div class="header-badge">2025/26</div>
+    <div id="breadcrumb" style="font-size:0.75rem;color:#bfdbfe;display:flex;align-items:center;gap:4px;margin:0 auto">
+      <span style="cursor:pointer;opacity:.7;hover:opacity:1" onclick="showView('menu')">🏠 Inicio</span>
+      <span id="breadcrumb-sep" style="opacity:.4">›</span>
+      <span id="breadcrumb-current" style="font-weight:600"></span>
+    </div>
     <div id="role-badge" style="background:#374151;color:#bfdbfe;font-size:0.7rem;font-weight:600;padding:4px 10px;border-radius:99px;border:1px solid #ffffff20;cursor:pointer" onclick="mostrarCambioPerfil()" title="Cambiar perfil">👤 Docente ▾</div>
 
   <!-- Modal cambio perfil -->
@@ -1411,9 +1418,18 @@ if (sessionStorage.getItem('auth')==='1') {
 function showView(name) {
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('view-'+name).classList.add('active');
-  document.getElementById('nav-'+name).classList.add('active');
-  window.scrollTo({top:0, behavior:'smooth'});
+  const viewEl = document.getElementById('view-'+name);
+  if (viewEl) viewEl.classList.add('active');
+  const btnEl = document.getElementById('nav-'+name);
+  if (btnEl) btnEl.classList.add('active');
+  // Update breadcrumb
+  const labels = {menu:'',horarios:'Horarios',guardias:'Guardianes',ausencias:'Ausencias',
+    cobertura:'Cobertura',aulas:'Aulas',ahora:'Ahora',sustituciones:'Sustituciones',acex:'ACEX',acerca:'Acerca de'};
+  const label = labels[name] || name;
+  const sep = document.getElementById('breadcrumb-sep');
+  const cur = document.getElementById('breadcrumb-current');
+  if (sep) sep.style.display = label ? '' : 'none';
+  if (cur) cur.textContent = label;
 }
 
 const legGrid = document.getElementById('leyenda-grid');
@@ -1798,10 +1814,26 @@ function ausAddDocente() {
   const yaAusentes = ausGetData(fecha).map(a => a.codigo);
   const sel = document.getElementById('aus-sel-docente');
   sel.innerHTML = '<option value="">— Selecciona —</option>';
+  const sustituidos = new Set(sustCache.filter(s=>s.activa).map(s=>s.codigo_original));
+  // Add sustitutos first
+  sustCache.filter(s=>s.activa).forEach(sust => {
+    if (yaAusentes.includes(sust.codigo_original)) return;
+    const opt = document.createElement('option');
+    opt.value = sust.codigo_original;
+    opt.textContent = sust.docente_sustituto + ' 🔄 (por ' + sust.docente_original.split(',')[0] + ')';
+    sel.appendChild(opt);
+  });
+  if (sustCache.filter(s=>s.activa).length > 0) {
+    const sep = document.createElement('option');
+    sep.disabled = true; sep.textContent = '──────────────';
+    sel.appendChild(sep);
+  }
+  // Add rest excluding sustituidos
   Object.entries(DB.docentes)
     .sort((a,b) => a[1].nombre.localeCompare(b[1].nombre,'es'))
     .forEach(([code, info]) => {
       if (yaAusentes.includes(code)) return;
+      if (sustituidos.has(code)) return;
       const opt = document.createElement('option');
       opt.value = code; opt.textContent = info.nombre; sel.appendChild(opt);
     });
