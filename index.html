@@ -903,7 +903,6 @@
     <button class="sidebar-toggle" onclick="toggleSidebar()" title="Cerrar menú">☰</button>
     <nav class="sidebar-nav">
       <button class="nav-btn active" onclick="showView('menu')" id="nav-menu"><span class="nav-icon">🏠</span><span class="nav-label">Inicio</span></button>
-      <button class="nav-btn" onclick="showView('ahora');ahoraBuild()" id="nav-ahora"><span class="nav-icon">⚡</span><span class="nav-label">Ahora</span></button>
       <div class="nav-separator"></div>
       <button class="nav-btn" onclick="showView('horarios')" id="nav-horarios"><span class="nav-icon">📅</span><span class="nav-label">Horarios</span></button>
       <button class="nav-btn" onclick="showView('guardias')" id="nav-guardias"><span class="nav-icon">🛡️</span><span class="nav-label">Guardianes</span></button>
@@ -1454,7 +1453,7 @@ function buildGuardiasTable(data) {
 
   const gMap = {};
   SESS.forEach(s => { gMap[s] = {}; DAYS.forEach(d => { gMap[s][d] = []; }); });
-  Object.values(data.docentes).forEach(info => {
+  Object.entries(data.docentes).forEach(([code, info]) => {
     DAYS.forEach(day => {
       const hd = info.horario[day] || {};
       SESS.forEach(sess => {
@@ -1462,7 +1461,10 @@ function buildGuardiasTable(data) {
         if (!slot) return;
         const arr = Array.isArray(slot) ? slot : [slot];
         const sig = sess === '4' ? 'GREC' : 'G';
-        if (arr.some(s => s.sigla === sig)) gMap[sess][day].push(info.nombre);
+        if (arr.some(s => s.sigla === sig)) {
+          const ef = getDocenteEfectivo(code, info.nombre);
+          gMap[sess][day].push(ef.nombre + (ef.esSubstituto ? ' 🔄' : ''));
+        }
       });
     });
   });
