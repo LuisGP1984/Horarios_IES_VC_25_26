@@ -928,7 +928,17 @@
       <h2>Gestión <span>Horarios</span></h2>
       <p>IES Virgen de la Calle · Palencia · Curso 2025/26</p>
     </div>
-    <div class="menu-grid">
+
+<!-- Widget AHORA en inicio -->
+    <div id="menu-ahora-widget" style="margin-top:24px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px 24px;box-shadow:var(--shadow)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <h3 style="font-size:0.9rem;font-weight:800;color:var(--text)">⚡ Ahora mismo</h3>
+        <button onclick="showView('ahora');ahoraBuild()" class="btn-secondary" style="padding:6px 12px;font-size:0.78rem">Ver más →</button>
+      </div>
+      <div id="menu-ahora-mini"></div>
+    </div>
+
+        <div class="menu-grid">
       <div class="menu-card" onclick="showView('ahora');ahoraBuild()" style="border-left:4px solid var(--accent)">
         <div class="mc-icon">⚡</div>
         <div class="mc-title">Ahora</div>
@@ -979,14 +989,6 @@
       </div>
     </div>    </div>
 
-    <!-- Widget AHORA en inicio -->
-    <div id="menu-ahora-widget" style="margin-top:24px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px 24px;box-shadow:var(--shadow)">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-        <h3 style="font-size:0.9rem;font-weight:800;color:var(--text)">⚡ Ahora mismo</h3>
-        <button onclick="showView('ahora');ahoraBuild()" class="btn-secondary" style="padding:6px 12px;font-size:0.78rem">Ver más →</button>
-      </div>
-      <div id="menu-ahora-mini"></div>
-    </div>
   </div>
 
   <!-- HORARIOS -->
