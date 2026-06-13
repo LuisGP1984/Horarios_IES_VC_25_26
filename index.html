@@ -53,10 +53,17 @@
     /* Mobile overlay */
     .sidebar-overlay { display: none; position: fixed; inset: 0; background: #00000060; z-index: 49; }
     @media (max-width: 700px) {
-      .sidebar { position: fixed; top: 0; left: 0; height: 100vh; transform: translateX(-100%); z-index: 60; width: 220px !important; }
-      .sidebar.open { transform: translateX(0); }
+      .sidebar { position: fixed; top: 0; left: 0; height: 100vh; transform: translateX(-100%); z-index: 9000; width: 220px !important; }
+      .sidebar.open { transform: translateX(0); box-shadow: 4px 0 20px #00000040; }
+      .sidebar-overlay { position: fixed; inset: 0; background: #00000060; z-index: 8999; display: none; }
       .sidebar-overlay.open { display: block; }
       header .header-menu-btn { display: flex !important; }
+    }
+    /* Ensure sidebar toggle button is always clickable on desktop */
+    .sidebar-toggle { position: relative; z-index: 51; }
+    /* Fix tables that might block sidebar */
+    .guardias-table-wrap, .aulas-table-wrap, .cob-table-wrap, .grupos-table-wrap {
+      position: relative; z-index: 0;
     }
 
     /* ── ACERCA DE ───────────────────────────────────── */
@@ -107,7 +114,7 @@
 
     /* Mobile menu button in header */
     .header-menu-btn {
-      display: none; background: none; border: none;
+      display: flex; background: none; border: none;
       color: #fff; font-size: 1.3rem; cursor: pointer; padding: 4px 8px;
       margin-right: 4px;
     }
@@ -545,6 +552,8 @@
       border-right: 1px solid var(--border); text-align: center;
       vertical-align: middle; min-width: 90px;
     }
+    table.aulas-table td.vesp-col { background: #faf5ff !important; border-left: 2px solid #c4b5fd; }
+    table.aulas-table th.vesp-col { background: #6d28d9 !important; }
     table.aulas-table td:first-child {
       text-align: left; font-weight: 700; font-size: 0.8rem;
       color: var(--text); padding-left: 14px; background: var(--surface2);
@@ -2365,7 +2374,7 @@ const AULAS_ORDEN = [
   {planta: 'Planta Segunda', aulas: ['201','202','203','204','205','207','208','209A','209B','210','211','211B','214','215','215B','216','217','218','219']},
 ];
 
-const SESS_ORDER_AULAS = ['1','2','3','3R','4','5','6','7','8'];
+const SESS_ORDER_AULAS = ['1','2','3','3R','4','5','6','7','8','V'];
 
 function aulasBuild() {
   const dia = document.getElementById('aulas-dia').value;
@@ -2375,6 +2384,8 @@ function aulasBuild() {
     return;
   }
 
+  // Add vespertino session (V) - always available for booking, not in JSON horarios
+  const SESS_EXTRA = { V: { label: 'Vespertino', hora: '16:00-21:00' } };
   const sesiones = dia === 'Viernes'
     ? SESS_ORDER_AULAS.filter(s => s !== '8')
     : SESS_ORDER_AULAS;
@@ -2407,8 +2418,9 @@ function aulasBuild() {
     <thead><tr>
       <th>Aula</th>`;
   sesiones.forEach(sess => {
-    const meta = DB.sesiones[sess];
-    thtml += `<th>${meta.label}<br><small style="font-weight:400;opacity:.8">${meta.hora}</small></th>`;
+    const meta = DB.sesiones[sess] || {label: sess==='V'?'Vespertino':sess, hora: sess==='V'?'16:00–21:00':''};
+    const isVesp = sess === 'V';
+    thtml += `<th${isVesp?' style="background:#6d28d9"':''}>${meta.label}<br><small style="font-weight:400;opacity:.8">${meta.hora}</small></th>`;
   });
   thtml += '</tr></thead><tbody>';
 
@@ -2554,9 +2566,11 @@ async function aulasBuild() {
         const clases   = aulaMap[aula] && aulaMap[aula][sess] ? aulaMap[aula][sess] : [];
         const reservas = reservasDeAula(fechaInput, aula, sess);
 
-        if (clases.length > 0) {
-          // Aula ocupada por clase
-          thtml += `<td>`;
+        const isVesp = sess === 'V';
+        const tdClass = isVesp ? ' class="vesp-col"' : '';
+        if (clases.length > 0 && !isVesp) {
+          // Aula ocupada por clase (vespertino never has assigned classes)
+          thtml += `<td${tdClass}>`;
           clases.forEach(sl => {
             const docShort = abreviar(sl.docente);
             const matShort = sl.materia.length > 20 ? sl.materia.substring(0,19)+'…' : sl.materia;
@@ -2569,7 +2583,7 @@ async function aulasBuild() {
           thtml += `</td>`;
         } else if (reservas.length > 0) {
           // Aula reservada
-          thtml += `<td>`;
+          thtml += `<td${tdClass}>`;
           reservas.forEach(r => {
             thtml += `<div class="aula-bloque">
               <div class="aula-cel-reservada" onclick="reservaMostrarCancelar('${r.id}','${aula}','${sess}','${r.docente}','${r.motivo||''}')">
@@ -2582,7 +2596,7 @@ async function aulasBuild() {
           thtml += `</td>`;
         } else {
           // Libre — botón reservar
-          thtml += `<td><span class="aula-btn-reservar" onclick="reservaMostrarModal('${fechaInput}','${aula}','${sess}','${dia}')">+ Reservar</span></td>`;
+          thtml += `<td${tdClass}><span class="aula-btn-reservar" onclick="reservaMostrarModal('${fechaInput}','${aula}','${sess}','${dia}')">+ Reservar</span></td>`;
         }
       });
       thtml += '</tr>';
@@ -2604,7 +2618,7 @@ async function aulasRefresh() {
 // ── Modal reservar ─────────────────────────────────────────────────────────
 function reservaMostrarModal(fecha, aula, sesion, dia) {
   reservaActual = { fecha, aula, sesion, dia };
-  const meta = DB.sesiones[sesion];
+  const meta = DB.sesiones[sesion] || {label:'Vespertino', hora:'16:00–21:00'};
   const dt = new Date(fecha+'T12:00:00');
   const fechaLabel = dt.toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});
 
@@ -3116,6 +3130,16 @@ function toggleSidebar() {
     sb.classList.toggle('collapsed');
   }
 }
+// Also allow sidebar-toggle button click on desktop
+document.addEventListener('DOMContentLoaded', () => {
+  const toggleBtn = document.querySelector('.sidebar-toggle');
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleSidebar();
+    });
+  }
+});
 function closeSidebar() {
   document.getElementById('sidebar').classList.remove('open');
   document.getElementById('sidebar-overlay').classList.remove('open');
