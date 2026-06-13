@@ -1674,6 +1674,9 @@ function ausAddDocente() {
 
   document.getElementById('aus-sesiones-check').innerHTML = '<p style="color:var(--text-soft);font-size:.83rem">Selecciona primero un docente.</p>';
   document.getElementById('aus-modal').classList.remove('hidden');
+  // Show tipo only for direccion
+  const tipoWrap = document.getElementById('aus-tipo-wrap');
+  if (tipoWrap) tipoWrap.style.display = USER_ROLE === 'direccion' ? '' : 'none';
 
   sel.onchange = () => ausLoadSesiones(dayName);
 }
