@@ -16,8 +16,8 @@
     /* ── LAYOUT ──────────────────────────────────────── */
     body { font-family: 'Inter', sans-serif; background: #f0f4f8; color: var(--text); min-height: 100vh; -webkit-font-smoothing: antialiased; }
     .app-layout { display: flex; min-height: 100vh; }
-    .app-content { flex: 1; min-width: 0; overflow: hidden; }
-    main { padding: 24px 28px 60px; }
+    .app-content { display: block; flex: 1 1 auto !important; min-width: 0 !important; width: 1px !important; overflow: visible; }
+    main { padding: 24px 28px 60px; min-width: 0; }
 
     /* ── SIDEBAR ─────────────────────────────────────── */
     .sidebar {
@@ -25,7 +25,7 @@
       background: linear-gradient(180deg, var(--navy) 0%, #0d1f3c 100%);
       border-right: 1px solid var(--border);
       display: flex; flex-direction: column;
-      position: sticky; top: 62px; height: calc(100vh - 62px);
+      position: relative; align-self: flex-start; height: auto; min-height: calc(100vh - 62px);
       overflow-y: auto; z-index: 50;
     }
     .sidebar.collapsed { width: 56px; }
@@ -3611,6 +3611,25 @@ function instalarApp() {
     if (btn) btn.style.display = 'none';
   });
 }
+
+
+// Fix app-content width after render
+function fixLayout() {
+  var sb = document.querySelector('.sidebar');
+  var ac = document.querySelector('.app-content');
+  var al = document.querySelector('.app-layout');
+  if (!sb || !ac || !al) return;
+  var sbW = sb.offsetWidth || 200;
+  var alW = al.offsetWidth;
+  if (alW > sbW) {
+    ac.style.width = (alW - sbW) + 'px';
+    ac.style.flex = 'none';
+  }
+}
+// Run on load and after login
+document.addEventListener('DOMContentLoaded', fixLayout);
+setTimeout(fixLayout, 500);
+setTimeout(fixLayout, 1500);
 
 document.getElementById('sel-docente').addEventListener('change', renderHorario);
 document.getElementById('sel-dia').addEventListener('change', renderHorario);
