@@ -1896,7 +1896,9 @@ async function ausConfirmAdd() {
   if (sesiones.length === 0) { alert('Marca al menos una sesión.'); return; }
 
   const info = DB.docentes[code];
-  const nombre = info ? info.nombre : code;
+  // Use sustituto name if there's an active sustitución
+  const ef = getDocenteEfectivo(code, info ? info.nombre : code);
+  const nombre = ef.nombre;
   const dayName = ausDayName(fecha);
 
   // Build sesiones with full data for Supabase
