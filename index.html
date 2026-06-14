@@ -15,8 +15,8 @@
 
     /* ── LAYOUT ──────────────────────────────────────── */
     /* body defined in layout section */
-    .app-layout { display: flex; min-height: calc(100vh - 62px); }
-    .app-content { flex: 1; min-width: 0; background: #f0f4f8; }
+    .app-layout { display: flex; min-height: calc(100vh - 62px); width: 100vw; max-width: 100%; }
+    .app-content { flex: 1 1 0%; min-width: 0; width: 0; background: #f0f4f8; overflow: visible; }
 
     /* ── SIDEBAR ─────────────────────────────────────── */
     .sidebar {
@@ -213,7 +213,7 @@
     /* ── NAV (moved to sidebar) ─────────────────────── */
 
     /* ── MAIN ────────────────────────────────────────── */
-    main { padding: 24px 28px 60px; position: relative; z-index: 1; }
+    main { padding: 24px 28px 60px; position: relative; z-index: 1; width: 100%; box-sizing: border-box; }
     .view { display: none; }
     .view.active { display: block; }
 
@@ -3149,25 +3149,6 @@ function ausDownloadPDF() {
     <p class="footnote">La tarea se recoger\u00e1 en el <b>organizador de consejer\u00eda</b></p>
   </div>
   <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
-
-<script>
-window.addEventListener('load', function() {
-  setTimeout(function() {
-    var al = document.querySelector('.app-layout');
-    var ac = document.querySelector('.app-content');
-    var mn = document.querySelector('main');
-    var sb = document.querySelector('.sidebar');
-    function info(el, name) {
-      if (!el) return name + ': NOT FOUND\n';
-      var r = el.getBoundingClientRect();
-      var s = window.getComputedStyle(el);
-      return name + ': left=' + Math.round(r.left) + ' width=' + Math.round(r.width) + 
-             ' display=' + s.display + ' flex=' + s.flex + '\n';
-    }
-    alert(info(sb,'sidebar') + info(al,'app-layout') + info(ac,'app-content') + info(mn,'main'));
-  }, 1000);
-});
-</script>
 
 </body></html>`);
   printWin.document.close();
