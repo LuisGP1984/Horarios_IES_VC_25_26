@@ -73,7 +73,7 @@
     }
 
     /* ── ACERCA DE ───────────────────────────────────── */
-    .acerca-wrap { display: flex; justify-content: center; padding: 20px 0 40px; }
+    .acerca-wrap { display: flex; justify-content: flex-start; padding: 20px 0 40px; }
     .acerca-card {
       background: var(--card); border: 1px solid var(--border);
       border-radius: 20px; padding: 40px 36px; max-width: 420px; width: 100%;
@@ -203,7 +203,7 @@
       background: linear-gradient(90deg, var(--navy) 0%, var(--navy2) 100%);
       box-shadow: 0 2px 16px #00000025; padding: 0 24px;
     }
-    .header-inner { max-width: 980px; margin: 0 auto; display: flex; align-items: center; gap: 14px; height: 62px; }
+    .header-inner { display: flex; align-items: center; gap: 14px; height: 62px; }
     .header-logo { width: 40px; height: 40px; border-radius: 10px; overflow: hidden; flex-shrink: 0; }
     .header-logo img { width: 100%; height: 100%; object-fit: cover; }
     .header-title { flex: 1; }
@@ -917,7 +917,7 @@
 </header>
 <div class="app-layout">
   <aside class="sidebar" id="sidebar">
-    <button class="sidebar-toggle" onclick="toggleSidebar()" title="Cerrar menú">☰</button>
+
     <nav class="sidebar-nav">
       <button class="nav-btn active" onclick="showView('menu')" id="nav-menu"><span class="nav-icon">🏠</span><span class="nav-label">Inicio</span></button>
       <div class="nav-separator"></div>
