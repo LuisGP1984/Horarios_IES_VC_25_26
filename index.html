@@ -792,6 +792,8 @@
 
 
 
+<div id="loading" style="position:fixed;inset:0;background:linear-gradient(160deg,#1a3a6e,#2563eb);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:999;transition:opacity .4s"><div style="width:36px;height:36px;border:3px solid #ffffff30;border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite"></div><p style="color:#bfdbfe;font-size:.9rem">Cargando horarios...</p></div>
+
 <!-- LOGIN -->
 <div id="login-screen">
   <div class="login-card">
@@ -1414,9 +1416,9 @@ fetch('horarios.json')
     buildGuardiasTable(data);
     ahoraMiniRender();
     document.getElementById('loading').classList.add('fade');
-    setTimeout(()=>document.getElementById('loading').style.display='none', 450);
+    setTimeout(()=>{ const l=document.getElementById('loading'); if(l) l.style.display='none'; }, 450);
   })
-  .catch(()=>{ document.getElementById('loading').innerHTML='<p style="color:#ff5f5f;padding:20px">Error cargando horarios.json</p>'; });
+  .catch(()=>{ const l=document.getElementById('loading'); if(l) l.innerHTML='<p style="color:#ff5f5f;padding:20px">Error cargando horarios.json</p>'; });
 
 function buildGuardiasTable(data) {
   const todayMap = {1:'Lunes',2:'Martes',3:'Miercoles',4:'Jueves',5:'Viernes'};
