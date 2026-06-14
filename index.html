@@ -20,7 +20,7 @@
 
     /* ── SIDEBAR ─────────────────────────────────────── */
     .sidebar {
-      width: 220px; flex-shrink: 0;
+      width: 200px; flex-shrink: 0;
       background: linear-gradient(180deg, var(--navy) 0%, #0d1f3c 100%);
       border-right: 1px solid var(--border);
       display: flex; flex-direction: column;
@@ -30,7 +30,6 @@
       isolation: isolate;
     }
     .sidebar.collapsed { width: 56px; }
-    .sidebar.collapsed + .app-content main { padding-left: 28px; }
     .sidebar-toggle {
       background: none; border: none; color: #8facd4;
       font-size: 1.2rem; padding: 16px; cursor: pointer;
@@ -231,7 +230,7 @@
     .nav-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: 0 2px 10px #2563eb30; }
 
     /* ── MAIN ────────────────────────────────────────── */
-    main { padding: 24px 28px 60px; position: relative; z-index: 1; max-width: 1400px; }
+    main { padding: 20px 28px 60px 28px; position: relative; z-index: 1; }
     .view { display: none; }
     .view.active { display: block; }
 
@@ -540,7 +539,7 @@
     }
     .aula-pill.ocupada { background: #dbeafe; border-color: #93c5fd; color: var(--navy); }
     .aula-pill.libre   { background: var(--surface2); border-color: var(--border); color: var(--text-soft); }
-    .aulas-table-wrap { overflow-x: auto; overflow-y: auto; max-height: 75vh; border-radius: 14px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+    .aulas-table-wrap { overflow-x: scroll; overflow-y: auto; max-height: 72vh; border-radius: 14px; border: 1px solid var(--border); box-shadow: var(--shadow); -webkit-overflow-scrolling: touch; }
     table.aulas-table {
       width: 100%; border-collapse: collapse; background: var(--card);
       font-size: 0.78rem; min-width: 700px;
@@ -1706,8 +1705,9 @@ async function ausRender() {
     const isSubstituto = displayName !== info.nombre;
     const initials = displayName.split(' ').filter(w=>/^[A-ZÁÉÍÓÚÑ]/i.test(w)).slice(0,2).map(w=>w[0]).join('');
     const horDia = info.horario[dayName] || {};
+    const origApellido = isSubstituto ? info.nombre.split(',')[0] : '';
     const subtag = isSubstituto
-      ? ` <span style="font-size:.7rem;font-weight:600;background:#fef9c3;color:#92400e;padding:2px 7px;border-radius:99px;white-space:nowrap">🔄 sust. ${info.nombre.split(',')[0]}</span>`
+      ? ` <span style="font-size:.7rem;font-weight:600;background:#fef9c3;color:#92400e;padding:2px 7px;border-radius:99px;white-space:nowrap">(sust. ${origApellido})</span>`
       : '';
 
     html += `<div class="aus-card">
