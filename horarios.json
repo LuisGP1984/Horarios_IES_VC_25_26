@@ -1192,14 +1192,6 @@
           "3R": {"tipo": "actividad", "sigla": "AC", "grupo": "", "materia": "", "aula": ""},
           "6": {"tipo": "clase", "sigla": "", "grupo": "02D", "materia": "Medidas de Atención Educativa (115)", "aula": "115"},
           "7": {"tipo": "clase", "sigla": "", "grupo": "04A", "materia": "Segunda Lengua Extranjera: Francés (205)", "aula": "205"}
-        },
-        "Viernes": {
-          "2": {"tipo": "clase", "sigla": "", "grupo": "01C", "materia": "Segunda Lengua Extranjera: Francés (B06)", "aula": "B06"},
-          "3": {"tipo": "clase", "sigla": "", "grupo": "02D", "materia": "Medidas de Atención Educativa", "aula": "115"},
-          "3R": {"tipo": "otro", "sigla": "AC AC", "grupo": "", "materia": "AC AC", "aula": ""},
-          "5": {"tipo": "clase", "sigla": "", "grupo": "GU1", "materia": "Segunda lengua extranjera Francés ()", "aula": ""},
-          "6": {"tipo": "otro", "sigla": "AC AC", "grupo": "", "materia": "AC AC", "aula": ""},
-          "7": {"tipo": "clase", "sigla": "", "grupo": "02C", "materia": "Medidas de Atención Educativa (B11B)", "aula": "B11B"}
         }
       }
     },
