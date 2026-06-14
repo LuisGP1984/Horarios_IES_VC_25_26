@@ -932,7 +932,6 @@
       <button class="nav-btn" onclick="showView('acerca')" id="nav-acerca"><span class="nav-icon">ℹ️</span><span class="nav-label">Acerca de</span></button>
     </nav>
   </aside>
-  <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
   <div class="app-content">
 
 <!-- MAIN -->
@@ -3204,7 +3203,8 @@ function ausDownloadPDF() {
     ${tableHTML(['5','6','7','8'])}
     <p class="footnote">La tarea se recoger\u00e1 en el <b>organizador de consejer\u00eda</b></p>
   </div>
-  </body></html>`);
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+</body></html>`);
   printWin.document.close();
 }
 
