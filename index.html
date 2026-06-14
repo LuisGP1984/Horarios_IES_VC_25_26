@@ -14,8 +14,8 @@
   <style>
 
     /* ── LAYOUT ──────────────────────────────────────── */
-    .app-layout { display: flex; flex: 1; width: 100%; overflow: hidden; }
-    .app-content { flex: 1; min-width: 0; display: flex; flex-direction: column; overflow-y: auto; background: #f0f4f8; }
+    .app-layout { display: flex; min-height: calc(100vh - 62px); width: 100%; }
+    .app-content { flex: 1; min-width: 0; min-height: 0; background: #f0f4f8; overflow-y: auto; }
 
     /* ── SIDEBAR ─────────────────────────────────────── */
     .sidebar {
@@ -23,7 +23,7 @@
       background: linear-gradient(180deg, var(--navy) 0%, #0d1f3c 100%);
       border-right: 1px solid var(--border);
       display: flex; flex-direction: column;
-      position: sticky; top: 0; height: calc(100vh - 64px);
+      position: sticky; top: 0; height: calc(100vh - 62px);
       overflow-y: auto; z-index: 50;
       transition: width .25s, transform .25s;
       isolation: isolate;
@@ -151,7 +151,7 @@
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { font-size: 16px; }
-    body { font-family: 'Inter', sans-serif; background: #f0f4f8; color: var(--text); min-height: 100vh; -webkit-font-smoothing: antialiased; display: flex; flex-direction: column; }
+    body { font-family: 'Inter', sans-serif; background: #f0f4f8; color: var(--text); min-height: 100vh; -webkit-font-smoothing: antialiased; }
 
     /* ── GEO BACKGROUND (subtle, light) ─────────────── */
     .geo-bg { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
@@ -229,7 +229,7 @@
     .nav-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: 0 2px 10px #2563eb30; }
 
     /* ── MAIN ────────────────────────────────────────── */
-    main { padding: 20px 24px 60px 24px; width: 100%; box-sizing: border-box; position: relative; z-index: 1; }
+    main { padding: 20px 28px 60px; position: relative; z-index: 1; }
     .view { display: none; }
     .view.active { display: block; }
 
