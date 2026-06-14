@@ -15,17 +15,17 @@
 
     /* ── LAYOUT ──────────────────────────────────────── */
     /* body defined in layout section */
-    .app-layout { min-height: calc(100vh - 62px); width: 100%; font-size: 0; }
-    .app-content { display: inline-block; vertical-align: top; width: calc(100% - 201px); min-height: calc(100vh - 62px); background: #f0f4f8; font-size: 16px; }
+    .app-layout { display: table; min-height: calc(100vh - 62px); width: 100%; table-layout: fixed; }
+    .app-content { display: table-cell; vertical-align: top; background: #f0f4f8; }
 
     /* ── SIDEBAR ─────────────────────────────────────── */
     .sidebar {
-      display: inline-block !important; vertical-align: top; width: 200px;
+      display: table-cell; vertical-align: top;
+      width: 200px;
       background: linear-gradient(180deg, var(--navy) 0%, #0d1f3c 100%);
       border-right: 1px solid var(--border);
       position: sticky; top: 0; height: calc(100vh - 62px);
       overflow-y: auto; z-index: 50;
-      transition: width .25s, transform .25s;
     }
     .sidebar.collapsed { width: 56px; }
     .sidebar-toggle {
@@ -34,7 +34,7 @@
       text-align: right; transition: color .15s; align-self: flex-end;
     }
     .sidebar-toggle:hover { color: #fff; }
-    .sidebar-nav { display: flex; flex-direction: column; gap: 4px; padding: 0 8px 16px; flex: 1; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 4px; padding: 16px 8px 16px; flex: 1; }
     .sidebar-nav .nav-btn {
       display: flex; align-items: center; gap: 10px;
       padding: 10px 12px; border-radius: 10px;
@@ -212,7 +212,7 @@
     /* ── NAV (moved to sidebar) ─────────────────────── */
 
     /* ── MAIN ────────────────────────────────────────── */
-    main { padding: 24px 28px 60px; position: relative; z-index: 1; }
+    main { padding: 24px 28px 60px; position: relative; z-index: 1; width: 100%; box-sizing: border-box; }
     .view { display: none; }
     .view.active { display: block; }
 
