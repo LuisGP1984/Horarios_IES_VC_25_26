@@ -875,7 +875,13 @@
       <span id="breadcrumb-sep" style="opacity:.4">›</span>
       <span id="breadcrumb-current" style="font-weight:600"></span>
     </div>
-    <div id="role-badge" style="background:#374151;color:#bfdbfe;font-size:0.7rem;font-weight:600;padding:4px 10px;border-radius:99px;border:1px solid #ffffff20;cursor:pointer" onclick="mostrarCambioPerfil()" title="Cambiar perfil">👤 Docente ▾</div>
+    <button id="btn-instalar" onclick="instalarApp()" title="Instalar como app"
+  style="display:none;background:#ffffff20;border:1px solid #ffffff30;color:#fff;
+  padding:5px 12px;border-radius:99px;font-size:0.75rem;font-weight:600;
+  cursor:pointer;font-family:Inter,sans-serif;white-space:nowrap">
+  📲 Instalar app
+</button>
+<div id="role-badge" style="background:#374151;color:#bfdbfe;font-size:0.7rem;font-weight:600;padding:4px 10px;border-radius:99px;border:1px solid #ffffff20;cursor:pointer" onclick="mostrarCambioPerfil()" title="Cambiar perfil">👤 Docente ▾</div>
 
   <!-- Modal cambio perfil -->
   <div id="perfil-modal" class="modal-overlay hidden">
@@ -1240,6 +1246,9 @@
           ✉️ luis.gonpos@educa.jcyl.es
         </a>
         <div class="acerca-version">v2.0 · Junio 2026</div>
+        <button onclick="instalarApp()" style="margin-top:14px;background:var(--accent);color:#fff;border:none;padding:10px 20px;border-radius:var(--radius);font-family:Inter,sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;width:100%">
+          📲 Instalar como app
+        </button>
       </div>
     </div>
   </div>
@@ -3637,6 +3646,36 @@ function ahoraMiniRender() {
 
 document.getElementById('acex-fecha-filtro')?.addEventListener('change', acexBuild);
 document.getElementById('ahora-fecha')?.addEventListener('change', () => ahoraRender());
+
+// ── PWA INSTALL ────────────────────────────────────────────────────────────
+let deferredPrompt = null;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  const btn = document.getElementById('btn-instalar');
+  if (btn) btn.style.display = '';
+});
+
+window.addEventListener('appinstalled', () => {
+  deferredPrompt = null;
+  const btn = document.getElementById('btn-instalar');
+  if (btn) btn.style.display = 'none';
+});
+
+function instalarApp() {
+  if (!deferredPrompt) {
+    alert('Para instalar la app:\n\n• Chrome escritorio: icono ⊕ en la barra de direcciones\n• Android: menú → Añadir a pantalla de inicio\n• iOS Safari: compartir → Añadir a pantalla de inicio');
+    return;
+  }
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(result => {
+    deferredPrompt = null;
+    const btn = document.getElementById('btn-instalar');
+    if (btn) btn.style.display = 'none';
+  });
+}
+
 document.getElementById('sel-docente').addEventListener('change', renderHorario);
 document.getElementById('sel-dia').addEventListener('change', renderHorario);
 
