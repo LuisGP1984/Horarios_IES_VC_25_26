@@ -2900,7 +2900,7 @@ async function ahoraRender() {
     const ausData = ausGetData(fecha);
     const ausHoy = [];
     ausData.forEach(aus => {
-      if (!aus.sesiones.includes(sesActual.sess)) return;
+      if (!aus.sesiones || !(aus.sesiones.includes(sesActual.sess) || aus.sesiones.some(s => (s.sess||s) === sesActual.sess))) return;
       const info = DB.docentes[aus.codigo];
       if (!info) return;
       const slot = (info.horario[dia]||{})[sesActual.sess];
