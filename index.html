@@ -77,9 +77,10 @@
         flex: none !important; transition: transform .25s !important;
       }
       .sidebar.open { transform: translateX(0) !important; box-shadow: 4px 0 20px #00000060 !important; }
-      .sidebar-overlay { display: none; position: fixed; inset: 0; background: #00000060; z-index: 8999; }
+      .sidebar-overlay { position: fixed !important; inset: 0 !important; background: #00000060 !important; z-index: 8999 !important; display: none !important; }
       .sidebar-overlay.open { display: block !important; }
       .header-menu-btn { display: flex !important; }
+      .sidebar-close-btn { display: flex !important; }
 
       /* Header */
       .header-inner { gap: 6px !important; padding: 0 8px !important; }
@@ -917,19 +918,22 @@
 <div class="app-layout">
   <aside class="sidebar" id="sidebar">
 
+    <div class="sidebar-close-btn" style="display:none;justify-content:flex-end;padding:8px 8px 0">
+      <button onclick="closeSidebar()" style="background:none;border:none;color:#8facd4;font-size:1.4rem;cursor:pointer;padding:4px 8px;line-height:1" title="Cerrar menú">✕</button>
+    </div>
     <nav class="sidebar-nav">
-      <button class="nav-btn active" onclick="showView('menu')" id="nav-menu"><span class="nav-icon">🏠</span><span class="nav-label">Inicio</span></button>
-      <button class="nav-btn" onclick="showView('ahora');ahoraBuild()" id="nav-ahora"><span class="nav-icon">⚡</span><span class="nav-label">Ahora</span></button>
+      <button class="nav-btn active" onclick="closeSidebar();showView('menu')" id="nav-menu"><span class="nav-icon">🏠</span><span class="nav-label">Inicio</span></button>
+      <button class="nav-btn" onclick="closeSidebar();showView('ahora');ahoraBuild()" id="nav-ahora"><span class="nav-icon">⚡</span><span class="nav-label">Ahora</span></button>
       <div class="nav-separator"></div>
-      <button class="nav-btn" onclick="showView('horarios')" id="nav-horarios"><span class="nav-icon">📅</span><span class="nav-label">Horarios</span></button>
-      <button class="nav-btn" onclick="showView('guardias')" id="nav-guardias"><span class="nav-icon">🛡️</span><span class="nav-label">Guardianes</span></button>
-      <button class="nav-btn" onclick="showView('ausencias')" id="nav-ausencias"><span class="nav-icon">📋</span><span class="nav-label">Ausencias</span></button>
-      <button class="nav-btn" onclick="showView('cobertura');cobBuildTable()" id="nav-cobertura"><span class="nav-icon">🔴</span><span class="nav-label">Cobertura</span></button>
-      <button class="nav-btn" onclick="showView('aulas');aulasBuild()" id="nav-aulas"><span class="nav-icon">🏫</span><span class="nav-label">Aulas</span></button>
+      <button class="nav-btn" onclick="closeSidebar();showView('horarios')" id="nav-horarios"><span class="nav-icon">📅</span><span class="nav-label">Horarios</span></button>
+      <button class="nav-btn" onclick="closeSidebar();showView('guardias')" id="nav-guardias"><span class="nav-icon">🛡️</span><span class="nav-label">Guardianes</span></button>
+      <button class="nav-btn" onclick="closeSidebar();showView('ausencias')" id="nav-ausencias"><span class="nav-icon">📋</span><span class="nav-label">Ausencias</span></button>
+      <button class="nav-btn" onclick="closeSidebar();showView('cobertura');cobBuildTable()" id="nav-cobertura"><span class="nav-icon">🔴</span><span class="nav-label">Cobertura</span></button>
+      <button class="nav-btn" onclick="closeSidebar();showView('aulas');aulasBuild()" id="nav-aulas"><span class="nav-icon">🏫</span><span class="nav-label">Aulas</span></button>
       <div class="nav-separator"></div>
-      <button class="nav-btn solo-direccion" onclick="showView('sustituciones');sustBuild()" id="nav-sustituciones"><span class="nav-icon">🔄</span><span class="nav-label">Sustituciones</span></button>
-      <button class="nav-btn" onclick="showView('acex');acexBuild()" id="nav-acex"><span class="nav-icon">🎒</span><span class="nav-label">ACEX</span></button>
-      <button class="nav-btn" onclick="showView('acerca')" id="nav-acerca"><span class="nav-icon">ℹ️</span><span class="nav-label">Acerca de</span></button>
+      <button class="nav-btn solo-direccion" onclick="closeSidebar();showView('sustituciones');sustBuild()" id="nav-sustituciones"><span class="nav-icon">🔄</span><span class="nav-label">Sustituciones</span></button>
+      <button class="nav-btn" onclick="closeSidebar();showView('acex');acexBuild()" id="nav-acex"><span class="nav-icon">🎒</span><span class="nav-label">ACEX</span></button>
+      <button class="nav-btn" onclick="closeSidebar();showView('acerca')" id="nav-acerca"><span class="nav-icon">ℹ️</span><span class="nav-label">Acerca de</span></button>
     </nav>
   </aside>
   <div class="app-content">
