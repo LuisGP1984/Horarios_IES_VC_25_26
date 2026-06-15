@@ -55,57 +55,69 @@
     .aulas-table-wrap { overflow-x: auto; }
 
     @media (max-width: 700px) {
-      /* Layout base */
-      .app-layout { display: block !important; }
-      .app-content { width: 100% !important; min-width: 0 !important; display: block !important; }
-      main { padding: 12px 12px 60px !important; width: 100% !important; box-sizing: border-box !important; overflow-x: hidden !important; }
+      /* Layout base - bloque simple */
+      html, body { width: 100% !important; overflow-x: hidden !important; }
+      .app-layout { display: block !important; width: 100% !important; }
+      .app-content { display: block !important; width: 100% !important; min-width: 0 !important; max-width: 100% !important; }
+      main { 
+        display: block !important;
+        width: 100% !important; 
+        max-width: 100% !important;
+        padding: 12px 12px 60px !important; 
+        box-sizing: border-box !important; 
+        overflow-x: hidden !important; 
+      }
+      .view { width: 100% !important; box-sizing: border-box !important; max-width: 100% !important; }
 
-      /* Sidebar: fixed, fuera de pantalla por defecto */
+      /* Sidebar */
       .sidebar { 
-        position: fixed !important; 
-        top: 0 !important; left: 0 !important; 
-        height: 100vh !important; 
-        width: 260px !important; 
-        transform: translateX(-100%) !important; 
-        z-index: 9000 !important; 
-        flex: none !important;
-        transition: transform .25s !important;
+        position: fixed !important; top: 0 !important; left: 0 !important;
+        height: 100vh !important; width: 260px !important;
+        transform: translateX(-100%) !important; z-index: 9000 !important;
+        flex: none !important; transition: transform .25s !important;
       }
       .sidebar.open { transform: translateX(0) !important; box-shadow: 4px 0 20px #00000060 !important; }
       .sidebar-overlay { display: none; position: fixed; inset: 0; background: #00000060; z-index: 8999; }
       .sidebar-overlay.open { display: block !important; }
       .header-menu-btn { display: flex !important; }
 
-      /* Header compacto */
+      /* Header */
       .header-inner { gap: 6px !important; padding: 0 8px !important; }
-      .header-title h1 { font-size: 0.82rem !important; }
+      .header-title h1 { font-size: 0.82rem !important; white-space: nowrap !important; }
       .header-title p { display: none !important; }
       .header-logo { width: 30px !important; height: 30px !important; }
       #breadcrumb { display: none !important; }
       .header-badge { font-size: 0.65rem !important; padding: 3px 7px !important; }
       #btn-instalar { display: none !important; }
 
-      /* Menú inicio */
-      .menu-grid { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
-      .menu-card { padding: 16px 10px !important; }
+      /* Menú inicio - tarjetas full width en 1 columna */
+      #menu-ahora-widget { 
+        width: 100% !important; box-sizing: border-box !important;
+        margin-bottom: 12px !important; padding: 12px !important; 
+      }
+      .menu-grid { 
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important; 
+        gap: 10px !important; 
+        width: 100% !important;
+      }
+      .menu-card { padding: 16px 10px !important; box-sizing: border-box !important; }
       .menu-card .mc-icon { font-size: 1.6rem !important; margin-bottom: 6px !important; }
       .menu-card .mc-title { font-size: 0.82rem !important; }
       .menu-card .mc-desc { display: none !important; }
-      #menu-ahora-widget { margin-bottom: 12px !important; padding: 12px !important; }
+      .menu-hero { padding: 10px 0 16px !important; }
+      .menu-hero h2 { font-size: 1.3rem !important; }
 
-      /* Controles */
-      .controls { grid-template-columns: 1fr !important; }
+      /* Controles y toolbars */
+      .controls { grid-template-columns: 1fr !important; width: 100% !important; }
       .ahora-grid { grid-template-columns: 1fr !important; }
-      .aus-toolbar { flex-direction: column !important; }
-      .aulas-toolbar { flex-direction: column !important; }
+      .aus-toolbar { flex-direction: column !important; width: 100% !important; }
+      .aulas-toolbar { flex-direction: column !important; width: 100% !important; }
 
-      /* Vistas */
-      .view { width: 100% !important; box-sizing: border-box !important; }
-      
       /* Tablas */
       .guardias-table-wrap, .cob-table-wrap, .aulas-table-wrap { 
-        overflow-x: auto !important; 
-        -webkit-overflow-scrolling: touch !important; 
+        overflow-x: auto !important; -webkit-overflow-scrolling: touch !important; 
+        width: 100% !important;
       }
     }
 
