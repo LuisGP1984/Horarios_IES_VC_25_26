@@ -860,6 +860,7 @@
 
     <nav class="sidebar-nav">
       <button class="nav-btn active" onclick="showView('menu')" id="nav-menu"><span class="nav-icon">🏠</span><span class="nav-label">Inicio</span></button>
+      <button class="nav-btn" onclick="showView('ahora');ahoraBuild()" id="nav-ahora"><span class="nav-icon">⚡</span><span class="nav-label">Ahora</span></button>
       <div class="nav-separator"></div>
       <button class="nav-btn" onclick="showView('horarios')" id="nav-horarios"><span class="nav-icon">📅</span><span class="nav-label">Horarios</span></button>
       <button class="nav-btn" onclick="showView('guardias')" id="nav-guardias"><span class="nav-icon">🛡️</span><span class="nav-label">Guardianes</span></button>
@@ -2282,9 +2283,11 @@ function cobGetWeekDates() {
   return result;
 }
 
-function cobBuildTable() {
+async function cobBuildTable() {
   if (!DB) return;
   const weekDates = cobGetWeekDates();
+  // Load ausencias for all days of the week from Supabase
+  await Promise.all(DAYS.map(d => ausCargarDesdeSupa(weekDates[d])));
   const todayMap  = {1:'Lunes',2:'Martes',3:'Miercoles',4:'Jueves',5:'Viernes'};
   const today     = todayMap[new Date().getDay()] || '';
 
@@ -2317,7 +2320,7 @@ function cobBuildTable() {
     const ausData = ausGetData(fecha);
     let count = 0;
     ausData.forEach(aus => {
-      if (aus.sesiones.includes(sessKey)) {
+      if (aus.sesiones && (aus.sesiones.includes(sessKey) || aus.sesiones.some(s => (s.sess||s) === sessKey))) {
         // Check if this session generates a guardia (clase or G)
         const info = DB.docentes[aus.codigo];
         if (!info) return;
@@ -2800,6 +2803,7 @@ async function ahoraRender() {
   // Use selected date if available
   const ahoraFechaEl = document.getElementById('ahora-fecha');
   let dia;
+  const ahoraFecha = ahoraFechaEl?.value || new Date().toISOString().split('T')[0];
   if (ahoraFechaEl && ahoraFechaEl.value) {
     const selDt = new Date(ahoraFechaEl.value + 'T12:00:00');
     const dowMap2 = {1:'Lunes',2:'Martes',3:'Miercoles',4:'Jueves',5:'Viernes'};
@@ -2807,6 +2811,8 @@ async function ahoraRender() {
   } else {
     dia = getDayName();
   }
+  // Load ausencias for today
+  await ausCargarDesdeSupa(ahoraFecha);
   const timeStr = now.toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'});
   const dateStr = now.toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'});
 
