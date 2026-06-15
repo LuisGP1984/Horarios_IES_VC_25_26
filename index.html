@@ -15,51 +15,24 @@
 
     /* ── LAYOUT ──────────────────────────────────────── */
     body { font-family: 'Inter', sans-serif; background: #f0f4f8; color: var(--text); min-height: 100vh; -webkit-font-smoothing: antialiased; }
-    
-    .app-layout {
-      display: flex;
-      min-height: 100vh;
-    }
-    
+
+    .app-layout { display: flex; min-height: 100vh; }
+
     .sidebar {
-      width: 200px;
-      flex: 0 0 200px;
+      width: 200px; flex: 0 0 200px;
       background: linear-gradient(180deg, var(--navy) 0%, #0d1f3c 100%);
       border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      position: sticky;
-      top: 62px;
-      height: calc(100vh - 62px);
-      overflow-y: auto;
-      z-index: 50;
+      display: flex; flex-direction: column;
+      position: sticky; top: 62px; height: calc(100vh - 62px);
+      overflow-y: auto; z-index: 50;
     }
-    
-    .app-content {
-      flex: 1;
-      width: 0;
-      min-width: 0;
-      background: #f0f4f8;
-    }
-    
-    main {
-      padding: 20px 24px 60px;
-      width: 100%;
-      box-sizing: border-box;
-      overflow-x: auto;
-    }
-
-    /* ── SIDEBAR NAV ──────────────────────────────────── */
     .sidebar.collapsed { width: 56px; flex: 0 0 56px; }
     .sidebar-nav { display: flex; flex-direction: column; gap: 4px; padding: 16px 8px; flex: 1; }
     .sidebar-nav .nav-btn {
       display: flex; align-items: center; gap: 10px;
-      padding: 10px 12px; border-radius: 10px;
-      border: none; background: transparent;
-      color: #8facd4; font-family: 'Inter',sans-serif;
-      font-size: 0.85rem; font-weight: 600;
-      cursor: pointer; transition: all .15s;
-      text-align: left; width: 100%;
+      padding: 10px 12px; border-radius: 10px; border: none; background: transparent;
+      color: #8facd4; font-family: 'Inter',sans-serif; font-size: 0.85rem; font-weight: 600;
+      cursor: pointer; transition: all .15s; text-align: left; width: 100%;
       white-space: nowrap; overflow: hidden;
     }
     .sidebar-nav .nav-btn:hover { background: #ffffff12; color: #fff; }
@@ -71,12 +44,22 @@
     .nav-separator { height: 1px; background: var(--border); margin: 6px 4px; }
     .sidebar-overlay { display: none; position: fixed; inset: 0; background: #00000060; z-index: 49; }
     .header-menu-btn { display: none; background: none; border: none; color: #fff; font-size: 1.3rem; cursor: pointer; padding: 4px 8px; margin-right: 4px; }
-    
+
+    .app-content { flex: 1 1 auto; min-width: 0; background: #f0f4f8; }
+
+    main { padding: 20px 24px 60px; box-sizing: border-box; }
+
+    /* Tablas anchas: scroll propio */
+    .guardias-table-wrap,
+    .cob-table-wrap,
+    .aulas-table-wrap { overflow-x: auto; }
+
     @media (max-width: 700px) {
       .sidebar { position: fixed; top: 0; left: 0; height: 100vh; transform: translateX(-100%); z-index: 9000; width: 220px !important; flex: none !important; }
       .sidebar.open { transform: translateX(0); }
       .sidebar-overlay.open { display: block; }
       .header-menu-btn { display: flex !important; }
+      .app-content { width: 100%; }
     }
 
     /* ── ACERCA DE ───────────────────────────────────── */
