@@ -55,54 +55,58 @@
     .aulas-table-wrap { overflow-x: auto; }
 
     @media (max-width: 700px) {
-      /* Sidebar: oculto por defecto, desliza al abrir */
-      .sidebar { position: fixed; top: 0; left: 0; height: 100vh; transform: translateX(-100%); z-index: 9000; width: 260px !important; flex: none !important; }
-      .sidebar.open { transform: translateX(0); box-shadow: 4px 0 20px #00000050; }
-      .sidebar-overlay.open { display: block; }
+      /* Layout base */
+      .app-layout { display: block !important; }
+      .app-content { width: 100% !important; min-width: 0 !important; display: block !important; }
+      main { padding: 12px 12px 60px !important; width: 100% !important; box-sizing: border-box !important; overflow-x: hidden !important; }
+
+      /* Sidebar: fixed, fuera de pantalla por defecto */
+      .sidebar { 
+        position: fixed !important; 
+        top: 0 !important; left: 0 !important; 
+        height: 100vh !important; 
+        width: 260px !important; 
+        transform: translateX(-100%) !important; 
+        z-index: 9000 !important; 
+        flex: none !important;
+        transition: transform .25s !important;
+      }
+      .sidebar.open { transform: translateX(0) !important; box-shadow: 4px 0 20px #00000060 !important; }
+      .sidebar-overlay { display: none; position: fixed; inset: 0; background: #00000060; z-index: 8999; }
+      .sidebar-overlay.open { display: block !important; }
       .header-menu-btn { display: flex !important; }
 
-      /* App content ocupa todo el ancho */
-      .app-content { width: 100%; }
-      main { padding: 12px 12px 60px; }
-
       /* Header compacto */
-      .header-inner { gap: 8px; height: 54px; padding: 0 8px; }
-      .header-title h1 { font-size: 0.85rem; }
-      .header-title p { display: none; }
-      .header-logo { width: 32px; height: 32px; }
-      #breadcrumb { font-size: 0.68rem; }
-      .header-badge { font-size: 0.65rem; padding: 3px 7px; }
+      .header-inner { gap: 6px !important; padding: 0 8px !important; }
+      .header-title h1 { font-size: 0.82rem !important; }
+      .header-title p { display: none !important; }
+      .header-logo { width: 30px !important; height: 30px !important; }
+      #breadcrumb { display: none !important; }
+      .header-badge { font-size: 0.65rem !important; padding: 3px 7px !important; }
       #btn-instalar { display: none !important; }
 
-      /* Menú inicio: una columna */
-      .menu-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-      .menu-card { padding: 18px 12px; }
-      .menu-card .mc-icon { font-size: 1.8rem; margin-bottom: 8px; }
-      .menu-card .mc-title { font-size: 0.88rem; }
-      .menu-card .mc-desc { display: none; }
+      /* Menú inicio */
+      .menu-grid { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
+      .menu-card { padding: 16px 10px !important; }
+      .menu-card .mc-icon { font-size: 1.6rem !important; margin-bottom: 6px !important; }
+      .menu-card .mc-title { font-size: 0.82rem !important; }
+      .menu-card .mc-desc { display: none !important; }
+      #menu-ahora-widget { margin-bottom: 12px !important; padding: 12px !important; }
 
-      /* Widget ahora mismo */
-      #menu-ahora-widget { margin-bottom: 14px; padding: 12px 14px; }
+      /* Controles */
+      .controls { grid-template-columns: 1fr !important; }
+      .ahora-grid { grid-template-columns: 1fr !important; }
+      .aus-toolbar { flex-direction: column !important; }
+      .aulas-toolbar { flex-direction: column !important; }
 
-      /* Controls: una columna */
-      .controls { grid-template-columns: 1fr; }
-
-      /* Ahora: grid una columna */
-      .ahora-grid { grid-template-columns: 1fr; }
-
-      /* Ausencias toolbar */
-      .aus-toolbar { flex-direction: column; gap: 10px; }
-      .aus-actions { flex-wrap: wrap; }
-
-      /* Aulas toolbar */
-      .aulas-toolbar { flex-direction: column; gap: 10px; }
-
-      /* Tablas: scroll horizontal */
-      .guardias-table-wrap, .cob-table-wrap, .aulas-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-
-      /* Hero */
-      .menu-hero h2 { font-size: 1.4rem; }
-      .menu-hero { padding: 10px 0 20px; }
+      /* Vistas */
+      .view { width: 100% !important; box-sizing: border-box !important; }
+      
+      /* Tablas */
+      .guardias-table-wrap, .cob-table-wrap, .aulas-table-wrap { 
+        overflow-x: auto !important; 
+        -webkit-overflow-scrolling: touch !important; 
+      }
     }
 
     /* ── ACERCA DE ───────────────────────────────────── */
