@@ -927,7 +927,7 @@
       <div class="nav-separator"></div>
       <button class="nav-btn" onclick="closeSidebar();showView('horarios')" id="nav-horarios"><span class="nav-icon">📅</span><span class="nav-label">Horarios</span></button>
       <button class="nav-btn" onclick="closeSidebar();showView('guardias')" id="nav-guardias"><span class="nav-icon">🛡️</span><span class="nav-label">Guardianes</span></button>
-      <button class="nav-btn" onclick="closeSidebar();showView('ausencias')" id="nav-ausencias"><span class="nav-icon">📋</span><span class="nav-label">Ausencias</span></button>
+      <button class="nav-btn" onclick="closeSidebar();showView('ausencias');ausRender()" id="nav-ausencias"><span class="nav-icon">📋</span><span class="nav-label">Ausencias</span></button>
       <button class="nav-btn" onclick="closeSidebar();showView('cobertura');cobBuildTable()" id="nav-cobertura"><span class="nav-icon">🔴</span><span class="nav-label">Cobertura</span></button>
       <button class="nav-btn" onclick="closeSidebar();showView('aulas');aulasBuild()" id="nav-aulas"><span class="nav-icon">🏫</span><span class="nav-label">Aulas</span></button>
       <div class="nav-separator"></div>
@@ -978,7 +978,7 @@
         <div class="mc-desc">Docentes de guardia por sesión, de lunes a viernes</div>
         <span class="mc-arrow">→</span>
       </div>
-      <div class="menu-card" onclick="showView('ausencias')">
+      <div class="menu-card" onclick="showView('ausencias');ausRender()">
         <div class="mc-icon">📋</div>
         <div class="mc-title">Ausencias</div>
         <div class="mc-desc">Registra ausentes y genera el parte de guardias</div>
@@ -2763,7 +2763,13 @@ async function reservaConfirmar() {
     });
     reservaCloseModal();
     delete reservasCache[reservaActual?.fecha];
+    const scrollPos = document.querySelector('.aulas-table-wrap')?.scrollTop || 0;
+    const scrollLeft = document.querySelector('.aulas-table-wrap')?.scrollLeft || 0;
     await aulasBuild();
+    setTimeout(() => {
+      const wrap = document.querySelector('.aulas-table-wrap');
+      if (wrap) { wrap.scrollTop = scrollPos; wrap.scrollLeft = scrollLeft; }
+    }, 100);
   } catch(e) {
     alert('Error al guardar la reserva: ' + e.message);
   } finally {
