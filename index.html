@@ -55,11 +55,54 @@
     .aulas-table-wrap { overflow-x: auto; }
 
     @media (max-width: 700px) {
-      .sidebar { position: fixed; top: 0; left: 0; height: 100vh; transform: translateX(-100%); z-index: 9000; width: 220px !important; flex: none !important; }
-      .sidebar.open { transform: translateX(0); }
+      /* Sidebar: oculto por defecto, desliza al abrir */
+      .sidebar { position: fixed; top: 0; left: 0; height: 100vh; transform: translateX(-100%); z-index: 9000; width: 260px !important; flex: none !important; }
+      .sidebar.open { transform: translateX(0); box-shadow: 4px 0 20px #00000050; }
       .sidebar-overlay.open { display: block; }
       .header-menu-btn { display: flex !important; }
+
+      /* App content ocupa todo el ancho */
       .app-content { width: 100%; }
+      main { padding: 12px 12px 60px; }
+
+      /* Header compacto */
+      .header-inner { gap: 8px; height: 54px; padding: 0 8px; }
+      .header-title h1 { font-size: 0.85rem; }
+      .header-title p { display: none; }
+      .header-logo { width: 32px; height: 32px; }
+      #breadcrumb { font-size: 0.68rem; }
+      .header-badge { font-size: 0.65rem; padding: 3px 7px; }
+      #btn-instalar { display: none !important; }
+
+      /* Menú inicio: una columna */
+      .menu-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .menu-card { padding: 18px 12px; }
+      .menu-card .mc-icon { font-size: 1.8rem; margin-bottom: 8px; }
+      .menu-card .mc-title { font-size: 0.88rem; }
+      .menu-card .mc-desc { display: none; }
+
+      /* Widget ahora mismo */
+      #menu-ahora-widget { margin-bottom: 14px; padding: 12px 14px; }
+
+      /* Controls: una columna */
+      .controls { grid-template-columns: 1fr; }
+
+      /* Ahora: grid una columna */
+      .ahora-grid { grid-template-columns: 1fr; }
+
+      /* Ausencias toolbar */
+      .aus-toolbar { flex-direction: column; gap: 10px; }
+      .aus-actions { flex-wrap: wrap; }
+
+      /* Aulas toolbar */
+      .aulas-toolbar { flex-direction: column; gap: 10px; }
+
+      /* Tablas: scroll horizontal */
+      .guardias-table-wrap, .cob-table-wrap, .aulas-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+      /* Hero */
+      .menu-hero h2 { font-size: 1.4rem; }
+      .menu-hero { padding: 10px 0 20px; }
     }
 
     /* ── ACERCA DE ───────────────────────────────────── */
