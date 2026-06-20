@@ -395,6 +395,62 @@
       padding: 16px 20px; box-shadow: var(--shadow);
     }
     .aus-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end; padding-bottom: 1px; }
+
+    /* ── EVALUACIONES ── */
+    .eval-etapas { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+    .eval-etapa-btn {
+      padding: 10px 22px; border-radius: 99px; border: 1.5px solid var(--border);
+      background: var(--card); color: var(--text-mid); font-family: 'Inter', sans-serif;
+      font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: all .15s;
+    }
+    .eval-etapa-btn:hover { border-color: var(--accent); }
+    .eval-etapa-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .eval-pestanas { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+    .eval-pestana-btn {
+      padding: 8px 16px; border-radius: var(--radius); border: 1.5px solid var(--border);
+      background: var(--card); color: var(--text-mid); font-family: 'Inter', sans-serif;
+      font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all .15s;
+    }
+    .eval-pestana-btn:hover { border-color: var(--accent); }
+    .eval-pestana-btn.active { background: var(--surface2); color: var(--accent); border-color: var(--accent); }
+    .eval-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+      box-shadow: var(--shadow); padding: 20px 24px;
+    }
+    .eval-card-header {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      margin-bottom: 14px; flex-wrap: wrap;
+    }
+    .eval-meta { font-size: 0.78rem; color: var(--text-mid); }
+    .eval-toolbar {
+      display: flex; gap: 4px; flex-wrap: wrap; align-items: center;
+      background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 6px; margin-bottom: 10px;
+    }
+    .eval-tb-btn {
+      width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+      border: none; background: transparent; border-radius: 6px; cursor: pointer;
+      font-size: 0.95rem; color: var(--text); transition: background .15s;
+    }
+    .eval-tb-btn:hover { background: var(--card); }
+    .eval-tb-sep { width: 1px; background: var(--border); margin: 4px 4px; align-self: stretch; }
+    .eval-editable {
+      min-height: 260px; max-height: 60vh; overflow-y: auto;
+      border: 1.5px solid var(--border); border-radius: var(--radius);
+      padding: 16px 18px; background: var(--card); color: var(--text);
+      font-family: 'Inter', sans-serif; font-size: 0.92rem; line-height: 1.6;
+    }
+    .eval-editable:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+    .eval-editable table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+    .eval-editable table td, .eval-editable table th {
+      border: 1px solid var(--border); padding: 6px 10px;
+    }
+    .eval-view { padding: 4px 2px; }
+    .eval-view table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+    .eval-view table td, .eval-view table th { border: 1px solid var(--border); padding: 6px 10px; }
+    .eval-view ul, .eval-view ol { padding-left: 22px; margin: 8px 0; }
+    .eval-empty-txt { color: var(--text-mid); font-style: italic; font-size: 0.88rem; }
+
     input[type="date"] {
       width: 100%; padding: 11px 14px;
       background: var(--card); border: 1.5px solid var(--border);
@@ -813,6 +869,12 @@
     }
     .ses-check-box input { accent-color:#8b5cf6; width:14px; height:14px; }
     .ses-check-box:has(input:checked) { border-color:#8b5cf6; background:#f5f3ff; color:#6d28d9; }
+    .ses-check-wrap { display:flex; flex-wrap:wrap; gap:6px; }
+    .acex-grupos-buscador input {
+      width:100%; padding:9px 12px; background:var(--surface); border:1.5px solid var(--border);
+      border-radius:8px; font-family:'Inter',sans-serif; font-size:.85rem; color:var(--text);
+    }
+    .acex-grupos-buscador input:focus { outline:none; border-color:var(--accent); }
 
     /* ── LEYENDA ─────────────────────────────────────── */
     details { margin-top: 32px; background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); }
@@ -926,6 +988,7 @@
       <button class="nav-btn" onclick="closeSidebar();showView('ahora');ahoraBuild()" id="nav-ahora"><span class="nav-icon">⚡</span><span class="nav-label">Ahora</span></button>
       <div class="nav-separator"></div>
       <button class="nav-btn" onclick="closeSidebar();showView('horarios')" id="nav-horarios"><span class="nav-icon">📅</span><span class="nav-label">Horarios</span></button>
+      <button class="nav-btn" onclick="closeSidebar();showView('grupos')" id="nav-grupos"><span class="nav-icon">👥</span><span class="nav-label">Grupos</span></button>
       <button class="nav-btn" onclick="closeSidebar();showView('guardias')" id="nav-guardias"><span class="nav-icon">🛡️</span><span class="nav-label">Guardianes</span></button>
       <button class="nav-btn" onclick="closeSidebar();showView('ausencias');ausRender()" id="nav-ausencias"><span class="nav-icon">📋</span><span class="nav-label">Ausencias</span></button>
       <button class="nav-btn" onclick="closeSidebar();showView('cobertura');cobBuildTable()" id="nav-cobertura"><span class="nav-icon">🔴</span><span class="nav-label">Cobertura</span></button>
@@ -933,6 +996,8 @@
       <div class="nav-separator"></div>
       <button class="nav-btn solo-direccion" onclick="closeSidebar();showView('sustituciones');sustBuild()" id="nav-sustituciones"><span class="nav-icon">🔄</span><span class="nav-label">Sustituciones</span></button>
       <button class="nav-btn" onclick="closeSidebar();showView('acex');acexBuild()" id="nav-acex"><span class="nav-icon">🎒</span><span class="nav-label">ACEX</span></button>
+      <button class="nav-btn" onclick="closeSidebar();showView('evaluaciones');evalBuild()" id="nav-evaluaciones"><span class="nav-icon">📝</span><span class="nav-label">Evaluaciones</span></button>
+      <button class="nav-btn" onclick="closeSidebar();showView('tablon');tablonBuild()" id="nav-tablon"><span class="nav-icon">📌</span><span class="nav-label">Tablón</span></button>
       <button class="nav-btn" onclick="closeSidebar();showView('acerca')" id="nav-acerca"><span class="nav-icon">ℹ️</span><span class="nav-label">Acerca de</span></button>
     </nav>
   </aside>
@@ -972,6 +1037,12 @@
         <div class="mc-desc">Consulta el horario completo de cualquier docente</div>
         <span class="mc-arrow">→</span>
       </div>
+      <div class="menu-card" onclick="showView('grupos')">
+        <div class="mc-icon">👥</div>
+        <div class="mc-title">Grupos</div>
+        <div class="mc-desc">Consulta el horario completo de cualquier grupo: materia, docente y aula</div>
+        <span class="mc-arrow">→</span>
+      </div>
       <div class="menu-card" onclick="showView('guardias')">
         <div class="mc-icon">🛡️</div>
         <div class="mc-title">Guardianes</div>
@@ -1000,6 +1071,18 @@
         <div class="mc-icon">🎒</div>
         <div class="mc-title">ACEX</div>
         <div class="mc-desc">Actividades Complementarias y Extraescolares</div>
+        <span class="mc-arrow">→</span>
+      </div>
+      <div class="menu-card" onclick="showView('evaluaciones');evalBuild()">
+        <div class="mc-icon">📝</div>
+        <div class="mc-title">Evaluaciones</div>
+        <div class="mc-desc">Calendario e información de evaluaciones por etapa</div>
+        <span class="mc-arrow">→</span>
+      </div>
+      <div class="menu-card" onclick="showView('tablon');tablonBuild()">
+        <div class="mc-icon">📌</div>
+        <div class="mc-title">Tablón</div>
+        <div class="mc-desc">Anuncios del equipo directivo de esta semana</div>
         <span class="mc-arrow">→</span>
       </div>
       <div class="menu-card solo-direccion" onclick="showView('sustituciones');sustBuild()">
@@ -1039,6 +1122,35 @@
       <div class="leyenda-grid" id="leyenda-grid"></div>
     </details>
   </div>
+
+  <!-- GRUPOS -->
+  <div class="view" id="view-grupos">
+    <div class="controls">
+      <div class="control-group">
+        <label for="sel-grupo">Grupo</label>
+        <select id="sel-grupo"><option value="">— Selecciona un grupo —</option></select>
+      </div>
+      <div class="control-group">
+        <label for="sel-grupo-dia">Día</label>
+        <select id="sel-grupo-dia">
+          <option value="">— Selecciona un día —</option>
+          <option value="Lunes">Lunes</option>
+          <option value="Martes">Martes</option>
+          <option value="Miercoles">Miércoles</option>
+          <option value="Jueves">Jueves</option>
+          <option value="Viernes">Viernes</option>
+        </select>
+      </div>
+    </div>
+    <div id="resultado-grupo">
+      <div class="state-msg"><div class="icon">👥</div><p>Selecciona un grupo y un día.</p></div>
+    </div>
+    <details>
+      <summary>Leyenda de siglas</summary>
+      <div class="leyenda-grid" id="leyenda-grid-grupo"></div>
+    </details>
+  </div>
+
 
   <!-- GUARDIAS -->
   <div class="view" id="view-guardias">
@@ -1314,18 +1426,42 @@
       <h2>🎒 Actividades Complementarias y Extraescolares</h2>
       <p>ACEX programadas — semana actual</p>
     </div>
-    <div class="aus-toolbar" style="margin-bottom:20px">
-      <div class="control-group" style="flex:0 0 190px">
-        <label for="acex-fecha-filtro">Semana</label>
-        <input type="date" id="acex-fecha-filtro">
+
+    <div class="eval-pestanas">
+      <button class="eval-pestana-btn active" id="acex-tab-semana" onclick="acexCambiarTab('semana')">📅 Semana</button>
+      <button class="eval-pestana-btn" id="acex-tab-buscar" onclick="acexCambiarTab('buscar')">🔍 Buscar por grupo</button>
+    </div>
+
+    <div id="acex-panel-semana">
+      <div class="aus-toolbar" style="margin-bottom:20px">
+        <div class="control-group" style="flex:0 0 190px">
+          <label for="acex-fecha-filtro">Semana</label>
+          <input type="date" id="acex-fecha-filtro">
+        </div>
+        <div class="aus-actions">
+          <button class="btn-primary solo-direccion" onclick="acexAbrirModal()">＋ Nueva ACEX</button>
+          <button class="btn-secondary" onclick="acexBuild()">🔄 Actualizar</button>
+        </div>
       </div>
-      <div class="aus-actions">
-        <button class="btn-primary solo-direccion" onclick="acexAbrirModal()">＋ Nueva ACEX</button>
-        <button class="btn-secondary" onclick="acexBuild()">🔄 Actualizar</button>
+      <div id="acex-lista">
+        <div class="state-msg"><div class="icon">🎒</div><p>Cargando ACEX...</p></div>
       </div>
     </div>
-    <div id="acex-lista">
-      <div class="state-msg"><div class="icon">🎒</div><p>Cargando ACEX...</p></div>
+
+    <div id="acex-panel-buscar" style="display:none">
+      <div class="aus-toolbar" style="margin-bottom:20px">
+        <div class="control-group" style="flex:1 1 220px">
+          <label for="acex-buscar-grupo">Grupo</label>
+          <select id="acex-buscar-grupo" onchange="acexBuscarPorGrupo()"><option value="">— Selecciona un grupo —</option></select>
+        </div>
+        <div class="control-group" style="flex:0 0 190px">
+          <label for="acex-buscar-fecha">Día</label>
+          <input type="date" id="acex-buscar-fecha" onchange="acexBuscarPorGrupo()">
+        </div>
+      </div>
+      <div id="acex-buscar-resultado">
+        <div class="state-msg"><div class="icon">🔍</div><p>Selecciona un grupo y un día.</p></div>
+      </div>
     </div>
   </div>
 
@@ -1352,9 +1488,11 @@
             style="width:100%;padding:10px 14px;background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);font-family:Inter,sans-serif;font-size:.88rem;color:var(--text);resize:vertical"></textarea>
         </div>
         <div class="control-group">
-          <label for="acex-grupos">Grupos que participan</label>
-          <input type="text" id="acex-grupos" placeholder="Ej: 1BCB, 2BHA, 03A..."
-            style="width:100%;padding:11px 14px;background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);font-family:Inter,sans-serif;font-size:.92rem;color:var(--text)">
+          <label>Grupos que participan</label>
+          <div class="acex-grupos-buscador">
+            <input type="text" id="acex-grupos-buscador" placeholder="Buscar grupo..." oninput="acexFiltrarGruposModal(this.value)">
+          </div>
+          <div class="ses-check-wrap" id="acex-grupos-wrap" style="max-height:180px;overflow-y:auto;margin-top:6px"></div>
         </div>
         <div class="control-group">
           <label for="acex-obs">Observaciones</label>
@@ -1366,6 +1504,32 @@
         <button class="btn-secondary" onclick="acexCerrarModal()">Cancelar</button>
         <button class="btn-primary" onclick="acexGuardar()">✅ Guardar ACEX</button>
       </div>
+    </div>
+  </div>
+
+  <!-- EVALUACIONES -->
+  <div class="view" id="view-evaluaciones">
+    <div class="aus-header">
+      <h2>📝 Evaluaciones</h2>
+      <p>Calendario e información de evaluaciones por etapa</p>
+    </div>
+
+    <div class="eval-etapas" id="eval-etapas-wrap"></div>
+    <div class="eval-pestanas" id="eval-pestanas-wrap"></div>
+
+    <div id="eval-contenido-wrap">
+      <div class="state-msg"><div class="icon">📝</div><p>Selecciona una etapa.</p></div>
+    </div>
+  </div>
+
+  <!-- TABLÓN -->
+  <div class="view" id="view-tablon">
+    <div class="aus-header">
+      <h2>📌 Tablón de anuncios</h2>
+      <p>Información del equipo directivo para esta semana</p>
+    </div>
+    <div id="tablon-contenido-wrap">
+      <div class="state-msg"><div class="icon">📌</div><p>Cargando...</p></div>
     </div>
   </div>
 
@@ -1424,6 +1588,16 @@ function applyRole() {
     badge.textContent = isDireccion ? '👔 Dirección' : '👤 Docente';
     badge.style.background = isDireccion ? '#1e4d9b' : '#374151';
   }
+  // Refrescar Evaluaciones si esta vista esta activa (el botón Editar depende del rol)
+  if (evalEtapaActual && document.getElementById('view-evaluaciones').classList.contains('active')) {
+    evalEditando = false;
+    evalRenderContenido();
+  }
+  // Refrescar Tablón si esta vista esta activa
+  if (document.getElementById('view-tablon').classList.contains('active')) {
+    tablonEditando = false;
+    tablonRenderContenido();
+  }
 }
 function togglePw() { const i=document.getElementById('pw-input'); i.type=i.type==='password'?'text':'password'; }
 document.getElementById('pw-input').addEventListener('keydown', e => { if(e.key==='Enter') checkLogin(); });
@@ -1441,8 +1615,8 @@ function showView(name) {
   const btnEl = document.getElementById('nav-'+name);
   if (btnEl) btnEl.classList.add('active');
   // Update breadcrumb
-  const labels = {menu:'',horarios:'Horarios',guardias:'Guardianes',ausencias:'Ausencias',
-    cobertura:'Cobertura',aulas:'Aulas',ahora:'Ahora',sustituciones:'Sustituciones',acex:'ACEX',acerca:'Acerca de'};
+  const labels = {menu:'',horarios:'Horarios',grupos:'Grupos',guardias:'Guardianes',ausencias:'Ausencias',
+    cobertura:'Cobertura',aulas:'Aulas',ahora:'Ahora',sustituciones:'Sustituciones',acex:'ACEX',evaluaciones:'Evaluaciones',tablon:'Tablón',acerca:'Acerca de'};
   const label = labels[name] || name;
   const sep = document.getElementById('breadcrumb-sep');
   const cur = document.getElementById('breadcrumb-current');
@@ -1452,6 +1626,8 @@ function showView(name) {
 
 const legGrid = document.getElementById('leyenda-grid');
 LEYENDA.forEach(([s,d]) => { legGrid.innerHTML += `<div class="leyenda-item"><span class="leyenda-sigla">${s}</span><span class="leyenda-desc">${d}</span></div>`; });
+const legGridGrupo = document.getElementById('leyenda-grid-grupo');
+if (legGridGrupo) LEYENDA.forEach(([s,d]) => { legGridGrupo.innerHTML += `<div class="leyenda-item"><span class="leyenda-sigla">${s}</span><span class="leyenda-desc">${d}</span></div>`; });
 
 fetch('horarios.json')
   .then(r=>r.json())
@@ -1461,9 +1637,11 @@ fetch('horarios.json')
     await getSustituciones();
     // Build docente selector with sustituciones applied
     rebuildDocenteSelectors();
+    buildGruposIndex();
+    rebuildGrupoSelector();
     const todayMap = {1:'Lunes',2:'Martes',3:'Miercoles',4:'Jueves',5:'Viernes'};
     const t = todayMap[new Date().getDay()];
-    if (t) document.getElementById('sel-dia').value = t;
+    if (t) { document.getElementById('sel-dia').value = t; document.getElementById('sel-grupo-dia').value = t; }
     buildGuardiasTable(data);
     ahoraMiniRender();
     document.getElementById('loading').classList.add('fade');
@@ -1623,6 +1801,99 @@ function renderHorario() {
   });
   html+=`</div>`;
   el.innerHTML=html;
+}
+
+// ── GRUPOS ────────────────────────────────────────────────────────────────
+// Índice derivado: grupo -> { dia -> { sesion -> [ {docenteCode, materia, aula} ] } }
+// Se construye una sola vez a partir de DB.docentes, ya que el JSON está
+// indexado por docente y no por grupo.
+let GRUPOS_INDEX = null;
+
+function buildGruposIndex() {
+  if (!DB) return;
+  GRUPOS_INDEX = {};
+  Object.entries(DB.docentes).forEach(([code, info]) => {
+    Object.entries(info.horario || {}).forEach(([dia, horDia]) => {
+      Object.entries(horDia).forEach(([sess, slot]) => {
+        const slots = Array.isArray(slot) ? slot : [slot];
+        slots.forEach(s => {
+          if (s.tipo !== 'clase' || !s.grupo) return;
+          // Un slot puede tener varios grupos a la vez (ej. "03A, 03B")
+          s.grupo.split(',').map(g => g.trim()).filter(Boolean).forEach(g => {
+            if (!GRUPOS_INDEX[g]) GRUPOS_INDEX[g] = {};
+            if (!GRUPOS_INDEX[g][dia]) GRUPOS_INDEX[g][dia] = {};
+            if (!GRUPOS_INDEX[g][dia][sess]) GRUPOS_INDEX[g][dia][sess] = [];
+            GRUPOS_INDEX[g][dia][sess].push({ docenteCode: code, materia: s.materia, aula: s.aula });
+          });
+        });
+      });
+    });
+  });
+}
+
+function rebuildGrupoSelector() {
+  if (!DB) return;
+  if (!GRUPOS_INDEX) buildGruposIndex();
+  const sel = document.getElementById('sel-grupo');
+  if (!sel) return;
+  const current = sel.value;
+  sel.innerHTML = '<option value="">— Selecciona un grupo —</option>';
+  Object.keys(GRUPOS_INDEX).sort((a,b) => a.localeCompare(b,'es')).forEach(g => {
+    const opt = document.createElement('option');
+    opt.value = g; opt.textContent = g;
+    sel.appendChild(opt);
+  });
+  if (current) sel.value = current;
+}
+
+function renderHorarioGrupo() {
+  if (!DB) return;
+  if (!GRUPOS_INDEX) buildGruposIndex();
+  const grupo = document.getElementById('sel-grupo').value;
+  const dia = document.getElementById('sel-grupo-dia').value;
+  const el = document.getElementById('resultado-grupo');
+  if (!grupo || !dia) { el.innerHTML = `<div class="state-msg"><div class="icon">👥</div><p>Selecciona un grupo y un día.</p></div>`; return; }
+
+  const sesiones = DB.sesiones;
+  const horDia = (GRUPOS_INDEX[grupo] && GRUPOS_INDEX[grupo][dia]) || {};
+  const activas = Object.keys(horDia).length;
+  const diaLabel = dia === 'Miercoles' ? 'Miércoles' : dia;
+
+  let html = `<div class="result-header">
+    <div class="result-avatar">👥</div>
+    <div>
+      <div class="result-name">Grupo ${grupo}</div>
+      <div class="result-day">${diaLabel} · ${activas} sesión${activas!==1?'es':''} con clase</div>
+    </div>
+  </div><div class="timeline">`;
+
+  const sessForDay = dia === 'Viernes' ? SESSION_ORDER.filter(s => s !== '8') : SESSION_ORDER;
+  sessForDay.forEach(sess => {
+    const meta = sesiones[sess];
+    const entradas = horDia[sess] || [];
+    const tipo = sess === '4' ? 'recreo' : (entradas.length === 0 ? 'libre' : 'clase');
+
+    html += `<div class="slot ${tipo}">
+      <div class="slot-time">
+        <span class="sess-label">${meta.label}</span>
+        <span class="sess-hora">${meta.hora.replace('-','–')}</span>
+      </div><div class="slot-body">`;
+
+    if (entradas.length === 0 && sess !== '4') {
+      html += `<span class="slot-libre-txt">Sin clase</span>`;
+    } else {
+      entradas.forEach(e => {
+        const docInfo = getDocenteEfectivo(e.docenteCode, getNombreEfectivo(e.docenteCode) || (DB.docentes[e.docenteCode]||{}).nombre || '');
+        html += `<div class="slot-materia">${e.materia||''}</div><div class="slot-meta">`;
+        if (docInfo.nombre) html += `<span class="tag grupo">🧑‍🏫 ${tc2(docInfo.nombre)}${docInfo.esSubstituto ? ' 🔄' : ''}</span>`;
+        if (e.aula) html += `<span class="tag aula">🚪 Aula ${e.aula}</span>`;
+        html += `</div>`;
+      });
+    }
+    html += `</div></div>`;
+  });
+  html += `</div>`;
+  el.innerHTML = html;
 }
 
 
@@ -2883,11 +3154,19 @@ async function ahoraRender() {
   }
   // Load ausencias for today
   await ausCargarDesdeSupa(ahoraFecha);
+  await tablonCargar();
   const timeStr = now.toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'});
   const dateStr = now.toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'});
 
   if (!dia) {
-    el.innerHTML = `<div class="ahora-fuera">
+    const tablonResumenFuera = tablonResumenTexto(tablonCache ? tablonCache.contenido : '', 140);
+    el.innerHTML = `
+      <div class="ahora-card" id="ahora-tablon-card" style="margin-bottom:16px;border-left:4px solid var(--accent)">
+        <h3>📌 Tablón del equipo directivo</h3>
+        <p style="font-size:.85rem;color:var(--text-mid);margin:6px 0 10px">${tablonResumenFuera || 'No hay anuncios esta semana.'}</p>
+        <button class="btn-secondary" style="font-size:.8rem" onclick="closeSidebar();showView('tablon');tablonBuild()">Ver tablón completo →</button>
+      </div>
+      <div class="ahora-fuera">
       <div class="icon">🏖️</div>
       <h3>Fuera de jornada lectiva</h3>
       <p>Hoy es ${dateStr}.<br>Los horarios son de lunes a viernes.</p>
@@ -3011,8 +3290,8 @@ async function ahoraRender() {
             <span style="font-size:1.1rem">🎒</span>
             <div>
               <div style="font-weight:700;font-size:.82rem;color:#6d28d9">ACEX en curso</div>
-              ${a.grupos?`<div style="font-size:.75rem;color:var(--text-mid)">👥 ${a.grupos}</div>`:''}
-              ${a.docentes?`<div style="font-size:.75rem;color:var(--text-mid)">👨‍🏫 ${a.docentes}</div>`:''}
+              ${a.grupos&&a.grupos.length?`<div style="font-size:.75rem;color:var(--text-mid)">👥 ${acexArrayToStr(a.grupos)}</div>`:''}
+              ${a.docentes&&a.docentes.length?`<div style="font-size:.75rem;color:var(--text-mid)">👨‍🏫 ${acexArrayToStr(a.docentes)}</div>`:''}
             </div>
           </div>`
         ).join('');
@@ -3039,7 +3318,15 @@ async function ahoraRender() {
     aulasLibresHtml = '<span class="ahora-empty">No hay sesión en curso</span>';
   }
 
+  const tablonResumen = tablonResumenTexto(tablonCache ? tablonCache.contenido : '', 140);
+
   el.innerHTML = `
+    <div class="ahora-card" id="ahora-tablon-card" style="margin-bottom:16px;border-left:4px solid var(--accent)">
+      <h3>📌 Tablón del equipo directivo</h3>
+      <p style="font-size:.85rem;color:var(--text-mid);margin:6px 0 10px">${tablonResumen || 'No hay anuncios esta semana.'}</p>
+      <button class="btn-secondary" style="font-size:.8rem" onclick="closeSidebar();showView('tablon');tablonBuild()">Ver tablón completo →</button>
+    </div>
+
     <div style="margin-bottom:20px">
       <div style="font-size:1.1rem;font-weight:800;color:var(--text);margin-bottom:2px">${dateStr.charAt(0).toUpperCase()+dateStr.slice(1)}</div>
       <div class="ahora-clock">${timeStr}</div>
@@ -3436,6 +3723,7 @@ async function sustGuardar() {
     sustCerrarModal();
     await sustBuild();
     rebuildDocenteSelectors();
+    renderHorarioGrupo();
   } catch(e) {
     alert('Error: ' + e.message);
   } finally {
@@ -3449,6 +3737,7 @@ async function sustCancelar(id) {
     await supaFetch('PATCH', `sustituciones?id=eq.${id}`, { activa: false });
     await sustBuild();
     rebuildDocenteSelectors();
+    renderHorarioGrupo();
   } catch(e) { alert('Error: ' + e.message); }
 }
 
@@ -3513,8 +3802,8 @@ function acexRender() {
           </div>
         </div>
         <div class="acex-card-body">
-          ${a.docentes?`<div class="acex-row"><span class="acex-row-label">👨‍🏫 Docentes:</span><span class="acex-row-val">${a.docentes}</span></div>`:''}
-          ${a.grupos?`<div class="acex-row"><span class="acex-row-label">👥 Grupos:</span><span class="acex-row-val">${a.grupos}</span></div>`:''}
+          ${a.docentes&&a.docentes.length?`<div class="acex-row"><span class="acex-row-label">👨‍🏫 Docentes:</span><span class="acex-row-val">${acexArrayToStr(a.docentes)}</span></div>`:''}
+          ${a.grupos&&a.grupos.length?`<div class="acex-row"><span class="acex-row-label">👥 Grupos:</span><span class="acex-row-val">${acexArrayToStr(a.grupos)}</span></div>`:''}
           ${a.observaciones?`<div class="acex-row"><span class="acex-row-label">📝 Notas:</span><span class="acex-row-val">${a.observaciones}</span></div>`:''}
         </div>
       </div>`;
@@ -3530,26 +3819,56 @@ function acexAbrirModal(id) {
   wrap.innerHTML = SESS_ALL.map(s =>
     `<label class="ses-check-box"><input type="checkbox" name="acex-ses" value="${s}" checked> ${SESS_LABELS_ACEX[s]}</label>`
   ).join('');
+
+  if (!GRUPOS_INDEX) buildGruposIndex();
+  const gruposOrdenados = Object.keys(GRUPOS_INDEX).sort((a,b) => a.localeCompare(b,'es'));
+  document.getElementById('acex-grupos-buscador').value = '';
+  document.getElementById('acex-grupos-wrap').innerHTML = gruposOrdenados.map(g =>
+    `<label class="ses-check-box acex-grupo-opt" data-grupo="${g}"><input type="checkbox" name="acex-grupo-check" value="${g}"> ${g}</label>`
+  ).join('');
+
   if (!id) {
     const today = new Date();
     const ymd = today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
     document.getElementById('acex-fecha').value = ymd;
     document.getElementById('acex-docentes').value = '';
-    document.getElementById('acex-grupos').value = '';
     document.getElementById('acex-obs').value = '';
   } else {
     const a = acexCache.find(x => x.id === id);
     if (a) {
       document.getElementById('acex-fecha').value = a.fecha;
-      document.getElementById('acex-docentes').value = a.docentes||'';
-      document.getElementById('acex-grupos').value = a.grupos||'';
+      document.getElementById('acex-docentes').value = acexArrayToStr(a.docentes);
       document.getElementById('acex-obs').value = a.observaciones||'';
       document.querySelectorAll('input[name="acex-ses"]').forEach(cb => {
         cb.checked = (a.sesiones||[]).includes(cb.value);
       });
+      // Marcar los grupos ya guardados (array de Postgres) que coincidan con grupos conocidos
+      const gruposGuardados = acexArrayToList(a.grupos);
+      document.querySelectorAll('input[name="acex-grupo-check"]').forEach(cb => {
+        cb.checked = gruposGuardados.includes(cb.value);
+      });
     }
   }
   document.getElementById('acex-modal').classList.remove('hidden');
+}
+
+// Los campos docentes/grupos son ARRAY en Supabase, pero por seguridad
+// (datos antiguos o llegados de otra forma) se admite también string.
+function acexArrayToList(val) {
+  if (!val) return [];
+  if (Array.isArray(val)) return val.map(v => String(v).trim()).filter(Boolean);
+  return String(val).split(',').map(v => v.trim()).filter(Boolean);
+}
+function acexArrayToStr(val) {
+  return acexArrayToList(val).join(', ');
+}
+
+function acexFiltrarGruposModal(query) {
+  const q = query.trim().toUpperCase();
+  document.querySelectorAll('#acex-grupos-wrap .acex-grupo-opt').forEach(el => {
+    const g = el.dataset.grupo.toUpperCase();
+    el.style.display = g.includes(q) ? '' : 'none';
+  });
 }
 
 function acexCerrarModal() {
@@ -3559,8 +3878,9 @@ function acexCerrarModal() {
 
 async function acexGuardar() {
   const fecha    = document.getElementById('acex-fecha').value;
-  const docentes = document.getElementById('acex-docentes').value.trim();
-  const grupos   = document.getElementById('acex-grupos').value.trim();
+  const docentesTxt = document.getElementById('acex-docentes').value.trim();
+  const docentes = docentesTxt ? docentesTxt.split(',').map(d=>d.trim()).filter(Boolean) : [];
+  const grupos   = Array.from(document.querySelectorAll('input[name="acex-grupo-check"]:checked')).map(c=>c.value);
   const obs      = document.getElementById('acex-obs').value.trim();
   const sesiones = Array.from(document.querySelectorAll('input[name="acex-ses"]:checked')).map(c=>c.value);
   if (!fecha) { alert('Selecciona una fecha.'); return; }
@@ -3568,7 +3888,7 @@ async function acexGuardar() {
 
   const btn = document.querySelector('#acex-modal .btn-primary');
   btn.textContent = '⏳ Guardando...'; btn.disabled = true;
-  const payload = { fecha, sesiones, docentes: docentes||null, grupos: grupos||null, observaciones: obs||null };
+  const payload = { fecha, sesiones, docentes: docentes.length?docentes:null, grupos: grupos.length?grupos:null, observaciones: obs||null };
   try {
     if (acexEditId) {
       await supaFetch('PATCH', `acex?id=eq.${acexEditId}`, payload);
@@ -3591,6 +3911,412 @@ async function acexEliminar(id) {
 }
 
 function acexEditar(id) { acexAbrirModal(id); }
+
+function acexCambiarTab(tab) {
+  document.getElementById('acex-tab-semana').classList.toggle('active', tab === 'semana');
+  document.getElementById('acex-tab-buscar').classList.toggle('active', tab === 'buscar');
+  document.getElementById('acex-panel-semana').style.display = tab === 'semana' ? '' : 'none';
+  document.getElementById('acex-panel-buscar').style.display = tab === 'buscar' ? '' : 'none';
+  if (tab === 'buscar') acexPrepararBuscador();
+}
+
+function acexPrepararBuscador() {
+  const sel = document.getElementById('acex-buscar-grupo');
+  if (sel.options.length <= 1) {
+    if (!GRUPOS_INDEX) buildGruposIndex();
+    const gruposOrdenados = Object.keys(GRUPOS_INDEX).sort((a,b) => a.localeCompare(b,'es'));
+    gruposOrdenados.forEach(g => {
+      const opt = document.createElement('option');
+      opt.value = g; opt.textContent = g;
+      sel.appendChild(opt);
+    });
+  }
+  const fechaEl = document.getElementById('acex-buscar-fecha');
+  if (!fechaEl.value) {
+    const today = new Date();
+    fechaEl.value = today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+  }
+}
+
+async function acexBuscarPorGrupo() {
+  const grupo = document.getElementById('acex-buscar-grupo').value;
+  const fecha = document.getElementById('acex-buscar-fecha').value;
+  const el = document.getElementById('acex-buscar-resultado');
+  if (!grupo || !fecha) {
+    el.innerHTML = `<div class="state-msg"><div class="icon">🔍</div><p>Selecciona un grupo y un día.</p></div>`;
+    return;
+  }
+  el.innerHTML = `<div class="state-msg"><div class="icon">⏳</div><p>Buscando...</p></div>`;
+  let rows;
+  try {
+    rows = await supaFetch('GET', `acex?fecha=eq.${fecha}&select=*`);
+  } catch(e) {
+    el.innerHTML = `<div class="state-msg"><p>Error: ${e.message}</p></div>`;
+    return;
+  }
+  // Coincidencia exacta de grupo dentro del array "grupos"
+  const coincidencias = rows.filter(a => acexArrayToList(a.grupos).includes(grupo));
+
+  const dt = new Date(fecha+'T12:00:00');
+  const dayLabel = dt.toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});
+
+  if (coincidencias.length === 0) {
+    el.innerHTML = `<div class="state-msg"><div class="icon">✅</div><p>El grupo <b>${grupo}</b> no tiene ninguna ACEX el ${dayLabel}.</p></div>`;
+    return;
+  }
+
+  let html = `<div class="acex-semana-header">${dayLabel.charAt(0).toUpperCase()+dayLabel.slice(1)} · Grupo ${grupo}</div>`;
+  coincidencias.forEach(a => {
+    const sesLabels = (a.sesiones||[]).map(s => SESS_LABELS_ACEX[s]||s);
+    html += `<div class="acex-card">
+      <div class="acex-card-header">
+        <span class="acex-fecha-badge">🎒 ACEX</span>
+        ${sesLabels.map(s=>`<span class="acex-ses-badge">${s}</span>`).join('')}
+      </div>
+      <div class="acex-card-body">
+        ${a.docentes&&a.docentes.length?`<div class="acex-row"><span class="acex-row-label">👨‍🏫 Docentes:</span><span class="acex-row-val">${acexArrayToStr(a.docentes)}</span></div>`:''}
+        <div class="acex-row"><span class="acex-row-label">👥 Grupos:</span><span class="acex-row-val">${acexArrayToStr(a.grupos)}</span></div>
+        ${a.observaciones?`<div class="acex-row"><span class="acex-row-label">📝 Notas:</span><span class="acex-row-val">${a.observaciones}</span></div>`:''}
+      </div>
+    </div>`;
+  });
+  el.innerHTML = html;
+}
+
+// ── EVALUACIONES ───────────────────────────────────────────────────────────
+const EVAL_ESTRUCTURA = {
+  ESO: { label: 'ESO', pestanas: [
+    { key: '1EVA', label: '1ª EVA' },
+    { key: '2EVA', label: '2ª EVA' },
+    { key: 'FINAL', label: 'Final' },
+  ]},
+  BTO: { label: 'Bachillerato', pestanas: [
+    { key: '1EVA', label: '1ª EVA' },
+    { key: '2EVA', label: '2ª EVA' },
+    { key: 'FINAL_ORD', label: 'Final ordinaria' },
+    { key: 'FINAL_EXT', label: 'Final extraordinaria' },
+  ]},
+  FP: { label: 'FP', pestanas: [
+    { key: '1EVA', label: '1ª EVA' },
+    { key: '2EVA', label: '2ª EVA' },
+    { key: 'FINAL_1', label: 'Primera final' },
+    { key: 'FINAL_2', label: 'Segunda final' },
+  ]},
+};
+
+let evalEtapaActual = null;
+let evalPestanaActual = null;
+let evalCache = {};        // "ETAPA|PESTANA" -> {contenido, actualizado_por, actualizado_en}
+let evalEditando = false;
+
+async function evalBuild() {
+  if (!evalEtapaActual) evalEtapaActual = 'ESO';
+  evalRenderEtapas();
+  await evalCargarEtapa(evalEtapaActual);
+}
+
+function evalRenderEtapas() {
+  const wrap = document.getElementById('eval-etapas-wrap');
+  wrap.innerHTML = Object.entries(EVAL_ESTRUCTURA).map(([key, e]) => `
+    <button class="eval-etapa-btn ${key===evalEtapaActual?'active':''}" onclick="evalSeleccionarEtapa('${key}')">${e.label}</button>
+  `).join('');
+}
+
+async function evalSeleccionarEtapa(etapa) {
+  evalEtapaActual = etapa;
+  evalPestanaActual = null;
+  evalEditando = false;
+  evalRenderEtapas();
+  await evalCargarEtapa(etapa);
+}
+
+async function evalCargarEtapa(etapa) {
+  const wrapContenido = document.getElementById('eval-contenido-wrap');
+  wrapContenido.innerHTML = `<div class="state-msg"><div class="icon">⏳</div><p>Cargando...</p></div>`;
+  try {
+    const rows = await supaFetch('GET', `evaluaciones?etapa=eq.${etapa}&select=*`);
+    rows.forEach(r => { evalCache[etapa + '|' + r.pestana] = r; });
+  } catch(e) {
+    wrapContenido.innerHTML = `<div class="state-msg"><p>Error cargando evaluaciones.</p></div>`;
+    return;
+  }
+  const pestanas = EVAL_ESTRUCTURA[etapa].pestanas;
+  if (!evalPestanaActual || !pestanas.some(p => p.key === evalPestanaActual)) {
+    evalPestanaActual = pestanas[0].key;
+  }
+  evalRenderPestanas();
+  evalRenderContenido();
+}
+
+function evalRenderPestanas() {
+  const wrap = document.getElementById('eval-pestanas-wrap');
+  const pestanas = EVAL_ESTRUCTURA[evalEtapaActual].pestanas;
+  wrap.innerHTML = pestanas.map(p => `
+    <button class="eval-pestana-btn ${p.key===evalPestanaActual?'active':''}" onclick="evalSeleccionarPestana('${p.key}')">${p.label}</button>
+  `).join('');
+}
+
+function evalSeleccionarPestana(key) {
+  evalPestanaActual = key;
+  evalEditando = false;
+  evalRenderPestanas();
+  evalRenderContenido();
+}
+
+function evalClaveActual() { return evalEtapaActual + '|' + evalPestanaActual; }
+
+function evalRenderContenido() {
+  const wrap = document.getElementById('eval-contenido-wrap');
+  const reg = evalCache[evalClaveActual()];
+  const contenido = reg ? (reg.contenido || '') : '';
+  const pestanaLabel = (EVAL_ESTRUCTURA[evalEtapaActual].pestanas.find(p => p.key === evalPestanaActual) || {}).label || '';
+  const etapaLabel = EVAL_ESTRUCTURA[evalEtapaActual].label;
+
+  let metaTxt = '';
+  if (reg && reg.actualizado_en) {
+    const f = new Date(reg.actualizado_en);
+    const fStr = f.toLocaleDateString('es-ES', { day:'2-digit', month:'2-digit', year:'numeric' }) + ' ' + f.toLocaleTimeString('es-ES', { hour:'2-digit', minute:'2-digit' });
+    metaTxt = `Última actualización: ${fStr}${reg.actualizado_por ? ' · ' + reg.actualizado_por : ''}`;
+  }
+
+  const esDireccion = USER_ROLE === 'direccion';
+
+  if (evalEditando && esDireccion) {
+    wrap.innerHTML = `
+      <div class="eval-card">
+        <div class="eval-card-header">
+          <h3 style="font-size:1rem;font-weight:800;color:var(--text)">${etapaLabel} · ${pestanaLabel}</h3>
+        </div>
+        <div class="eval-toolbar">
+          <button type="button" class="eval-tb-btn" title="Negrita" onclick="evalCmd('bold')"><b>B</b></button>
+          <button type="button" class="eval-tb-btn" title="Cursiva" onclick="evalCmd('italic')"><i>I</i></button>
+          <button type="button" class="eval-tb-btn" title="Subrayado" onclick="evalCmd('underline')"><u>U</u></button>
+          <div class="eval-tb-sep"></div>
+          <button type="button" class="eval-tb-btn" title="Título" onclick="evalCmd('formatBlock','H3')">H</button>
+          <button type="button" class="eval-tb-btn" title="Lista de puntos" onclick="evalCmd('insertUnorderedList')">•≡</button>
+          <button type="button" class="eval-tb-btn" title="Lista numerada" onclick="evalCmd('insertOrderedList')">1≡</button>
+          <div class="eval-tb-sep"></div>
+          <button type="button" class="eval-tb-btn" title="Insertar tabla" onclick="evalInsertarTabla()">⊞</button>
+          <button type="button" class="eval-tb-btn" title="Deshacer" onclick="evalCmd('undo')">↺</button>
+          <button type="button" class="eval-tb-btn" title="Quitar formato" onclick="evalCmd('removeFormat')">✕</button>
+        </div>
+        <div id="eval-editable" class="eval-editable" contenteditable="true">${contenido || ''}</div>
+        <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:14px">
+          <button class="btn-secondary" onclick="evalCancelarEdicion()">Cancelar</button>
+          <button class="btn-primary" onclick="evalGuardar()">✅ Guardar</button>
+        </div>
+      </div>
+    `;
+    document.getElementById('eval-editable').focus();
+    return;
+  }
+
+  wrap.innerHTML = `
+    <div class="eval-card">
+      <div class="eval-card-header">
+        <h3 style="font-size:1rem;font-weight:800;color:var(--text)">${etapaLabel} · ${pestanaLabel}</h3>
+        ${esDireccion ? `<button class="btn-primary" onclick="evalEditar()">✏️ Editar</button>` : ''}
+      </div>
+      ${metaTxt ? `<div class="eval-meta" style="margin-bottom:10px">${metaTxt}</div>` : ''}
+      <div class="eval-view">${contenido ? contenido : '<p class="eval-empty-txt">Todavía no hay información publicada para esta evaluación.</p>'}</div>
+    </div>
+  `;
+}
+
+function evalEditar() {
+  evalEditando = true;
+  evalRenderContenido();
+}
+
+function evalCancelarEdicion() {
+  evalEditando = false;
+  evalRenderContenido();
+}
+
+function evalCmd(cmd, valor) {
+  document.execCommand(cmd, false, valor || null);
+  document.getElementById('eval-editable').focus();
+}
+
+function evalInsertarTabla() {
+  const filas = parseInt(prompt('¿Cuántas filas?', '3'), 10);
+  const cols = parseInt(prompt('¿Cuántas columnas?', '3'), 10);
+  if (!filas || !cols || filas < 1 || cols < 1) return;
+  let html = '<table>';
+  for (let r = 0; r < filas; r++) {
+    html += '<tr>';
+    for (let c = 0; c < cols; c++) html += '<td>&nbsp;</td>';
+    html += '</tr>';
+  }
+  html += '</table><p><br></p>';
+  document.execCommand('insertHTML', false, html);
+  document.getElementById('eval-editable').focus();
+}
+
+async function evalGuardar() {
+  const html = document.getElementById('eval-editable').innerHTML;
+  const etapa = evalEtapaActual;
+  const pestana = evalPestanaActual;
+  const nombreEditor = (sessionStorage.getItem('role') === 'direccion') ? '👔 Equipo Directivo' : '';
+
+  const btn = document.querySelector('#eval-contenido-wrap .btn-primary');
+  if (btn) { btn.textContent = '⏳ Guardando...'; btn.disabled = true; }
+  try {
+    await supaFetch('PATCH', `evaluaciones?etapa=eq.${etapa}&pestana=eq.${pestana}`, {
+      contenido: html,
+      actualizado_por: nombreEditor || null,
+      actualizado_en: new Date().toISOString()
+    });
+    evalCache[etapa + '|' + pestana] = { etapa, pestana, contenido: html, actualizado_por: nombreEditor, actualizado_en: new Date().toISOString() };
+    evalEditando = false;
+    evalRenderContenido();
+  } catch(e) {
+    alert('Error al guardar: ' + e.message);
+    if (btn) { btn.textContent = '✅ Guardar'; btn.disabled = false; }
+  }
+}
+
+// ── TABLÓN DE ANUNCIOS ────────────────────────────────────────────────────
+let tablonCache = null;   // {id, contenido, actualizado_por, actualizado_en}
+let tablonEditando = false;
+
+async function tablonCargar() {
+  try {
+    const rows = await supaFetch('GET', 'tablon?select=*&order=id.asc&limit=1');
+    tablonCache = rows[0] || { id: 1, contenido: '', actualizado_por: null, actualizado_en: null };
+  } catch(e) {
+    tablonCache = tablonCache || { id: 1, contenido: '', actualizado_por: null, actualizado_en: null };
+  }
+  return tablonCache;
+}
+
+async function tablonBuild() {
+  const wrap = document.getElementById('tablon-contenido-wrap');
+  wrap.innerHTML = `<div class="state-msg"><div class="icon">⏳</div><p>Cargando...</p></div>`;
+  await tablonCargar();
+  tablonEditando = false;
+  tablonRenderContenido();
+}
+
+function tablonRenderContenido() {
+  const wrap = document.getElementById('tablon-contenido-wrap');
+  const reg = tablonCache || { contenido: '' };
+  const contenido = reg.contenido || '';
+  const esDireccion = USER_ROLE === 'direccion';
+
+  let metaTxt = '';
+  if (reg.actualizado_en) {
+    const f = new Date(reg.actualizado_en);
+    const fStr = f.toLocaleDateString('es-ES', { day:'2-digit', month:'2-digit', year:'numeric' }) + ' ' + f.toLocaleTimeString('es-ES', { hour:'2-digit', minute:'2-digit' });
+    metaTxt = `Última actualización: ${fStr}${reg.actualizado_por ? ' · ' + reg.actualizado_por : ''}`;
+  }
+
+  if (tablonEditando && esDireccion) {
+    wrap.innerHTML = `
+      <div class="eval-card">
+        <div class="eval-toolbar">
+          <button type="button" class="eval-tb-btn" title="Negrita" onclick="tablonCmd('bold')"><b>B</b></button>
+          <button type="button" class="eval-tb-btn" title="Cursiva" onclick="tablonCmd('italic')"><i>I</i></button>
+          <button type="button" class="eval-tb-btn" title="Subrayado" onclick="tablonCmd('underline')"><u>U</u></button>
+          <div class="eval-tb-sep"></div>
+          <button type="button" class="eval-tb-btn" title="Título" onclick="tablonCmd('formatBlock','H3')">H</button>
+          <button type="button" class="eval-tb-btn" title="Lista de puntos" onclick="tablonCmd('insertUnorderedList')">•≡</button>
+          <button type="button" class="eval-tb-btn" title="Lista numerada" onclick="tablonCmd('insertOrderedList')">1≡</button>
+          <div class="eval-tb-sep"></div>
+          <button type="button" class="eval-tb-btn" title="Insertar tabla" onclick="tablonInsertarTabla()">⊞</button>
+          <button type="button" class="eval-tb-btn" title="Deshacer" onclick="tablonCmd('undo')">↺</button>
+          <button type="button" class="eval-tb-btn" title="Quitar formato" onclick="tablonCmd('removeFormat')">✕</button>
+        </div>
+        <div id="tablon-editable" class="eval-editable" contenteditable="true">${contenido}</div>
+        <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:14px">
+          <button class="btn-secondary" onclick="tablonCancelarEdicion()">Cancelar</button>
+          <button class="btn-primary" onclick="tablonGuardar()">✅ Guardar</button>
+        </div>
+      </div>
+    `;
+    document.getElementById('tablon-editable').focus();
+    return;
+  }
+
+  wrap.innerHTML = `
+    <div class="eval-card">
+      <div class="eval-card-header">
+        <h3 style="font-size:1rem;font-weight:800;color:var(--text)">📌 Esta semana</h3>
+        ${esDireccion ? `<button class="btn-primary" onclick="tablonEditar()">✏️ Editar</button>` : ''}
+      </div>
+      ${metaTxt ? `<div class="eval-meta" style="margin-bottom:10px">${metaTxt}</div>` : ''}
+      <div class="eval-view">${contenido ? contenido : '<p class="eval-empty-txt">El equipo directivo no ha publicado ningún anuncio esta semana.</p>'}</div>
+    </div>
+  `;
+}
+
+function tablonEditar() { tablonEditando = true; tablonRenderContenido(); }
+function tablonCancelarEdicion() { tablonEditando = false; tablonRenderContenido(); }
+
+function tablonCmd(cmd, valor) {
+  document.execCommand(cmd, false, valor || null);
+  document.getElementById('tablon-editable').focus();
+}
+
+function tablonInsertarTabla() {
+  const filas = parseInt(prompt('¿Cuántas filas?', '3'), 10);
+  const cols = parseInt(prompt('¿Cuántas columnas?', '3'), 10);
+  if (!filas || !cols || filas < 1 || cols < 1) return;
+  let html = '<table>';
+  for (let r = 0; r < filas; r++) {
+    html += '<tr>';
+    for (let c = 0; c < cols; c++) html += '<td>&nbsp;</td>';
+    html += '</tr>';
+  }
+  html += '</table><p><br></p>';
+  document.execCommand('insertHTML', false, html);
+  document.getElementById('tablon-editable').focus();
+}
+
+async function tablonGuardar() {
+  const html = document.getElementById('tablon-editable').innerHTML;
+  const nombreEditor = (sessionStorage.getItem('role') === 'direccion') ? '👔 Equipo Directivo' : '';
+  const id = (tablonCache && tablonCache.id) || 1;
+
+  const btn = document.querySelector('#tablon-contenido-wrap .btn-primary');
+  if (btn) { btn.textContent = '⏳ Guardando...'; btn.disabled = true; }
+  try {
+    await supaFetch('PATCH', `tablon?id=eq.${id}`, {
+      contenido: html,
+      actualizado_por: nombreEditor || null,
+      actualizado_en: new Date().toISOString()
+    });
+    tablonCache = { id, contenido: html, actualizado_por: nombreEditor, actualizado_en: new Date().toISOString() };
+    tablonEditando = false;
+    tablonRenderContenido();
+    ahoraMiniTablonRefrescar();
+  } catch(e) {
+    alert('Error al guardar: ' + e.message);
+    if (btn) { btn.textContent = '✅ Guardar'; btn.disabled = false; }
+  }
+}
+
+// Extrae texto plano de un HTML y lo recorta a N caracteres, para el resumen en "Ahora"
+function tablonResumenTexto(html, maxLen) {
+  if (!html) return '';
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  const txt = (tmp.textContent || tmp.innerText || '').replace(/\s+/g, ' ').trim();
+  if (txt.length <= maxLen) return txt;
+  return txt.slice(0, maxLen).trim() + '…';
+}
+
+async function ahoraMiniTablonRefrescar() {
+  const el = document.getElementById('ahora-tablon-card');
+  if (!el) return;
+  await tablonCargar();
+  const resumen = tablonResumenTexto(tablonCache.contenido, 140);
+  el.innerHTML = `
+    <h3>📌 Tablón del equipo directivo</h3>
+    <p style="font-size:.85rem;color:var(--text-mid);margin:6px 0 10px">${resumen || 'No hay anuncios esta semana.'}</p>
+    <button class="btn-secondary" style="font-size:.8rem" onclick="closeSidebar();showView('tablon');tablonBuild()">Ver tablón completo →</button>
+  `;
+}
 
 // ── AHORA MINI (widget en inicio) ─────────────────────────────────────────
 function ahoraMiniRender() {
@@ -3717,6 +4443,8 @@ setTimeout(fixLayout, 1500);
 
 document.getElementById('sel-docente').addEventListener('change', renderHorario);
 document.getElementById('sel-dia').addEventListener('change', renderHorario);
+document.getElementById('sel-grupo').addEventListener('change', renderHorarioGrupo);
+document.getElementById('sel-grupo-dia').addEventListener('change', renderHorarioGrupo);
 
 </script>
 </body>
