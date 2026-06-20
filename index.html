@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
     <link rel="icon" type="image/png" href="logo.png">
+  <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="logo.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="IES VC">
-  <meta name="theme-color" content="#1e40af">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#0a1628">
   <title>IES Virgen de la Calle · Horarios</title>
@@ -4445,6 +4445,14 @@ document.getElementById('sel-docente').addEventListener('change', renderHorario)
 document.getElementById('sel-dia').addEventListener('change', renderHorario);
 document.getElementById('sel-grupo').addEventListener('change', renderHorarioGrupo);
 document.getElementById('sel-grupo-dia').addEventListener('change', renderHorarioGrupo);
+
+// Registro del Service Worker, requisito para que Chrome/Android
+// considere la web "instalable" como PWA.
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
 
 </script>
 </body>
