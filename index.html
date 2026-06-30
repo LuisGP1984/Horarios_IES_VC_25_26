@@ -11,6 +11,7 @@
   <meta name="theme-color" content="#0a1628">
   <title>IES Virgen de la Calle · Horarios</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
 
     /* ── LAYOUT ──────────────────────────────────────── */
@@ -1020,6 +1021,7 @@
       <button class="nav-btn" onclick="closeSidebar();showView('evaluaciones');evalBuild()" id="nav-evaluaciones"><span class="nav-icon">📝</span><span class="nav-label">Evaluaciones</span></button>
       <button class="nav-btn" onclick="closeSidebar();showView('tablon');tablonBuild()" id="nav-tablon"><span class="nav-icon">📌</span><span class="nav-label">Tablón</span></button>
       <button class="nav-btn" onclick="closeSidebar();showView('armarios');armariosBuild()" id="nav-armarios"><span class="nav-icon">💻</span><span class="nav-label">Portátiles</span></button>
+      <button class="nav-btn solo-direccion" onclick="closeSidebar();showView('exportar')" id="nav-exportar"><span class="nav-icon">📊</span><span class="nav-label">Exportar</span></button>
       <button class="nav-btn" onclick="closeSidebar();showView('acerca')" id="nav-acerca"><span class="nav-icon">ℹ️</span><span class="nav-label">Acerca de</span></button>
     </nav>
   </aside>
@@ -1117,6 +1119,12 @@
         <div class="mc-icon">🔄</div>
         <div class="mc-title">Sustituciones</div>
         <div class="mc-desc">Gestiona sustituciones de docentes activas</div>
+        <span class="mc-arrow">→</span>
+      </div>
+      <div class="menu-card solo-direccion" onclick="showView('exportar')">
+        <div class="mc-icon">📊</div>
+        <div class="mc-title">Exportar</div>
+        <div class="mc-desc">Descarga horarios, ausencias y sustituciones en Excel</div>
         <span class="mc-arrow">→</span>
       </div>
     </div>
@@ -1363,6 +1371,60 @@
 
 
   <!-- ACERCA DE -->
+  <!-- EXPORTAR -->
+  <div class="view" id="view-exportar">
+    <div class="aus-header">
+      <h2>📊 Exportar a Excel</h2>
+      <p>Descarga los datos de la aplicación en formato .xlsx</p>
+    </div>
+
+    <!-- Horario de docentes -->
+    <div class="eval-card" style="margin-bottom:16px">
+      <div class="eval-card-header">
+        <h3 style="font-size:1rem;font-weight:800">📅 Horario de docentes</h3>
+      </div>
+      <p style="font-size:.83rem;color:var(--text-mid);margin-bottom:14px">Genera un Excel con una hoja por docente (L-V × sesiones) y una hoja de horario semanal completo.</p>
+      <button class="btn-primary" onclick="exportHorarioDocentes()">⬇️ Descargar horario de docentes</button>
+    </div>
+
+    <!-- Horario de grupos -->
+    <div class="eval-card" style="margin-bottom:16px">
+      <div class="eval-card-header">
+        <h3 style="font-size:1rem;font-weight:800">👥 Horario de grupos</h3>
+      </div>
+      <p style="font-size:.83rem;color:var(--text-mid);margin-bottom:14px">Genera un Excel con una hoja por grupo (L-V × sesiones: materia + docente + aula).</p>
+      <button class="btn-primary" onclick="exportHorarioGrupos()">⬇️ Descargar horario de grupos</button>
+    </div>
+
+    <!-- Ausencias por periodo -->
+    <div class="eval-card" style="margin-bottom:16px">
+      <div class="eval-card-header">
+        <h3 style="font-size:1rem;font-weight:800">📋 Ausencias por periodo</h3>
+      </div>
+      <p style="font-size:.83rem;color:var(--text-mid);margin-bottom:14px">Tabla plana con todas las ausencias registradas entre las fechas indicadas.</p>
+      <div class="aus-toolbar" style="margin-bottom:14px;padding:0;background:none;border:none">
+        <div class="control-group" style="flex:0 0 175px">
+          <label for="exp-aus-desde">Desde</label>
+          <input type="date" id="exp-aus-desde">
+        </div>
+        <div class="control-group" style="flex:0 0 175px">
+          <label for="exp-aus-hasta">Hasta</label>
+          <input type="date" id="exp-aus-hasta">
+        </div>
+      </div>
+      <button class="btn-primary" onclick="exportAusencias()">⬇️ Descargar ausencias</button>
+    </div>
+
+    <!-- Sustituciones -->
+    <div class="eval-card" style="margin-bottom:16px">
+      <div class="eval-card-header">
+        <h3 style="font-size:1rem;font-weight:800">🔄 Sustituciones</h3>
+      </div>
+      <p style="font-size:.83rem;color:var(--text-mid);margin-bottom:14px">Tabla plana con todas las sustituciones (activas e históricas): docente original, sustituto, fechas y estado.</p>
+      <button class="btn-primary" onclick="exportSustituciones()">⬇️ Descargar sustituciones</button>
+    </div>
+  </div>
+
   <div class="view" id="view-acerca">
     <div class="acerca-wrap">
       <div class="acerca-card">
@@ -1818,7 +1880,7 @@ function showView(name) {
   if (btnEl) btnEl.classList.add('active');
   // Update breadcrumb
   const labels = {menu:'',horarios:'Horarios',grupos:'Grupos',guardias:'Guardianes',ausencias:'Ausencias',
-    cobertura:'Cobertura',aulas:'Aulas',ahora:'Ahora',sustituciones:'Sustituciones',acex:'ACEX',evaluaciones:'Evaluaciones',tablon:'Tablón',armarios:'Portátiles',acerca:'Acerca de'};
+    cobertura:'Cobertura',aulas:'Aulas',ahora:'Ahora',sustituciones:'Sustituciones',acex:'ACEX',evaluaciones:'Evaluaciones',tablon:'Tablón',armarios:'Portátiles',exportar:'Exportar',acerca:'Acerca de'};
   const label = labels[name] || name;
   const sep = document.getElementById('breadcrumb-sep');
   const cur = document.getElementById('breadcrumb-current');
@@ -4950,6 +5012,11 @@ function ahoraMiniRender() {
   if (ahoraEl) ahoraEl.value = todayStr;
   const armariosEl = document.getElementById('armarios-fecha');
   if (armariosEl) armariosEl.value = todayStr;
+  // Fechas exportar ausencias: inicio de curso → hoy
+  const expDesde = document.getElementById('exp-aus-desde');
+  const expHasta = document.getElementById('exp-aus-hasta');
+  if (expDesde) expDesde.value = `${y}-09-01`;
+  if (expHasta) expHasta.value = todayStr;
 })();
 
 document.getElementById('acex-fecha-filtro')?.addEventListener('change', acexBuild);
@@ -5010,6 +5077,183 @@ document.getElementById('sel-grupo-dia').addEventListener('change', renderHorari
 
 // Registro del Service Worker, requisito para que Chrome/Android
 // considere la web "instalable" como PWA.
+// ── EXPORTAR A EXCEL ──────────────────────────────────────────────────────
+const DIAS_SEMANA = ['Lunes','Martes','Miercoles','Jueves','Viernes'];
+const SESS_EXPORT = ['1','2','3','3R','4','5','6','7','8'];
+
+function xlsxDescargar(wb, nombre) {
+  const wbout = XLSX.write(wb, { bookType:'xlsx', type:'array' });
+  const blob = new Blob([wbout], { type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = nombre; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function xlsxEstilosCabecera(ws, rangoFila, color) {
+  // SheetJS community no soporta estilos natively; la cabecera queda sin color
+  // pero la estructura es correcta — compatible con todas las versiones.
+}
+
+// Devuelve el label de sesion legible
+function sessLabel(s) {
+  if (!DB || !DB.sesiones[s]) return SESS_LABELS_ACEX[s] || s;
+  return DB.sesiones[s].label;
+}
+
+// ── 1. Horario de docentes ─────────────────────────────────────────────────
+function exportHorarioDocentes() {
+  if (!DB) { alert('Cargando datos, espera un momento.'); return; }
+  const wb = XLSX.utils.book_new();
+
+  // Hoja 1: Horario semanal completo (todos los docentes × dias × sesiones)
+  const cabSemanal = ['Docente', ...DIAS_SEMANA.flatMap(d => SESS_EXPORT.map(s => `${d} - ${sessLabel(s)}`))];
+  const filasSemanal = [];
+  Object.values(DB.docentes).sort((a,b) => a.nombre.localeCompare(b.nombre,'es')).forEach(doc => {
+    const fila = [doc.nombre];
+    DIAS_SEMANA.forEach(dia => {
+      SESS_EXPORT.forEach(sess => {
+        const slot = doc.horario[dia] && doc.horario[dia][sess];
+        if (!slot) { fila.push(''); return; }
+        if (slot.tipo === 'clase') {
+          fila.push(`${slot.materia||''} [${slot.grupo||''}] Aula:${slot.aula||''}`);
+        } else {
+          fila.push(slot.sigla || '');
+        }
+      });
+    });
+    filasSemanal.push(fila);
+  });
+  const wsSemanal = XLSX.utils.aoa_to_sheet([cabSemanal, ...filasSemanal]);
+  XLSX.utils.book_append_sheet(wb, wsSemanal, 'Horario semanal');
+
+  // Hoja por docente
+  Object.values(DB.docentes).sort((a,b) => a.nombre.localeCompare(b.nombre,'es')).forEach(doc => {
+    const cabDoc = ['Sesión', ...DIAS_SEMANA];
+    const filasDoc = SESS_EXPORT.map(sess => {
+      const fila = [sessLabel(sess)];
+      DIAS_SEMANA.forEach(dia => {
+        const slot = doc.horario[dia] && doc.horario[dia][sess];
+        if (!slot) { fila.push(''); return; }
+        if (slot.tipo === 'clase') {
+          fila.push(`${slot.materia||''}\n${slot.grupo||''}\nAula: ${slot.aula||''}`);
+        } else {
+          fila.push(slot.sigla || '');
+        }
+      });
+      return fila;
+    });
+    const wsDoc = XLSX.utils.aoa_to_sheet([cabDoc, ...filasDoc]);
+    // Limitar nombre de hoja a 31 caracteres (límite Excel)
+    const nombreHoja = doc.nombre.substring(0, 31).replace(/[:\\\/\?\*\[\]]/g,'');
+    XLSX.utils.book_append_sheet(wb, wsDoc, nombreHoja);
+  });
+
+  xlsxDescargar(wb, `Horario_Docentes_${new Date().toISOString().split('T')[0]}.xlsx`);
+}
+
+// ── 2. Horario de grupos ───────────────────────────────────────────────────
+function exportHorarioGrupos() {
+  if (!DB) { alert('Cargando datos, espera un momento.'); return; }
+  if (!GRUPOS_INDEX) buildGruposIndex();
+  const wb = XLSX.utils.book_new();
+
+  const grupos = Object.keys(GRUPOS_INDEX).sort((a,b) => a.localeCompare(b,'es'));
+  grupos.forEach(grupo => {
+    const cabGrupo = ['Sesión', ...DIAS_SEMANA];
+    const filasGrupo = SESS_EXPORT.map(sess => {
+      const fila = [sessLabel(sess)];
+      DIAS_SEMANA.forEach(dia => {
+        const entradas = (GRUPOS_INDEX[grupo][dia] && GRUPOS_INDEX[grupo][dia][sess]) || [];
+        if (entradas.length === 0) { fila.push(''); return; }
+        const txt = entradas.map(e => {
+          const docNombre = (DB.docentes[e.docenteCode]||{}).nombre || e.docenteCode;
+          return `${e.materia||''}\n${docNombre}\nAula: ${e.aula||''}`;
+        }).join('\n---\n');
+        fila.push(txt);
+      });
+      return fila;
+    });
+    const wsGrupo = XLSX.utils.aoa_to_sheet([cabGrupo, ...filasGrupo]);
+    const nombreHoja = grupo.substring(0,31).replace(/[:\\\/\?\*\[\]]/g,'');
+    XLSX.utils.book_append_sheet(wb, wsGrupo, nombreHoja);
+  });
+
+  if (wb.SheetNames.length === 0) { alert('No hay grupos en el horario.'); return; }
+  xlsxDescargar(wb, `Horario_Grupos_${new Date().toISOString().split('T')[0]}.xlsx`);
+}
+
+// ── 3. Ausencias por periodo ───────────────────────────────────────────────
+async function exportAusencias() {
+  const desde = document.getElementById('exp-aus-desde').value;
+  const hasta = document.getElementById('exp-aus-hasta').value;
+  if (!desde || !hasta) { alert('Selecciona las fechas de inicio y fin.'); return; }
+  if (desde > hasta) { alert('La fecha de inicio debe ser anterior a la de fin.'); return; }
+
+  const btn = event.target;
+  btn.textContent = '⏳ Generando...'; btn.disabled = true;
+  try {
+    const rows = await supaFetch('GET', `ausencias?fecha=gte.${desde}&fecha=lte.${hasta}&order=fecha.asc,nombre.asc&select=*`);
+    if (rows.length === 0) { alert('No hay ausencias en ese periodo.'); return; }
+
+    const cab = ['Fecha','Docente','Código','Tipo','Sesiones','Nº sesiones'];
+    const filas = rows.map(r => {
+      const sesLabels = (r.sesiones||[]).map(s => {
+        if (typeof s === 'object') return SESS_LABELS_ACEX[s.sess] || s.sess;
+        return SESS_LABELS_ACEX[s] || s;
+      });
+      return [
+        r.fecha,
+        r.nombre || '',
+        r.codigo || '',
+        r.tipo || '',
+        sesLabels.join(', '),
+        sesLabels.length
+      ];
+    });
+
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet([cab, ...filas]);
+    ws['!cols'] = [{wch:12},{wch:35},{wch:10},{wch:12},{wch:50},{wch:12}];
+    XLSX.utils.book_append_sheet(wb, ws, 'Ausencias');
+    xlsxDescargar(wb, `Ausencias_${desde}_${hasta}.xlsx`);
+  } catch(e) {
+    alert('Error al obtener los datos: ' + e.message);
+  } finally {
+    btn.textContent = '⬇️ Descargar ausencias'; btn.disabled = false;
+  }
+}
+
+// ── 4. Sustituciones ──────────────────────────────────────────────────────
+async function exportSustituciones() {
+  const btn = event.target;
+  btn.textContent = '⏳ Generando...'; btn.disabled = true;
+  try {
+    const rows = await supaFetch('GET', `sustituciones?order=fecha_inicio.desc&select=*`);
+    if (rows.length === 0) { alert('No hay sustituciones registradas.'); return; }
+
+    const cab = ['Docente original','Código','Docente sustituto','Fecha inicio','Fecha fin','Activa'];
+    const filas = rows.map(r => [
+      r.docente_original || '',
+      r.codigo_original || '',
+      r.docente_sustituto || '',
+      r.fecha_inicio || '',
+      r.fecha_fin || '(indefinida)',
+      r.activa ? 'Sí' : 'No'
+    ]);
+
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet([cab, ...filas]);
+    ws['!cols'] = [{wch:35},{wch:10},{wch:35},{wch:14},{wch:14},{wch:8}];
+    XLSX.utils.book_append_sheet(wb, ws, 'Sustituciones');
+    xlsxDescargar(wb, `Sustituciones_${new Date().toISOString().split('T')[0]}.xlsx`);
+  } catch(e) {
+    alert('Error al obtener los datos: ' + e.message);
+  } finally {
+    btn.textContent = '⬇️ Descargar sustituciones'; btn.disabled = false;
+  }
+}
+
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('sw.js').catch(() => {});
