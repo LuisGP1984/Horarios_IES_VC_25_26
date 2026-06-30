@@ -1013,6 +1013,7 @@
       <button class="nav-btn" onclick="closeSidebar();showView('acex');acexBuild()" id="nav-acex"><span class="nav-icon">🎒</span><span class="nav-label">ACEX</span></button>
       <button class="nav-btn" onclick="closeSidebar();showView('evaluaciones');evalBuild()" id="nav-evaluaciones"><span class="nav-icon">📝</span><span class="nav-label">Evaluaciones</span></button>
       <button class="nav-btn" onclick="closeSidebar();showView('tablon');tablonBuild()" id="nav-tablon"><span class="nav-icon">📌</span><span class="nav-label">Tablón</span></button>
+      <button class="nav-btn" onclick="closeSidebar();showView('armarios');armariosBuild()" id="nav-armarios"><span class="nav-icon">💻</span><span class="nav-label">Portátiles</span></button>
       <button class="nav-btn" onclick="closeSidebar();showView('acerca')" id="nav-acerca"><span class="nav-icon">ℹ️</span><span class="nav-label">Acerca de</span></button>
     </nav>
   </aside>
@@ -1098,6 +1099,12 @@
         <div class="mc-icon">📌</div>
         <div class="mc-title">Tablón</div>
         <div class="mc-desc">Anuncios del equipo directivo de esta semana</div>
+        <span class="mc-arrow">→</span>
+      </div>
+      <div class="menu-card" onclick="showView('armarios');armariosBuild()">
+        <div class="mc-icon">💻</div>
+        <div class="mc-title">Portátiles</div>
+        <div class="mc-desc">Reserva de armarios de portátiles por sesión</div>
         <span class="mc-arrow">→</span>
       </div>
       <div class="menu-card solo-direccion" onclick="showView('sustituciones');sustBuild()">
@@ -1568,6 +1575,109 @@
     </div>
   </div>
 
+  <!-- ARMARIOS DE PORTÁTILES -->
+  <div class="view" id="view-armarios">
+    <div class="aulas-header">
+      <h2>💻 Reserva de armarios de portátiles</h2>
+      <p>Consulta la ocupación y reserva un armario por sesión</p>
+    </div>
+    <div class="aulas-toolbar">
+      <div class="control-group" style="flex:0 0 190px">
+        <label for="armarios-fecha">Fecha</label>
+        <input type="date" id="armarios-fecha">
+      </div>
+      <div class="aulas-legend">
+        <span class="aula-pill reservada">🟡 Reservado</span>
+        <span class="aula-pill libre">⚪ Libre</span>
+      </div>
+      <button class="btn-secondary solo-direccion" style="margin-left:auto" onclick="armariosConfigAbrir()">⚙️ Configurar armarios</button>
+      <button class="btn-secondary" onclick="armariosBuild()">🔄 Actualizar</button>
+    </div>
+    <div id="armarios-table-wrap" class="aulas-table-wrap">
+      <div class="state-msg"><div class="icon">💻</div><p>Selecciona una fecha para ver la ocupación.</p></div>
+    </div>
+  </div>
+
+  <!-- Modal reservar armario -->
+  <div id="armario-reserva-modal" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width:460px">
+      <div class="modal-header">
+        <h3 id="armario-reserva-title">Reservar armario</h3>
+        <button class="modal-close" onclick="armarioReservaCerrar()">✕</button>
+      </div>
+      <div class="modal-body" style="display:flex;flex-direction:column;gap:14px">
+        <div id="armario-reserva-info" style="background:var(--surface2);border-radius:8px;padding:12px;font-size:0.85rem;color:var(--text-mid)"></div>
+        <div class="control-group">
+          <label>Sesiones</label>
+          <div class="ses-check-wrap" id="armario-sesiones-wrap"></div>
+        </div>
+        <div class="control-group">
+          <label for="armario-reserva-docente">Tu nombre</label>
+          <select id="armario-reserva-docente"><option value="">— Selecciona tu nombre —</option></select>
+        </div>
+        <div class="control-group">
+          <label for="armario-reserva-grupo">Grupo (opcional)</label>
+          <input type="text" id="armario-reserva-grupo" placeholder="Ej: 03A, 1BCB..."
+            style="width:100%;padding:11px 14px;background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);font-family:Inter,sans-serif;font-size:0.92rem;color:var(--text)">
+        </div>
+        <div class="control-group">
+          <label>Cantidad de portátiles</label>
+          <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+            <label style="display:flex;align-items:center;gap:6px;font-size:.85rem;cursor:pointer">
+              <input type="radio" name="armario-modo" value="completo" checked onchange="armarioToggleCantidad()"> Todos los portátiles
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:.85rem;cursor:pointer">
+              <input type="radio" name="armario-modo" value="parcial" onchange="armarioToggleCantidad()"> Solo algunos
+            </label>
+          </div>
+          <input type="number" id="armario-reserva-cantidad" min="1" placeholder="Cantidad" disabled
+            style="margin-top:8px;width:100%;padding:11px 14px;background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);font-family:Inter,sans-serif;font-size:0.92rem;color:var(--text)">
+          <p style="font-size:.72rem;color:var(--text-soft);margin-top:6px">⚠️ Aunque reserves solo algunos portátiles, el armario quedará bloqueado entero para esa sesión.</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="armarioReservaCerrar()">Cancelar</button>
+        <button class="btn-primary" onclick="armarioReservaConfirmar()">✅ Confirmar reserva</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal cancelar reserva armario -->
+  <div id="armario-cancelar-modal" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width:380px">
+      <div class="modal-header">
+        <h3>Cancelar reserva</h3>
+        <button class="modal-close" onclick="armarioCancelarCerrar()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p id="armario-cancelar-info" style="font-size:0.88rem;color:var(--text-mid);margin-bottom:16px"></p>
+        <p style="font-size:0.85rem;color:var(--text)">¿Confirmas que quieres cancelar esta reserva?</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="armarioCancelarCerrar()">No, mantener</button>
+        <button class="btn-primary" style="background:#dc2626" onclick="armarioReservaCancelar()">🗑 Sí, cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal configuración de armarios (Dirección) -->
+  <div id="armarios-config-modal" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width:480px">
+      <div class="modal-header">
+        <h3>⚙️ Configurar armarios</h3>
+        <button class="modal-close" onclick="armariosConfigCerrar()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="armarios-config-lista" style="display:flex;flex-direction:column;gap:10px"></div>
+        <button class="btn-secondary" style="margin-top:14px;width:100%" onclick="armariosConfigAñadirFila()">＋ Añadir armario</button>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="armariosConfigCerrar()">Cerrar</button>
+        <button class="btn-primary" onclick="armariosConfigGuardar()">✅ Guardar cambios</button>
+      </div>
+    </div>
+  </div>
+
 </main>
 
 <script>
@@ -1651,7 +1761,7 @@ function showView(name) {
   if (btnEl) btnEl.classList.add('active');
   // Update breadcrumb
   const labels = {menu:'',horarios:'Horarios',grupos:'Grupos',guardias:'Guardianes',ausencias:'Ausencias',
-    cobertura:'Cobertura',aulas:'Aulas',ahora:'Ahora',sustituciones:'Sustituciones',acex:'ACEX',evaluaciones:'Evaluaciones',tablon:'Tablón',acerca:'Acerca de'};
+    cobertura:'Cobertura',aulas:'Aulas',ahora:'Ahora',sustituciones:'Sustituciones',acex:'ACEX',evaluaciones:'Evaluaciones',tablon:'Tablón',armarios:'Portátiles',acerca:'Acerca de'};
   const label = labels[name] || name;
   const sep = document.getElementById('breadcrumb-sep');
   const cur = document.getElementById('breadcrumb-current');
@@ -3248,6 +3358,30 @@ async function ahoraRender() {
     } catch(e) {}
   }
 
+  // ── Armarios de portátiles reservados ahora ──────────────────────────────
+  let armariosAhoraHtml = '';
+  if (sesActual) {
+    try {
+      const todayStr = now.toISOString().split('T')[0];
+      await armariosConfigCargar();
+      const reservasHoy = await supaFetch('GET', `armarios_reservas?fecha=eq.${todayStr}&select=*`);
+      const reservasActivas = reservasHoy.filter(r => r.sesion === sesActual.sess);
+      if (reservasActivas.length > 0) {
+        armariosAhoraHtml = reservasActivas.map(r => {
+          const arm = armariosConfigCache.find(a => a.id === r.armario_id);
+          const cantTxt = r.completo ? 'Todos los portátiles' : `${r.cantidad||'?'} portátiles`;
+          return `<div class="ahora-list-item" style="background:#fefce8;border:1px solid #fde047">
+            <span style="font-size:1.1rem">💻</span>
+            <div>
+              <div style="font-weight:700;font-size:.82rem;color:#854d0e">${arm?arm.nombre:'Armario'} reservado</div>
+              <div style="font-size:.75rem;color:var(--text-mid)">🧑‍🏫 ${abreviar(r.docente)} · ${cantTxt}${r.grupo?` · 👥 ${r.grupo}`:''}</div>
+            </div>
+          </div>`;
+        }).join('');
+      }
+    } catch(e) {}
+  }
+
   // ── Aulas libres ahora ──────────────────────────────────────────────
   let aulasLibresHtml = '';
   if (sesActual) {
@@ -3309,6 +3443,10 @@ async function ahoraRender() {
     ${acexAhoraHtml ? `<div class="ahora-card" style="margin-top:16px;border-left:4px solid #8b5cf6">
       <h3 style="color:#6d28d9">🎒 ACEX en curso</h3>
       <div class="ahora-list">${acexAhoraHtml}</div>
+    </div>` : ''}
+    ${armariosAhoraHtml ? `<div class="ahora-card" style="margin-top:16px;border-left:4px solid #eab308">
+      <h3 style="color:#854d0e">💻 Armarios de portátiles reservados</h3>
+      <div class="ahora-list">${armariosAhoraHtml}</div>
     </div>` : ''}
     <div class="ahora-card" style="margin-top:16px">
       <h3>✅ Aulas libres ahora</h3>
@@ -4280,6 +4418,275 @@ async function ahoraMiniTablonRefrescar() {
   `;
 }
 
+// ── ARMARIOS DE PORTÁTILES ────────────────────────────────────────────────
+let armariosConfigCache = [];          // lista de {id, nombre, capacidad, activo, orden}
+let armariosReservasCache = {};        // fecha -> [reservas]
+let armarioReservaActual = null;       // {fecha, armarioId, armarioNombre}
+let armarioCancelarId = null;
+
+async function armariosConfigCargar() {
+  try {
+    const rows = await supaFetch('GET', 'armarios_config?select=*&order=orden.asc');
+    armariosConfigCache = rows;
+  } catch(e) {
+    console.error('Error cargando configuración de armarios:', e);
+    armariosConfigCache = [];
+  }
+  return armariosConfigCache;
+}
+
+async function armariosReservasCargar(fecha) {
+  try {
+    const rows = await supaFetch('GET', `armarios_reservas?fecha=eq.${fecha}&select=*`);
+    armariosReservasCache[fecha] = rows;
+  } catch(e) {
+    console.error('Error cargando reservas de armarios:', e);
+    armariosReservasCache[fecha] = [];
+  }
+  return armariosReservasCache[fecha];
+}
+
+function armariosReservaDe(fecha, armarioId, sesion) {
+  const rows = armariosReservasCache[fecha] || [];
+  return rows.find(r => r.armario_id === armarioId && r.sesion === sesion);
+}
+
+async function armariosBuild() {
+  const fecha = document.getElementById('armarios-fecha').value;
+  const wrap = document.getElementById('armarios-table-wrap');
+  if (!fecha) {
+    wrap.innerHTML = '<div class="state-msg"><div class="icon">💻</div><p>Selecciona una fecha para ver la ocupación.</p></div>';
+    return;
+  }
+  wrap.innerHTML = '<div class="state-msg"><div class="icon">⏳</div><p>Cargando...</p></div>';
+
+  await armariosConfigCargar();
+  await armariosReservasCargar(fecha);
+
+  const armariosActivos = armariosConfigCache.filter(a => a.activo);
+  if (armariosActivos.length === 0) {
+    wrap.innerHTML = '<div class="state-msg"><div class="icon">💻</div><p>No hay armarios configurados todavía.</p></div>';
+    return;
+  }
+
+  const dt = new Date(fecha+'T12:00:00');
+  const diaSemana = dt.getDay(); // 0=domingo, 6=sabado
+  const sesiones = (diaSemana === 5) ? SESS_ALL.filter(s => s !== '8') : SESS_ALL; // viernes sin sesion 7/'8'
+
+  let html = `<table class="aulas-table"><thead><tr><th>Armario</th>`;
+  sesiones.forEach(sess => {
+    const meta = (DB && DB.sesiones[sess]) || SESS_LABELS_ACEX[sess] && {label: SESS_LABELS_ACEX[sess], hora:''};
+    const label = meta ? meta.label : sess;
+    const hora = meta && meta.hora ? meta.hora : '';
+    html += `<th>${label}${hora?`<br><small style="font-weight:400;opacity:.8">${hora}</small>`:''}</th>`;
+  });
+  html += `</tr></thead><tbody>`;
+
+  armariosActivos.forEach(arm => {
+    html += `<tr><td>${arm.nombre}<br><small style="opacity:.7">${arm.capacidad} portátiles</small></td>`;
+    sesiones.forEach(sess => {
+      const r = armariosReservaDe(fecha, arm.id, sess);
+      if (r) {
+        const cantTxt = r.completo ? 'Todos' : `${r.cantidad||'?'} uds.`;
+        html += `<td>
+          <div class="aula-bloque" style="cursor:pointer" onclick="armarioCancelarMostrar(${r.id}, '${arm.nombre}', '${sess}', '${(r.docente||'').replace(/'/g,"\\'")}', '${cantTxt}')">
+            <div class="aula-cel-ocupada" style="background:#fef3c7;border-color:#fde047">
+              <span class="aula-cel-grupo">${r.grupo||''}</span>
+              <span class="aula-cel-doc">${abreviar(r.docente)}</span>
+              <span class="aula-cel-materia">${cantTxt}</span>
+            </div>
+          </div>
+        </td>`;
+      } else {
+        html += `<td onclick="armarioReservaMostrar('${fecha}', ${arm.id}, '${arm.nombre.replace(/'/g,"\\'")}', '${sess}')" style="cursor:pointer"><span class="aula-libre-dot"></span></td>`;
+      }
+    });
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+}
+
+document.getElementById('armarios-fecha').addEventListener('change', armariosBuild);
+
+// ── Modal reservar armario ──────────────────────────────────────────────
+function armarioReservaMostrar(fecha, armarioId, armarioNombre, sesionPreseleccionada) {
+  armarioReservaActual = { fecha, armarioId, armarioNombre };
+  const dt = new Date(fecha+'T12:00:00');
+  const fechaLabel = dt.toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});
+
+  document.getElementById('armario-reserva-title').textContent = `Reservar ${armarioNombre}`;
+  document.getElementById('armario-reserva-info').innerHTML = `<strong>Fecha:</strong> ${fechaLabel}`;
+  document.getElementById('armario-reserva-grupo').value = '';
+  document.getElementById('armario-reserva-cantidad').value = '';
+  document.querySelector('input[name="armario-modo"][value="completo"]').checked = true;
+  armarioToggleCantidad();
+
+  // Checkboxes de sesión: ocultar las que ya están reservadas para este armario ese día
+  const diaSemana = dt.getDay();
+  const sesionesDia = (diaSemana === 5) ? SESS_ALL.filter(s => s !== '8') : SESS_ALL;
+  const wrap = document.getElementById('armario-sesiones-wrap');
+  wrap.innerHTML = sesionesDia.map(s => {
+    const yaReservada = !!armariosReservaDe(fecha, armarioId, s);
+    const label = (DB && DB.sesiones[s] && DB.sesiones[s].label) || SESS_LABELS_ACEX[s] || s;
+    return `<label class="ses-check-box" ${yaReservada?'style="opacity:.4;text-decoration:line-through"':''}>
+      <input type="checkbox" name="armario-ses" value="${s}" ${yaReservada?'disabled':''} ${s===sesionPreseleccionada?'checked':''}> ${label}
+    </label>`;
+  }).join('');
+
+  // Poblar selector de docente
+  const sel = document.getElementById('armario-reserva-docente');
+  if (sel.options.length <= 1 && DB) {
+    Object.entries(DB.docentes)
+      .sort((a,b) => a[1].nombre.localeCompare(b[1].nombre,'es'))
+      .forEach(([code, info]) => {
+        const opt = document.createElement('option');
+        opt.value = info.nombre; opt.textContent = info.nombre;
+        sel.appendChild(opt);
+      });
+  }
+  sel.value = '';
+  document.getElementById('armario-reserva-modal').classList.remove('hidden');
+}
+
+function armarioReservaCerrar() {
+  document.getElementById('armario-reserva-modal').classList.add('hidden');
+  armarioReservaActual = null;
+}
+
+function armarioToggleCantidad() {
+  const esParcial = document.querySelector('input[name="armario-modo"]:checked').value === 'parcial';
+  document.getElementById('armario-reserva-cantidad').disabled = !esParcial;
+  if (!esParcial) document.getElementById('armario-reserva-cantidad').value = '';
+}
+
+async function armarioReservaConfirmar() {
+  if (!armarioReservaActual) return;
+  const docente = document.getElementById('armario-reserva-docente').value;
+  const grupo = document.getElementById('armario-reserva-grupo').value.trim();
+  const sesiones = Array.from(document.querySelectorAll('input[name="armario-ses"]:checked')).map(c => c.value);
+  const completo = document.querySelector('input[name="armario-modo"]:checked').value === 'completo';
+  const cantidad = completo ? null : parseInt(document.getElementById('armario-reserva-cantidad').value, 10);
+
+  if (!docente) { alert('Selecciona tu nombre.'); return; }
+  if (sesiones.length === 0) { alert('Selecciona al menos una sesión.'); return; }
+  if (!completo && (!cantidad || cantidad < 1)) { alert('Indica cuántos portátiles necesitas.'); return; }
+
+  const btn = document.querySelector('#armario-reserva-modal .btn-primary');
+  btn.textContent = '⏳ Guardando...'; btn.disabled = true;
+
+  try {
+    for (const sesion of sesiones) {
+      await supaFetch('POST', 'armarios_reservas', {
+        fecha: armarioReservaActual.fecha,
+        armario_id: armarioReservaActual.armarioId,
+        sesion,
+        docente,
+        grupo: grupo || null,
+        completo,
+        cantidad: completo ? null : cantidad
+      });
+    }
+    armarioReservaCerrar();
+    delete armariosReservasCache[armarioReservaActual?.fecha];
+    await armariosBuild();
+  } catch(e) {
+    alert('Error al guardar la reserva: ' + e.message);
+  } finally {
+    btn.textContent = '✅ Confirmar reserva'; btn.disabled = false;
+  }
+}
+
+// ── Modal cancelar reserva armario ──────────────────────────────────────
+function armarioCancelarMostrar(id, armarioNombre, sesion, docente, cantTxt) {
+  armarioCancelarId = id;
+  const label = (DB && DB.sesiones[sesion] && DB.sesiones[sesion].label) || SESS_LABELS_ACEX[sesion] || sesion;
+  document.getElementById('armario-cancelar-info').innerHTML =
+    `<strong>${armarioNombre}</strong> · ${label}<br>
+     Reservado por: <strong>${abreviar(docente)}</strong> (${cantTxt})`;
+  document.getElementById('armario-cancelar-modal').classList.remove('hidden');
+}
+
+function armarioCancelarCerrar() {
+  document.getElementById('armario-cancelar-modal').classList.add('hidden');
+  armarioCancelarId = null;
+}
+
+async function armarioReservaCancelar() {
+  if (!armarioCancelarId) return;
+  const btn = document.querySelector('#armario-cancelar-modal .btn-primary');
+  btn.textContent = '⏳ Cancelando...'; btn.disabled = true;
+  try {
+    await supaFetch('DELETE', `armarios_reservas?id=eq.${armarioCancelarId}`);
+    armarioCancelarCerrar();
+    const fecha = document.getElementById('armarios-fecha').value;
+    delete armariosReservasCache[fecha];
+    await armariosBuild();
+  } catch(e) {
+    alert('Error al cancelar: ' + e.message);
+  } finally {
+    btn.textContent = '🗑 Sí, cancelar'; btn.disabled = false;
+  }
+}
+
+// ── Configuración de armarios (Dirección) ────────────────────────────────
+function armariosConfigAbrir() {
+  armariosConfigRenderLista();
+  document.getElementById('armarios-config-modal').classList.remove('hidden');
+}
+
+function armariosConfigCerrar() {
+  document.getElementById('armarios-config-modal').classList.add('hidden');
+}
+
+function armariosConfigRenderLista() {
+  const wrap = document.getElementById('armarios-config-lista');
+  wrap.innerHTML = armariosConfigCache.map((a, idx) => `
+    <div style="display:flex;gap:8px;align-items:center" data-idx="${idx}" data-id="${a.id||''}">
+      <input type="text" value="${a.nombre}" placeholder="Nombre" class="armario-cfg-nombre"
+        style="flex:1 1 auto;padding:8px 10px;background:var(--card);border:1.5px solid var(--border);border-radius:8px;font-family:Inter,sans-serif;font-size:.85rem;color:var(--text)">
+      <input type="number" value="${a.capacidad}" min="1" placeholder="Cant." class="armario-cfg-capacidad"
+        style="width:80px;padding:8px 10px;background:var(--card);border:1.5px solid var(--border);border-radius:8px;font-family:Inter,sans-serif;font-size:.85rem;color:var(--text)">
+      <label style="display:flex;align-items:center;gap:4px;font-size:.78rem;white-space:nowrap">
+        <input type="checkbox" class="armario-cfg-activo" ${a.activo!==false?'checked':''}> Activo
+      </label>
+      <button class="aus-del-btn" onclick="this.closest('div[data-idx]').remove()" title="Eliminar de la lista">🗑</button>
+    </div>
+  `).join('');
+}
+
+function armariosConfigAñadirFila() {
+  armariosConfigCache.push({ id: null, nombre: '', capacidad: 10, activo: true, orden: armariosConfigCache.length + 1 });
+  armariosConfigRenderLista();
+}
+
+async function armariosConfigGuardar() {
+  const filas = Array.from(document.querySelectorAll('#armarios-config-lista > div[data-idx]'));
+  const btn = document.querySelector('#armarios-config-modal .btn-primary');
+  btn.textContent = '⏳ Guardando...'; btn.disabled = true;
+  try {
+    for (let i = 0; i < filas.length; i++) {
+      const fila = filas[i];
+      const id = fila.dataset.id;
+      const nombre = fila.querySelector('.armario-cfg-nombre').value.trim();
+      const capacidad = parseInt(fila.querySelector('.armario-cfg-capacidad').value, 10) || 1;
+      const activo = fila.querySelector('.armario-cfg-activo').checked;
+      if (!nombre) continue;
+      if (id) {
+        await supaFetch('PATCH', `armarios_config?id=eq.${id}`, { nombre, capacidad, activo, orden: i+1 });
+      } else {
+        await supaFetch('POST', 'armarios_config', { nombre, capacidad, activo, orden: i+1 });
+      }
+    }
+    armariosConfigCerrar();
+    await armariosBuild();
+  } catch(e) {
+    alert('Error al guardar la configuración: ' + e.message);
+  } finally {
+    btn.textContent = '✅ Guardar cambios'; btn.disabled = false;
+  }
+}
+
 // ── AHORA MINI (widget en inicio) ─────────────────────────────────────────
 function ahoraMiniRender() {
   const el = document.getElementById('menu-ahora-mini');
@@ -4350,6 +4757,8 @@ function ahoraMiniRender() {
   if (aulasEl) aulasEl.value = todayStr;
   const ahoraEl = document.getElementById('ahora-fecha');
   if (ahoraEl) ahoraEl.value = todayStr;
+  const armariosEl = document.getElementById('armarios-fecha');
+  if (armariosEl) armariosEl.value = todayStr;
 })();
 
 document.getElementById('acex-fecha-filtro')?.addEventListener('change', acexBuild);
