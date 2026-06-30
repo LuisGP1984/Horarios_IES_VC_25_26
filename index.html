@@ -585,6 +585,9 @@
     .cob-header { margin-bottom: 16px; }
     .cob-header h2 { font-size: 1.25rem; font-weight: 800; color: var(--text); margin-bottom: 4px; }
     .cob-header p  { font-size: 0.83rem; color: var(--text-mid); }
+    .cob-semana-nav { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .cob-semana-nav p { margin: 0; font-weight: 600; }
+    .cob-semana-nav .btn-secondary { padding: 6px 14px; font-size: 0.8rem; }
     .cob-legend {
       display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px;
     }
@@ -1251,7 +1254,12 @@
   <div class="view" id="view-cobertura">
     <div class="cob-header">
       <h2>🔴 Cobertura semanal</h2>
-      <p id="cob-semana-label">Semana en curso</p>
+      <div class="cob-semana-nav">
+        <button class="btn-secondary" onclick="cobCambiarSemana(-1)" title="Semana anterior">◀</button>
+        <p id="cob-semana-label">Semana en curso</p>
+        <button class="btn-secondary" onclick="cobCambiarSemana(1)" title="Semana siguiente">▶</button>
+        <button class="btn-secondary" id="cob-hoy-btn" onclick="cobIrSemanaActual()" style="display:none">Semana actual</button>
+      </div>
     </div>
     <div class="cob-legend">
       <span class="cob-pill verde">✅ Cobertura OK (sobra guardia)</span>
@@ -1568,7 +1576,13 @@
   <div class="view" id="view-tablon">
     <div class="aus-header">
       <h2>📌 Tablón de anuncios</h2>
-      <p>Información del equipo directivo para esta semana</p>
+      <p>Información del equipo directivo, día a día</p>
+    </div>
+    <div class="cob-semana-nav" style="margin-bottom:16px">
+      <button class="btn-secondary" onclick="tablonCambiarDia(-1)" title="Día anterior">◀</button>
+      <p id="tablon-fecha-label">Hoy</p>
+      <button class="btn-secondary" onclick="tablonCambiarDia(1)" title="Día siguiente">▶</button>
+      <button class="btn-secondary" id="tablon-hoy-btn" onclick="tablonIrHoy()" style="display:none">Hoy</button>
     </div>
     <div id="tablon-contenido-wrap">
       <div class="state-msg"><div class="icon">📌</div><p>Cargando...</p></div>
@@ -2744,12 +2758,15 @@ function ausDownloadWordFallback(payload, fecha) {
 
 
 // ── COBERTURA ──────────────────────────────────────────────────────────────
+let cobOffsetSemana = 0; // 0 = semana actual, -1 = anterior, +1 = siguiente, etc.
+
 function cobGetWeekDates() {
-  // Returns {Lunes: 'YYYY-MM-DD', Martes: ..., ...} for current week
+  // Returns {Lunes: 'YYYY-MM-DD', Martes: ..., ...} for the selected week
+  // (semana actual + cobOffsetSemana semanas)
   const today = new Date();
   const dow = today.getDay(); // 0=Sun
   const monday = new Date(today);
-  monday.setDate(today.getDate() - (dow === 0 ? 6 : dow - 1));
+  monday.setDate(today.getDate() - (dow === 0 ? 6 : dow - 1) + (cobOffsetSemana * 7));
   const result = {};
   const dayNames = ['Lunes','Martes','Miercoles','Jueves','Viernes'];
   dayNames.forEach((d, i) => {
@@ -2763,19 +2780,32 @@ function cobGetWeekDates() {
   return result;
 }
 
+function cobCambiarSemana(delta) {
+  cobOffsetSemana += delta;
+  cobBuildTable();
+}
+
+function cobIrSemanaActual() {
+  cobOffsetSemana = 0;
+  cobBuildTable();
+}
+
 async function cobBuildTable() {
   if (!DB) return;
   const weekDates = cobGetWeekDates();
   // Load ausencias for all days of the week from Supabase
   await Promise.all(DAYS.map(d => ausCargarDesdeSupa(weekDates[d])));
   const todayMap  = {1:'Lunes',2:'Martes',3:'Miercoles',4:'Jueves',5:'Viernes'};
-  const today     = todayMap[new Date().getDay()] || '';
+  const today     = cobOffsetSemana === 0 ? (todayMap[new Date().getDay()] || '') : '';
 
   // Format week label
   const dates = Object.values(weekDates);
   const fmt = d => new Date(d+'T12:00:00').toLocaleDateString('es-ES',{day:'numeric',month:'short'});
+  const sufijo = cobOffsetSemana === 0 ? ' (actual)' : '';
   document.getElementById('cob-semana-label').textContent =
-    `Semana del ${fmt(dates[0])} al ${fmt(dates[4])}`;
+    `Semana del ${fmt(dates[0])} al ${fmt(dates[4])}${sufijo}`;
+  const hoyBtn = document.getElementById('cob-hoy-btn');
+  if (hoyBtn) hoyBtn.style.display = cobOffsetSemana === 0 ? 'none' : '';
 
   const SESS_KEYS = ['1','2','3','3R','4','5','6','7','8'];
   const SMETA = {
@@ -3213,7 +3243,7 @@ async function ahoraRender() {
   }
   // Load ausencias for today
   await ausCargarDesdeSupa(ahoraFecha);
-  await tablonCargar();
+  await tablonCargarHoySinAfectarNavegacion();
   const timeStr = now.toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'});
   const dateStr = now.toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'});
 
@@ -3222,7 +3252,7 @@ async function ahoraRender() {
     el.innerHTML = `
       <div class="ahora-card" id="ahora-tablon-card" style="margin-bottom:16px;border-left:4px solid var(--accent)">
         <h3>📌 Tablón del equipo directivo</h3>
-        <p style="font-size:.85rem;color:var(--text-mid);margin:6px 0 10px">${tablonResumenFuera || 'No hay anuncios esta semana.'}</p>
+        <p style="font-size:.85rem;color:var(--text-mid);margin:6px 0 10px">${tablonResumenFuera || 'No hay anuncios hoy.'}</p>
         <button class="btn-secondary" style="font-size:.8rem" onclick="closeSidebar();showView('tablon');tablonBuild()">Ver tablón completo →</button>
       </div>
       <div class="ahora-fuera">
@@ -3406,7 +3436,7 @@ async function ahoraRender() {
   el.innerHTML = `
     <div class="ahora-card" id="ahora-tablon-card" style="margin-bottom:16px;border-left:4px solid var(--accent)">
       <h3>📌 Tablón del equipo directivo</h3>
-      <p style="font-size:.85rem;color:var(--text-mid);margin:6px 0 10px">${tablonResumen || 'No hay anuncios esta semana.'}</p>
+      <p style="font-size:.85rem;color:var(--text-mid);margin:6px 0 10px">${tablonResumen || 'No hay anuncios hoy.'}</p>
       <button class="btn-secondary" style="font-size:.8rem" onclick="closeSidebar();showView('tablon');tablonBuild()">Ver tablón completo →</button>
     </div>
 
@@ -4276,16 +4306,61 @@ async function evalGuardar() {
   }
 }
 
-// ── TABLÓN DE ANUNCIOS ────────────────────────────────────────────────────
-let tablonCache = null;   // {id, contenido, actualizado_por, actualizado_en}
+// ── TABLÓN DE ANUNCIOS (diario) ───────────────────────────────────────────
+let tablonOffsetDia = 0;       // 0 = hoy, -1 = ayer, etc.
+let tablonCache = null;        // registro mostrado actualmente: {fecha, contenido, actualizado_por, actualizado_en, esFallback}
 let tablonEditando = false;
+let tablonLimpiezaHecha = false; // evita repetir el DELETE de limpieza varias veces por sesión
+
+function tablonFechaSeleccionada() {
+  const d = new Date();
+  d.setDate(d.getDate() + tablonOffsetDia);
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+
+// Borra automáticamente los tablones de hace más de 14 días. Se ejecuta una
+// sola vez por sesión de la app (no en cada render) para no machacar la BD.
+async function tablonLimpiarAntiguos() {
+  if (tablonLimpiezaHecha) return;
+  tablonLimpiezaHecha = true;
+  try {
+    const limite = new Date();
+    limite.setDate(limite.getDate() - 14);
+    const limiteStr = limite.getFullYear()+'-'+String(limite.getMonth()+1).padStart(2,'0')+'-'+String(limite.getDate()).padStart(2,'0');
+    await supaFetch('DELETE', `tablon?fecha=lt.${limiteStr}`);
+  } catch(e) { /* limpieza best-effort, no bloquea nada si falla */ }
+}
+
+// Carga el tablón de HOY sin perder el día que el usuario tuviera seleccionado
+// en la vista completa de Tablón (usado desde "Ahora", que siempre muestra hoy).
+async function tablonCargarHoySinAfectarNavegacion() {
+  const offsetPrevio = tablonOffsetDia;
+  tablonOffsetDia = 0;
+  await tablonCargar();
+  tablonOffsetDia = offsetPrevio;
+}
 
 async function tablonCargar() {
+  await tablonLimpiarAntiguos();
+  const fecha = tablonFechaSeleccionada();
   try {
-    const rows = await supaFetch('GET', 'tablon?select=*&order=id.asc&limit=1');
-    tablonCache = rows[0] || { id: 1, contenido: '', actualizado_por: null, actualizado_en: null };
+    const rows = await supaFetch('GET', `tablon?fecha=eq.${fecha}&select=*`);
+    if (rows[0]) {
+      tablonCache = { ...rows[0], esFallback: false };
+      return tablonCache;
+    }
+    // No hay nada para ese día exacto: si es "hoy" (offset 0), buscar el
+    // anuncio más reciente de los últimos días como fallback informativo.
+    if (tablonOffsetDia === 0) {
+      const recientes = await supaFetch('GET', `tablon?select=*&order=fecha.desc&limit=1`);
+      if (recientes[0]) {
+        tablonCache = { ...recientes[0], esFallback: true };
+        return tablonCache;
+      }
+    }
+    tablonCache = { fecha, contenido: '', actualizado_por: null, actualizado_en: null, esFallback: false };
   } catch(e) {
-    tablonCache = tablonCache || { id: 1, contenido: '', actualizado_por: null, actualizado_en: null };
+    tablonCache = { fecha, contenido: '', actualizado_por: null, actualizado_en: null, esFallback: false };
   }
   return tablonCache;
 }
@@ -4298,7 +4373,34 @@ async function tablonBuild() {
   tablonRenderContenido();
 }
 
+function tablonCambiarDia(delta) {
+  tablonOffsetDia += delta;
+  tablonEditando = false;
+  tablonBuild();
+}
+
+function tablonIrHoy() {
+  tablonOffsetDia = 0;
+  tablonEditando = false;
+  tablonBuild();
+}
+
+function tablonFechaLabelActual() {
+  const fecha = tablonFechaSeleccionada();
+  const dt = new Date(fecha+'T12:00:00');
+  const label = dt.toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});
+  return label.charAt(0).toUpperCase()+label.slice(1) + (tablonOffsetDia === 0 ? ' (hoy)' : '');
+}
+
+function tablonActualizarCabecera() {
+  const labelEl = document.getElementById('tablon-fecha-label');
+  if (labelEl) labelEl.textContent = tablonFechaLabelActual();
+  const hoyBtn = document.getElementById('tablon-hoy-btn');
+  if (hoyBtn) hoyBtn.style.display = tablonOffsetDia === 0 ? 'none' : '';
+}
+
 function tablonRenderContenido() {
+  tablonActualizarCabecera();
   const wrap = document.getElementById('tablon-contenido-wrap');
   const reg = tablonCache || { contenido: '' };
   const contenido = reg.contenido || '';
@@ -4310,10 +4412,17 @@ function tablonRenderContenido() {
     const fStr = f.toLocaleDateString('es-ES', { day:'2-digit', month:'2-digit', year:'numeric' }) + ' ' + f.toLocaleTimeString('es-ES', { hour:'2-digit', minute:'2-digit' });
     metaTxt = `Última actualización: ${fStr}${reg.actualizado_por ? ' · ' + reg.actualizado_por : ''}`;
   }
+  let fallbackTxt = '';
+  if (reg.esFallback && reg.fecha) {
+    const dtF = new Date(reg.fecha+'T12:00:00');
+    const fLabel = dtF.toLocaleDateString('es-ES',{day:'numeric',month:'long'});
+    fallbackTxt = `<div class="eval-meta" style="margin-bottom:10px;color:#92400e">⚠️ No hay anuncio para hoy. Mostrando el más reciente, del ${fLabel}.</div>`;
+  }
 
   if (tablonEditando && esDireccion) {
     wrap.innerHTML = `
       <div class="eval-card">
+        ${reg.esFallback ? `<div class="eval-meta" style="margin-bottom:10px;color:#92400e">📝 Vas a crear el anuncio de <strong>${tablonFechaLabelActual()}</strong> (el texto de arriba era de otro día, no se editará).</div>` : ''}
         <div class="eval-toolbar">
           <button type="button" class="eval-tb-btn" title="Negrita" onclick="tablonCmd('bold')"><b>B</b></button>
           <button type="button" class="eval-tb-btn" title="Cursiva" onclick="tablonCmd('italic')"><i>I</i></button>
@@ -4327,7 +4436,7 @@ function tablonRenderContenido() {
           <button type="button" class="eval-tb-btn" title="Deshacer" onclick="tablonCmd('undo')">↺</button>
           <button type="button" class="eval-tb-btn" title="Quitar formato" onclick="tablonCmd('removeFormat')">✕</button>
         </div>
-        <div id="tablon-editable" class="eval-editable" contenteditable="true">${contenido}</div>
+        <div id="tablon-editable" class="eval-editable" contenteditable="true">${reg.esFallback ? '' : contenido}</div>
         <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:14px">
           <button class="btn-secondary" onclick="tablonCancelarEdicion()">Cancelar</button>
           <button class="btn-primary" onclick="tablonGuardar()">✅ Guardar</button>
@@ -4341,11 +4450,12 @@ function tablonRenderContenido() {
   wrap.innerHTML = `
     <div class="eval-card">
       <div class="eval-card-header">
-        <h3 style="font-size:1rem;font-weight:800;color:var(--text)">📌 Esta semana</h3>
+        <h3 style="font-size:1rem;font-weight:800;color:var(--text)">📌 Anuncio del día</h3>
         ${esDireccion ? `<button class="btn-primary" onclick="tablonEditar()">✏️ Editar</button>` : ''}
       </div>
-      ${metaTxt ? `<div class="eval-meta" style="margin-bottom:10px">${metaTxt}</div>` : ''}
-      <div class="eval-view">${contenido ? contenido : '<p class="eval-empty-txt">El equipo directivo no ha publicado ningún anuncio esta semana.</p>'}</div>
+      ${fallbackTxt}
+      ${metaTxt && !reg.esFallback ? `<div class="eval-meta" style="margin-bottom:10px">${metaTxt}</div>` : ''}
+      <div class="eval-view">${(contenido && !reg.esFallback) || (reg.esFallback && contenido) ? contenido : '<p class="eval-empty-txt">El equipo directivo no ha publicado ningún anuncio para este día.</p>'}</div>
     </div>
   `;
 }
@@ -4376,17 +4486,25 @@ function tablonInsertarTabla() {
 async function tablonGuardar() {
   const html = document.getElementById('tablon-editable').innerHTML;
   const nombreEditor = (sessionStorage.getItem('role') === 'direccion') ? '👔 Equipo Directivo' : '';
-  const id = (tablonCache && tablonCache.id) || 1;
+  const fecha = tablonFechaSeleccionada(); // puede ser hoy, un día pasado o futuro
 
   const btn = document.querySelector('#tablon-contenido-wrap .btn-primary');
   if (btn) { btn.textContent = '⏳ Guardando...'; btn.disabled = true; }
   try {
-    await supaFetch('PATCH', `tablon?id=eq.${id}`, {
+    // Upsert manual: si ya existe fila para hoy, PATCH; si no, POST.
+    const existentes = await supaFetch('GET', `tablon?fecha=eq.${fecha}&select=id`);
+    const payload = {
+      fecha,
       contenido: html,
       actualizado_por: nombreEditor || null,
       actualizado_en: new Date().toISOString()
-    });
-    tablonCache = { id, contenido: html, actualizado_por: nombreEditor, actualizado_en: new Date().toISOString() };
+    };
+    if (existentes[0]) {
+      await supaFetch('PATCH', `tablon?id=eq.${existentes[0].id}`, payload);
+    } else {
+      await supaFetch('POST', 'tablon', payload);
+    }
+    tablonCache = { ...payload, esFallback: false };
     tablonEditando = false;
     tablonRenderContenido();
     ahoraMiniTablonRefrescar();
@@ -4409,11 +4527,11 @@ function tablonResumenTexto(html, maxLen) {
 async function ahoraMiniTablonRefrescar() {
   const el = document.getElementById('ahora-tablon-card');
   if (!el) return;
-  await tablonCargar();
+  await tablonCargarHoySinAfectarNavegacion();
   const resumen = tablonResumenTexto(tablonCache.contenido, 140);
   el.innerHTML = `
     <h3>📌 Tablón del equipo directivo</h3>
-    <p style="font-size:.85rem;color:var(--text-mid);margin:6px 0 10px">${resumen || 'No hay anuncios esta semana.'}</p>
+    <p style="font-size:.85rem;color:var(--text-mid);margin:6px 0 10px">${resumen || 'No hay anuncios hoy.'}</p>
     <button class="btn-secondary" style="font-size:.8rem" onclick="closeSidebar();showView('tablon');tablonBuild()">Ver tablón completo →</button>
   `;
 }
