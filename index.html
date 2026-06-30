@@ -5078,8 +5078,7 @@ document.getElementById('sel-grupo-dia').addEventListener('change', renderHorari
 // Registro del Service Worker, requisito para que Chrome/Android
 // considere la web "instalable" como PWA.
 // ── EXPORTAR A EXCEL ──────────────────────────────────────────────────────
-const DIAS_SEMANA = ['Lunes','Martes','Miercoles','Jueves','Viernes'];
-const SESS_EXPORT = ['1','2','3','3R','4','5','6','7','8'];
+// Reutiliza DAYS y SESSION_ORDER ya definidas globalmente arriba.
 
 function xlsxDescargar(wb, nombre) {
   const wbout = XLSX.write(wb, { bookType:'xlsx', type:'array' });
@@ -5107,12 +5106,12 @@ function exportHorarioDocentes() {
   const wb = XLSX.utils.book_new();
 
   // Hoja 1: Horario semanal completo (todos los docentes × dias × sesiones)
-  const cabSemanal = ['Docente', ...DIAS_SEMANA.flatMap(d => SESS_EXPORT.map(s => `${d} - ${sessLabel(s)}`))];
+  const cabSemanal = ['Docente', ...DAYS.flatMap(d => SESSION_ORDER.map(s => `${d} - ${sessLabel(s)}`))];
   const filasSemanal = [];
   Object.values(DB.docentes).sort((a,b) => a.nombre.localeCompare(b.nombre,'es')).forEach(doc => {
     const fila = [doc.nombre];
-    DIAS_SEMANA.forEach(dia => {
-      SESS_EXPORT.forEach(sess => {
+    DAYS.forEach(dia => {
+      SESSION_ORDER.forEach(sess => {
         const slot = doc.horario[dia] && doc.horario[dia][sess];
         if (!slot) { fila.push(''); return; }
         if (slot.tipo === 'clase') {
@@ -5129,10 +5128,10 @@ function exportHorarioDocentes() {
 
   // Hoja por docente
   Object.values(DB.docentes).sort((a,b) => a.nombre.localeCompare(b.nombre,'es')).forEach(doc => {
-    const cabDoc = ['Sesión', ...DIAS_SEMANA];
-    const filasDoc = SESS_EXPORT.map(sess => {
+    const cabDoc = ['Sesión', ...DAYS];
+    const filasDoc = SESSION_ORDER.map(sess => {
       const fila = [sessLabel(sess)];
-      DIAS_SEMANA.forEach(dia => {
+      DAYS.forEach(dia => {
         const slot = doc.horario[dia] && doc.horario[dia][sess];
         if (!slot) { fila.push(''); return; }
         if (slot.tipo === 'clase') {
@@ -5160,10 +5159,10 @@ function exportHorarioGrupos() {
 
   const grupos = Object.keys(GRUPOS_INDEX).sort((a,b) => a.localeCompare(b,'es'));
   grupos.forEach(grupo => {
-    const cabGrupo = ['Sesión', ...DIAS_SEMANA];
-    const filasGrupo = SESS_EXPORT.map(sess => {
+    const cabGrupo = ['Sesión', ...DAYS];
+    const filasGrupo = SESSION_ORDER.map(sess => {
       const fila = [sessLabel(sess)];
-      DIAS_SEMANA.forEach(dia => {
+      DAYS.forEach(dia => {
         const entradas = (GRUPOS_INDEX[grupo][dia] && GRUPOS_INDEX[grupo][dia][sess]) || [];
         if (entradas.length === 0) { fila.push(''); return; }
         const txt = entradas.map(e => {
