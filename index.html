@@ -976,6 +976,9 @@
         <button onclick="solicitarCambioPerfil('docente')" class="perfil-btn" id="perfil-btn-docente">
           👤 Docente
         </button>
+        <button onclick="solicitarCambioPerfil('acex')" class="perfil-btn" id="perfil-btn-acex">
+          🎒 Personal ACEX
+        </button>
         <button onclick="solicitarCambioPerfil('direccion')" class="perfil-btn" id="perfil-btn-direccion">
           👔 Equipo Directivo
         </button>
@@ -1489,7 +1492,7 @@
           <input type="date" id="acex-fecha-filtro">
         </div>
         <div class="aus-actions">
-          <button class="btn-primary solo-direccion" onclick="acexAbrirModal()">＋ Nueva ACEX</button>
+          <button class="btn-primary solo-acex" onclick="acexAbrirModal()">＋ Nueva ACEX</button>
           <button class="btn-secondary" onclick="acexBuild()">🔄 Actualizar</button>
         </div>
       </div>
@@ -1547,6 +1550,21 @@
         <div class="control-group">
           <label for="acex-obs">Observaciones</label>
           <textarea id="acex-obs" rows="2" placeholder="Destino, actividad, información adicional..."
+            style="width:100%;padding:10px 14px;background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);font-family:Inter,sans-serif;font-size:.88rem;color:var(--text);resize:vertical"></textarea>
+        </div>
+        <div class="control-group">
+          <label for="acex-criterios">Criterios de evaluación</label>
+          <textarea id="acex-criterios" rows="3" placeholder="¿Qué criterios de evaluación califica esta ACEX?..."
+            style="width:100%;padding:10px 14px;background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);font-family:Inter,sans-serif;font-size:.88rem;color:var(--text);resize:vertical"></textarea>
+        </div>
+        <div class="control-group">
+          <label for="acex-alumnos-van">Alumnos que van</label>
+          <textarea id="acex-alumnos-van" rows="3" placeholder="Nombres de los alumnos que participan en la ACEX..."
+            style="width:100%;padding:10px 14px;background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);font-family:Inter,sans-serif;font-size:.88rem;color:var(--text);resize:vertical"></textarea>
+        </div>
+        <div class="control-group">
+          <label for="acex-alumnos-quedan">Actividad para los que se quedan</label>
+          <textarea id="acex-alumnos-quedan" rows="3" placeholder="Qué deben hacer los alumnos que no van a la ACEX..."
             style="width:100%;padding:10px 14px;background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius);font-family:Inter,sans-serif;font-size:.88rem;color:var(--text);resize:vertical"></textarea>
         </div>
       </div>
@@ -1697,7 +1715,13 @@
 <script>
 const PWD_DIRECCION = 'EGL2530';
 const PWD_DOCENTE   = 'VC2526';
-let USER_ROLE = null; // 'direccion' | 'docente'
+const PWD_ACEX      = 'ACEX2526';
+let USER_ROLE = null; // 'direccion' | 'acex' | 'docente'
+
+// Comprobaciones de rol reutilizables
+const esDireccion = () => USER_ROLE === 'direccion';
+const esAcex      = () => USER_ROLE === 'acex';
+const puedeEditarAcex = () => USER_ROLE === 'direccion' || USER_ROLE === 'acex';
 const DAYS = ['Lunes','Martes','Miercoles','Jueves','Viernes'];
 const DAY_LABELS = {Lunes:'Lunes',Martes:'Martes',Miercoles:'Miércoles',Jueves:'Jueves',Viernes:'Viernes'};
 const SESSION_ORDER = ['1','2','3','3R','4','5','6','7','8'];
@@ -1722,6 +1746,12 @@ function checkLogin() {
     sessionStorage.setItem('role','direccion');
     document.getElementById('login-screen').classList.add('hidden');
     applyRole();
+  } else if (val === PWD_ACEX) {
+    USER_ROLE = 'acex';
+    sessionStorage.setItem('auth','1');
+    sessionStorage.setItem('role','acex');
+    document.getElementById('login-screen').classList.add('hidden');
+    applyRole();
   } else if (val === PWD_DOCENTE) {
     USER_ROLE = 'docente';
     sessionStorage.setItem('auth','1');
@@ -1736,16 +1766,29 @@ function checkLogin() {
 }
 
 function applyRole() {
-  const isDireccion = USER_ROLE === 'direccion';
+  const isDireccionVal = esDireccion();
+  const puedeAcex = puedeEditarAcex();
   // Show/hide direccion-only elements
   document.querySelectorAll('.solo-direccion').forEach(el => {
-    el.style.display = isDireccion ? '' : 'none';
+    el.style.display = isDireccionVal ? '' : 'none';
+  });
+  // Show/hide acex-editable elements (Dirección + rol ACEX)
+  document.querySelectorAll('.solo-acex').forEach(el => {
+    el.style.display = puedeAcex ? '' : 'none';
   });
   // Show role badge in header
   const badge = document.getElementById('role-badge');
   if (badge) {
-    badge.textContent = isDireccion ? '👔 Dirección' : '👤 Docente';
-    badge.style.background = isDireccion ? '#1e4d9b' : '#374151';
+    if (isDireccionVal) {
+      badge.textContent = '👔 Dirección';
+      badge.style.background = '#1e4d9b';
+    } else if (esAcex()) {
+      badge.textContent = '🎒 Personal ACEX';
+      badge.style.background = '#6d28d9';
+    } else {
+      badge.textContent = '👤 Docente';
+      badge.style.background = '#374151';
+    }
   }
   // Refrescar Evaluaciones si esta vista esta activa (el botón Editar depende del rol)
   if (evalEtapaActual && document.getElementById('view-evaluaciones').classList.contains('active')) {
@@ -3672,6 +3715,7 @@ function mostrarCambioPerfil() {
   document.getElementById('perfil-pw-error').textContent = '';
   document.getElementById('perfil-modal').classList.remove('hidden');
   document.getElementById('perfil-btn-docente').classList.toggle('activo', USER_ROLE==='docente');
+  document.getElementById('perfil-btn-acex').classList.toggle('activo', USER_ROLE==='acex');
   document.getElementById('perfil-btn-direccion').classList.toggle('activo', USER_ROLE==='direccion');
 }
 function cerrarCambioPerfil() {
@@ -3680,7 +3724,13 @@ function cerrarCambioPerfil() {
 }
 function solicitarCambioPerfil(role) {
   if (role === USER_ROLE) { cerrarCambioPerfil(); return; }
-  if (role === 'direccion' && USER_ROLE === 'docente') {
+  // Cambiar a Dirección o a ACEX desde Docente requiere contraseña
+  // Cambiar a ACEX desde Dirección no (baja de privilegios)
+  // Cambiar a Dirección desde ACEX requiere contraseña
+  const necesitaPwd =
+    (role === 'direccion') ||
+    (role === 'acex' && USER_ROLE === 'docente');
+  if (necesitaPwd) {
     _perfilPendiente = role;
     document.getElementById('perfil-pw-wrap').style.display = 'flex';
     document.getElementById('perfil-pw-input').focus();
@@ -3691,7 +3741,10 @@ function solicitarCambioPerfil(role) {
 function confirmarCambioPerfil() {
   const val = document.getElementById('perfil-pw-input').value;
   const err = document.getElementById('perfil-pw-error');
-  if (val === PWD_DIRECCION) {
+  const pwdCorrecta =
+    (_perfilPendiente === 'direccion' && val === PWD_DIRECCION) ||
+    (_perfilPendiente === 'acex' && (val === PWD_ACEX || val === PWD_DIRECCION));
+  if (pwdCorrecta) {
     err.textContent = '';
     aplicarCambioPerfil(_perfilPendiente);
   } else {
@@ -3927,7 +3980,7 @@ function acexRender() {
           <span class="acex-fecha-badge">🎒 ACEX</span>
           ${sesLabels.map(s=>`<span class="acex-ses-badge">${s}</span>`).join('')}
           <div style="margin-left:auto;display:flex;gap:6px">
-            ${USER_ROLE==='direccion'?`<button class="aus-del-btn" onclick="acexEditar('${a.id}')">✏️</button>
+            ${puedeEditarAcex()?`<button class="aus-del-btn" onclick="acexEditar('${a.id}')">✏️</button>
             <button class="aus-del-btn" onclick="acexEliminar('${a.id}')">🗑</button>`:''}
           </div>
         </div>
@@ -3935,6 +3988,9 @@ function acexRender() {
           ${a.docentes&&a.docentes.length?`<div class="acex-row"><span class="acex-row-label">👨‍🏫 Docentes:</span><span class="acex-row-val">${acexArrayToStr(a.docentes)}</span></div>`:''}
           ${a.grupos&&a.grupos.length?`<div class="acex-row"><span class="acex-row-label">👥 Grupos:</span><span class="acex-row-val">${acexArrayToStr(a.grupos)}</span></div>`:''}
           ${a.observaciones?`<div class="acex-row"><span class="acex-row-label">📝 Notas:</span><span class="acex-row-val">${a.observaciones}</span></div>`:''}
+          ${a.criterios?`<div class="acex-row"><span class="acex-row-label">📋 Criterios:</span><span class="acex-row-val">${a.criterios}</span></div>`:''}
+          ${a.alumnos_van?`<div class="acex-row"><span class="acex-row-label">🚌 Alumnos van:</span><span class="acex-row-val">${a.alumnos_van}</span></div>`:''}
+          ${a.alumnos_quedan?`<div class="acex-row"><span class="acex-row-label">🏫 Se quedan:</span><span class="acex-row-val">${a.alumnos_quedan}</span></div>`:''}
         </div>
       </div>`;
     });
@@ -3963,12 +4019,18 @@ function acexAbrirModal(id) {
     document.getElementById('acex-fecha').value = ymd;
     document.getElementById('acex-docentes').value = '';
     document.getElementById('acex-obs').value = '';
+    document.getElementById('acex-criterios').value = '';
+    document.getElementById('acex-alumnos-van').value = '';
+    document.getElementById('acex-alumnos-quedan').value = '';
   } else {
     const a = acexCache.find(x => x.id === id);
     if (a) {
       document.getElementById('acex-fecha').value = a.fecha;
       document.getElementById('acex-docentes').value = acexArrayToStr(a.docentes);
       document.getElementById('acex-obs').value = a.observaciones||'';
+      document.getElementById('acex-criterios').value = a.criterios||'';
+      document.getElementById('acex-alumnos-van').value = a.alumnos_van||'';
+      document.getElementById('acex-alumnos-quedan').value = a.alumnos_quedan||'';
       document.querySelectorAll('input[name="acex-ses"]').forEach(cb => {
         cb.checked = (a.sesiones||[]).includes(cb.value);
       });
@@ -4012,13 +4074,24 @@ async function acexGuardar() {
   const docentes = docentesTxt ? docentesTxt.split(',').map(d=>d.trim()).filter(Boolean) : [];
   const grupos   = Array.from(document.querySelectorAll('input[name="acex-grupo-check"]:checked')).map(c=>c.value);
   const obs      = document.getElementById('acex-obs').value.trim();
+  const criterios = document.getElementById('acex-criterios').value.trim();
+  const alumnosVan = document.getElementById('acex-alumnos-van').value.trim();
+  const alumnosQuedan = document.getElementById('acex-alumnos-quedan').value.trim();
   const sesiones = Array.from(document.querySelectorAll('input[name="acex-ses"]:checked')).map(c=>c.value);
   if (!fecha) { alert('Selecciona una fecha.'); return; }
   if (sesiones.length === 0) { alert('Selecciona al menos una sesión.'); return; }
 
   const btn = document.querySelector('#acex-modal .btn-primary');
   btn.textContent = '⏳ Guardando...'; btn.disabled = true;
-  const payload = { fecha, sesiones, docentes: docentes.length?docentes:null, grupos: grupos.length?grupos:null, observaciones: obs||null };
+  const payload = {
+    fecha, sesiones,
+    docentes: docentes.length ? docentes : null,
+    grupos: grupos.length ? grupos : null,
+    observaciones: obs || null,
+    criterios: criterios || null,
+    alumnos_van: alumnosVan || null,
+    alumnos_quedan: alumnosQuedan || null
+  };
   try {
     if (acexEditId) {
       await supaFetch('PATCH', `acex?id=eq.${acexEditId}`, payload);
